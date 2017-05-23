@@ -302,7 +302,7 @@ public class MatchComposer implements OWItemImageListener, Runnable
 			finished = Files.exists(Paths.get(this.matchRoot, this.currentMatch.toString(), this.map + ".png"))
 					&& (Files.exists(Paths.get(this.matchRoot, this.currentMatch.toString(), "_victory.png"))
 							|| Files.exists(Paths.get(this.matchRoot, this.currentMatch.toString(), "_defeat.png")))
-					&& Files.exists(Paths.get(this.matchRoot, this.currentMatch.toString(), "date.properties"));
+					&& Files.exists(Paths.get(this.matchRoot, this.currentMatch.toString(), "data.properties"));
 			
 			complete = Files.exists(Paths.get(this.matchRoot, this.currentMatch.toString(), "_sr_screen.png"))
 					&& !isDirEmpty(Paths.get(this.matchRoot, this.currentMatch.toString(), "stats"));
