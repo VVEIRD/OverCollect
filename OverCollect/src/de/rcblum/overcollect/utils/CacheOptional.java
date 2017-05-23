@@ -11,7 +11,7 @@ import java.util.function.Supplier;
 
 /**
  * Optional that expires its value after a certain time it has not been accessed.
- * @author wkiv894
+ * @author Roland von Werden
  *
  * @param <T>
  */
