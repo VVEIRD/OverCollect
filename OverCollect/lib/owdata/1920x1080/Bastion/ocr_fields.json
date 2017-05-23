@@ -1,0 +1,54 @@
+{
+  "doRecolor": true,
+  "fontSize": 55,
+  "secondaryFontSize": 19,
+  "dataColor": [
+    0,
+    0,
+	0
+  ],
+  "secondaryDataColor": [
+    0,
+    0,
+	0
+  ],
+  "dataFieldSize": [
+    240,
+    75
+  ],
+  "secondaryDataFieldSize": [
+    240,
+    50
+  ],
+  "values": {
+    "healingDone": [
+      1245,
+      434
+    ],
+    "objectiveKills": [
+      435,
+      430
+    ],
+    "eliminations": [
+      165,
+      433
+    ],
+    "objectiveTime": [
+      705,
+      430
+    ],
+    "damageDone": [
+      975,
+      433
+    ],
+    "deaths": [
+      1515,
+      437
+    ]
+  },
+  "secondaryValues": {},
+  "skew": 0.26,
+  "skewTrim": 21,
+  "skewSecondary": 0.0,
+  "skewSecondaryTrim": 0
+}

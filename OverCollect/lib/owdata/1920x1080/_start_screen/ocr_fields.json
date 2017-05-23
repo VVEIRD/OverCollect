@@ -1,0 +1,37 @@
+{
+  "dataFieldSize": [
+    240,
+    75
+  ],
+  "secondaryDataFieldSize": [
+    0,
+    0
+  ],
+  "values": {
+    "healingDone": [
+      1245,
+      437
+    ],
+    "objectiveKills": [
+      435,
+      437
+    ],
+    "eliminations": [
+      165,
+      437
+    ],
+    "objectiveTime": [
+      705,
+      437
+    ],
+    "damageDone": [
+      975,
+      437
+    ],
+    "deaths": [
+      1515,
+      437
+    ]
+  },
+  "secondaryValues": {}
+}

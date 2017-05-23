@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="create_run_jar" name="Create Runnable Jar for Project OverCollect with libraries in sub-folder">
+    <!--this file was created by Eclipse Runnable JAR Export Wizard-->
+    <!--ANT 1.7 is required                                        -->
+    <!--define folder properties-->
+    <property name="dir.buildfile" value="."/>
+    <property name="dir.workspace" value="C:/Users/rcBlum/Google Drive/Java/workspace"/>
+    <property name="dir.jarfile" value="C:/Users/rcBlum/Google Drive/Overwatch/OWCollect/owc-dist"/>
+    <target name="create_run_jar">
+        <jar destfile="${dir.jarfile}/OverCollect.jar">
+            <manifest>
+                <attribute name="Main-Class" value="de.rcblum.overcollect.OverWatchCollectorApp"/>
+                <attribute name="Class-Path" value=". lib/OverCollect/gson-2.8.0.jar lib/OverCollect/poi-3.16.jar lib/OverCollect/commons-codec-1.10.jar lib/OverCollect/commons-collections4-4.1.jar lib/OverCollect/poi-ooxml-3.16.jar lib/OverCollect/curvesapi-1.04.jar lib/OverCollect/poi-ooxml-schemas-3.16.jar lib/OverCollect/xmlbeans-2.6.0.jar lib/OverCollect/stax-api-1.0.1.jar lib/OverCollect/jgoodies-forms-1.8.0.jar lib/OverCollect/jgoodies-common-1.8.0.jar"/>
+            </manifest>
+            <fileset dir="${dir.workspace}/OverCollect/target/classes"/>
+        </jar>
+        <delete dir="${dir.jarfile}/lib/OverCollect"/>
+        <mkdir dir="${dir.jarfile}/lib/OverCollect"/>
+        <copy file="C:/Users/rcBlum/.m2/repository/com/google/code/gson/gson/2.8.0/gson-2.8.0.jar" todir="${dir.jarfile}/lib/OverCollect"/>
+        <copy file="C:/Users/rcBlum/.m2/repository/org/apache/poi/poi/3.16/poi-3.16.jar" todir="${dir.jarfile}/lib/OverCollect"/>
+        <copy file="C:/Users/rcBlum/.m2/repository/commons-codec/commons-codec/1.10/commons-codec-1.10.jar" todir="${dir.jarfile}/lib/OverCollect"/>
+        <copy file="C:/Users/rcBlum/.m2/repository/org/apache/commons/commons-collections4/4.1/commons-collections4-4.1.jar" todir="${dir.jarfile}/lib/OverCollect"/>
+        <copy file="C:/Users/rcBlum/.m2/repository/org/apache/poi/poi-ooxml/3.16/poi-ooxml-3.16.jar" todir="${dir.jarfile}/lib/OverCollect"/>
+        <copy file="C:/Users/rcBlum/.m2/repository/com/github/virtuald/curvesapi/1.04/curvesapi-1.04.jar" todir="${dir.jarfile}/lib/OverCollect"/>
+        <copy file="C:/Users/rcBlum/.m2/repository/org/apache/poi/poi-ooxml-schemas/3.16/poi-ooxml-schemas-3.16.jar" todir="${dir.jarfile}/lib/OverCollect"/>
+        <copy file="C:/Users/rcBlum/.m2/repository/org/apache/xmlbeans/xmlbeans/2.6.0/xmlbeans-2.6.0.jar" todir="${dir.jarfile}/lib/OverCollect"/>
+        <copy file="C:/Users/rcBlum/.m2/repository/stax/stax-api/1.0.1/stax-api-1.0.1.jar" todir="${dir.jarfile}/lib/OverCollect"/>
+        <copy file="C:/Users/rcBlum/.m2/repository/com/jgoodies/jgoodies-forms/1.8.0/jgoodies-forms-1.8.0.jar" todir="${dir.jarfile}/lib/OverCollect"/>
+        <copy file="C:/Users/rcBlum/.m2/repository/com/jgoodies/jgoodies-common/1.8.0/jgoodies-common-1.8.0.jar" todir="${dir.jarfile}/lib/OverCollect"/>
+    </target>
+</project>

@@ -1,0 +1,34 @@
+{
+  "doRecolor": true,
+  "fontSize": 64,
+  "dataColor": [
+    0,
+    0,
+    0
+  ],
+  "dataFieldSize": [
+    300,
+    82
+  ],
+  "secondaryFontSize": 19,
+  "secondaryDataColor": [
+    0,
+    0,
+    0
+  ],
+  "secondaryDataFieldSize": [
+    0,
+    0
+  ],
+  "skew": 0.26,
+  "skewTrim": 21,
+  "skewSecondary": 0.0,
+  "skewSecondaryTrim": 0,
+  "values": {
+    "sr": [
+      800,
+      450
+    ]
+  },
+  "secondaryValues": {}
+}

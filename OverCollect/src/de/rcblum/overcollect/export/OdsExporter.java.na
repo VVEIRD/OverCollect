@@ -1,0 +1,215 @@
+package de.rcblum.overcollect.export;
+
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Calendar;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.odftoolkit.simple.SpreadsheetDocument;
+import org.odftoolkit.simple.table.Cell;
+import org.odftoolkit.simple.table.Row;
+import org.odftoolkit.simple.table.Table;
+
+import de.rcblum.overcollect.configuration.OWItem;
+import de.rcblum.overcollect.configuration.OWLib;
+import de.rcblum.overcollect.stats.OWMatch;
+
+public class OdsExporter {
+	private List<OWMatch> matches = null;
+
+	private List<String> maps = null;
+
+	private List<OWItem> heroes = null;
+
+	private SpreadsheetDocument workbook = null;
+	
+	public OdsExporter() throws Exception
+	{
+		this.matches = OWLib.getInstance().getMatches().stream()
+				.sorted((m1, m2) -> m1.getStartTime().compareTo(m2.getStartTime())).collect(Collectors.toList());
+		this.heroes = OWLib.getInstance().getHeroes();
+		this.maps = OWLib.getInstance().getMaps();
+		this.workbook = SpreadsheetDocument.newSpreadsheetDocument();
+	}
+	
+	public void generateMatchSheet() 
+	{
+		String[] columns = {"Starttime", "Endtime", "Map", "Team SR", "Enemy SR", "Result", "SR after Match", "SR Difference", "Match ID"};
+		String[] rows = new String[matches.size()];
+		String[][] data = new String[rows.length][columns.length];
+		for (int i = 0; i < rows.length; i++) {
+			rows[i] = "Match " + (i+1);
+		}
+		Table sheet = Table.newTable(this.workbook, rows, columns, data);
+		sheet.setTableName("match_data");
+		int rowIndex = 0;
+		
+		// Set values
+		OWMatch previousMatch = null;
+		for (OWMatch match : matches) {
+			Row row = sheet.getRowByIndex(rowIndex++);
+			int cellIndex = 0;
+			Cell c = row.getCellByIndex(cellIndex++);
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(match.getStartTime());
+			c.setDateTimeValue(cal);
+			c = row.getCellByIndex(cellIndex++);
+			cal = Calendar.getInstance();
+			cal.setTime(match.getEndTime());
+			c.setDateTimeValue(cal);
+			c = row.getCellByIndex(cellIndex++);
+			c.setStringValue(match.getMap());
+			c = row.getCellByIndex(cellIndex++);
+			c.setStringValue(match.getTeamSr());
+			c = row.getCellByIndex(cellIndex++);
+			c.setStringValue(match.getEnemySr());
+			c = row.getCellByIndex(cellIndex++);
+			c.setStringValue(match.getResult().toString());
+			c = row.getCellByIndex(cellIndex++);
+			c.setDoubleValue((double) match.getSr());
+			c = row.getCellByIndex(cellIndex++);
+			c.setDoubleValue((double) (match.getSr()-(previousMatch != null ? previousMatch.getSr() : match.getSr())));
+			c = row.getCellByIndex(cellIndex++);
+			c.setStringValue(match.getMatchId());
+			previousMatch = match;
+		}
+	}
+	
+	/*
+	public void generateHeroSheets() 
+	{
+		for (OWItem hero : heroes) {
+			this.createHeroSheet(hero);
+		}
+	}
+	
+	private XSSFSheet createHeroSheet(OWItem hero) 
+	{
+		float wonGames = 0;
+		int playedGames = 0;
+		String heroName = hero.getItemName();
+		Set<String> secondaryStats = hero.getOCRConfiguration().secondaryValues.keySet();
+		XSSFSheet sheet = null;
+		System.out.println("Hero: " + hero.getItemName() + " ");
+		List<OWMatch> heroMatches = this.matches;//.stream().filter(m -> m.getCharacterStats().stream().anyMatch(j -> heroName.equals(j.getName()))).collect(Collectors.toList());
+		List<OWMatch> foundMatches = this.matches.stream().filter(m -> m.getCharacterStats().stream().anyMatch(j -> heroName.equals(j.getName()))).collect(Collectors.toList());;
+		System.out.println("Matches: " + foundMatches.size());
+		System.out.println();
+		if (foundMatches.size() > 0) {
+			sheet = this.workbook.createSheet(heroName + "_data");
+			int rowIndex = 0;
+			int cIndex = 0;
+			Row row = sheet.createRow(rowIndex++);
+			Cell c = row.createCell(cIndex++);
+			c.setCellValue("Starttime");
+			c = row.createCell(cIndex++);
+			c.setCellValue("Endtime");
+			c = row.createCell(cIndex++);
+			c.setCellValue("Map");
+			c = row.createCell(cIndex++);
+			c.setCellValue("Team SR");
+			c = row.createCell(cIndex++);
+			c.setCellValue("Enemy SR");
+			c = row.createCell(cIndex++);
+			c.setCellValue("Result");
+			c = row.createCell(cIndex++);
+			c.setCellValue("Winrate");
+			// Hero Stats
+			c = row.createCell(cIndex++);
+			c.setCellValue("Name");
+			c = row.createCell(cIndex++);
+			c.setCellValue("Eliminations");
+			c = row.createCell(cIndex++);
+			c.setCellValue("Objective Kills");
+			c = row.createCell(cIndex++);
+			c.setCellValue("Objective Time");
+			c = row.createCell(cIndex++);
+			c.setCellValue("Damage Done");
+			c = row.createCell(cIndex++);
+			c.setCellValue("Healing Done");
+			c = row.createCell(cIndex++);
+			c.setCellValue("Deaths");
+			for (String secondaryStat : secondaryStats) {
+				c = row.createCell(cIndex++);
+				c.setCellValue(secondaryStat);	
+			}
+			c = row.createCell(cIndex++);
+			c.setCellValue("SR after Match");
+			c = row.createCell(cIndex++);
+			c.setCellValue("SR Difference");
+			c = row.createCell(cIndex++);
+			c.setCellValue("Match ID");
+			CellStyle cellStyleDateFormat = workbook.createCellStyle();
+			CreationHelper createHelper = workbook.getCreationHelper();
+			cellStyleDateFormat.setDataFormat(
+			    createHelper.createDataFormat().getFormat("DD.MM.YYYY hh:mm:ss"));
+			CellStyle cellStylePercentage = workbook.createCellStyle();
+			cellStylePercentage.setDataFormat(createHelper.createDataFormat().getFormat("0%"));
+			OWMatch previousMatch = null;
+			for (OWMatch match : heroMatches) {
+				if (match.getCharacterStats().stream().anyMatch(j -> heroName.equals(j.getName()))) {
+					row = sheet.createRow(rowIndex++);
+					int cellIndex = 0;
+					c = row.getCellByIndex(cellIndex++);
+					c.setCellValue(match.getStartTime());
+					c.setCellStyle(cellStyleDateFormat);
+					c = row.getCellByIndex(cellIndex++);
+					c.setCellValue(match.getEndTime());
+					c.setCellStyle(cellStyleDateFormat);
+					c = row.getCellByIndex(cellIndex++);
+					c.setCellValue(match.getMap());
+					c = row.getCellByIndex(cellIndex++);
+					c.setCellValue(match.getTeamSr());
+					c = row.getCellByIndex(cellIndex++);
+					c.setCellValue(match.getEnemySr());
+					c = row.getCellByIndex(cellIndex++);
+					c.setCellValue(match.getResult().toString());
+					playedGames++;
+					wonGames += match.getResult() == Result.VICTORY ? 1 : 0;
+					c = row.getCellByIndex(cellIndex++);
+					c.setCellValue(wonGames/playedGames);
+					c.setCellStyle(cellStylePercentage);
+					// Hero Stats
+					Optional<OWCharacterStats> statOptional = match.getCharacterStats().stream().filter(i -> i.getName().equals(heroName)).findFirst();
+					c = row.getCellByIndex(cellIndex++);
+					c.setCellValue(statOptional.isPresent() ? statOptional.get().getName() : "");
+					c = row.getCellByIndex(cellIndex++);
+					c.setCellValue(statOptional.isPresent() ? statOptional.get().getEliminations() : "");
+					c = row.getCellByIndex(cellIndex++);
+					c.setCellValue(statOptional.isPresent() ? statOptional.get().getObjectiveKills() : "");
+					c = row.getCellByIndex(cellIndex++);
+					c.setCellValue(statOptional.isPresent() ? statOptional.get().getObjectiveTime() : "");
+					c = row.getCellByIndex(cellIndex++);
+					c.setCellValue(statOptional.isPresent() ? statOptional.get().getDamageDone() : "");
+					c = row.getCellByIndex(cellIndex++);
+					c.setCellValue(statOptional.isPresent() ? statOptional.get().getHealingDone() : "");
+					c = row.getCellByIndex(cellIndex++);
+					c.setCellValue(statOptional.isPresent() ? statOptional.get().getDeaths() : "");
+					Map<String, String> sStats = statOptional.isPresent() ? statOptional.get().getSecondaryStats() : new HashMap<>();
+					for (String secondaryStat : secondaryStats) {
+						c = row.getCellByIndex(cellIndex++);
+						c.setCellValue(sStats.get(secondaryStat));	
+					}
+					c = row.getCellByIndex(cellIndex++);
+					c.setCellValue(match.getSr());
+					c = row.getCellByIndex(cellIndex++);
+					c.setCellValue(match.getSr()-(previousMatch != null && previousMatch.getSr() != -1 ? previousMatch.getSr() : match.getSr()));
+					c = row.getCellByIndex(cellIndex++);
+					c.setCellValue(match.getMatchId());
+				}
+				previousMatch = match;
+			}
+		}
+		return sheet;
+	}
+	 */
+	public void save(Path path) throws Exception 
+	{
+		try (OutputStream out = Files.newOutputStream(path)){
+			workbook.save(out);
+			System.out.println("ODS written successfully..");
+		} 
+	}
+}
