@@ -1,23 +1,5 @@
 package de.rcblum.overcollect.ui.panels;
 
-import javax.swing.JPanel;
-
-import com.jgoodies.forms.layout.FormLayout;
-import com.jgoodies.forms.layout.ColumnSpec;
-import com.jgoodies.forms.layout.RowSpec;
-
-import de.rcblum.overcollect.OverWatchCollectorApp;
-import de.rcblum.overcollect.export.XSSFExporter;
-import de.rcblum.overcollect.ui.utils.FileUtils;
-import de.rcblum.overcollect.ui.utils.FileUtils.OWFileFilter;
-import de.rcblum.overcollect.ui.utils.UiStatics;
-
-import com.jgoodies.forms.layout.FormSpecs;
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-
 import java.awt.Desktop;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -27,6 +9,22 @@ import java.nio.file.Paths;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+
+import com.jgoodies.forms.layout.ColumnSpec;
+import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.layout.FormSpecs;
+import com.jgoodies.forms.layout.RowSpec;
+
+import de.rcblum.overcollect.OverWatchCollectorApp;
+import de.rcblum.overcollect.export.XSSFExporter;
+import de.rcblum.overcollect.ui.utils.FileUtils;
+import de.rcblum.overcollect.ui.utils.FileUtils.OWFileFilter;
+import de.rcblum.overcollect.ui.utils.UiStatics;
 
 public class JOWSidebar extends JPanel {
 
@@ -35,6 +33,10 @@ public class JOWSidebar extends JPanel {
 
 	private static final Icon ICON_RECORDING = new ImageIcon(
 			JOWSidebar.class.getResource("/resources/ui/Recording.png"));
+	public static void infoBox(String infoMessage, String titleBar, int msgType) {
+		JOptionPane.showMessageDialog(null, infoMessage, titleBar, msgType);
+	}
+
 	private JLabel lblRecording;
 
 	private OverWatchCollectorApp app = null;
@@ -141,10 +143,6 @@ public class JOWSidebar extends JPanel {
 			}
 		});
 
-	}
-
-	public static void infoBox(String infoMessage, String titleBar, int msgType) {
-		JOptionPane.showMessageDialog(null, infoMessage, titleBar, msgType);
 	}
 
 }

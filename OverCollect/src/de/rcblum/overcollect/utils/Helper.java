@@ -5,14 +5,6 @@ import java.awt.Image;
 import java.awt.image.BufferedImage;
 
 public class Helper {
-	public static boolean isInteger(String val) {
-		return val != null && val.matches("^-?\\d+$");
-	}
-
-	public static int toInteger(String value, int defaultValue) {
-		return isInteger(value) ? Integer.valueOf(value) : defaultValue;
-	}
-
 	public static BufferedImage copy(BufferedImage img) {
 		try {
 			int newW = img.getWidth();
@@ -27,5 +19,13 @@ public class Helper {
 			e.printStackTrace();
 		}
 		return null;
+	}
+
+	public static boolean isInteger(String val) {
+		return val != null && val.matches("^-?\\d+$");
+	}
+
+	public static int toInteger(String value, int defaultValue) {
+		return isInteger(value) ? Integer.valueOf(value) : defaultValue;
 	}
 }

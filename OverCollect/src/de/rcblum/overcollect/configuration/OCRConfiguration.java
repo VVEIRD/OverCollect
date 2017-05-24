@@ -11,6 +11,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -19,6 +20,40 @@ import com.google.gson.JsonSyntaxException;
 
 public class OCRConfiguration {
 	private static transient Map<String, Map<String, OCRConfiguration>> configurations = new HashMap<>();
+
+	public static OCRConfiguration getInstance(Dimension dimension, String alias) {
+		OCRConfiguration configuration = null;
+		String resolution = ((int) dimension.getWidth()) + "x" + ((int) dimension.getHeight());
+		Gson gson = new Gson();
+		File ocrFile = new File("lib" + File.separator + "owdata" + File.separator + resolution + File.separator + alias
+				+ File.separator + "ocr_fields.json");
+		System.out.println(ocrFile.getAbsolutePath());
+		if (configurations.containsKey(resolution) && configurations.get(resolution).containsKey(alias)) {
+			return configurations.get(resolution).get(alias);
+		} else if (!configurations.containsKey(resolution)) {
+			configurations.put(resolution, new HashMap<>());
+		}
+		if (ocrFile.exists()) {
+			try {
+				String text = new String(Files.readAllBytes(Paths.get(ocrFile.getAbsolutePath())),
+						StandardCharsets.UTF_8);
+				configuration = gson.fromJson(text, OCRConfiguration.class);
+			} catch (JsonIOException | JsonSyntaxException | IOException e) {
+				e.printStackTrace();
+			}
+		}
+		configurations.get(resolution).put(alias, configuration);
+		return configuration;
+	}
+
+	public static void save(String libPath, String resolution, String alias, OCRConfiguration ocr)
+			throws UnsupportedEncodingException, IOException {
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		Path ocrFile = Paths.get(libPath, resolution, alias, "ocr_fields.json");
+		System.out.println(ocrFile.toString());
+		String text = gson.toJson(ocr);
+		Files.write(ocrFile, text.getBytes("UTF-8"));
+	}
 
 	public final boolean doRecolor;
 
@@ -60,14 +95,53 @@ public class OCRConfiguration {
 	public final int skewTrim;
 
 	public final double skewSecondary;
-
 	public final int skewSecondaryTrim;
 
 	/**
 	 * Coordinates for the data on screen. "identifier" = [x, y]
 	 */
 	public final Map<String, int[]> values;
+
 	public final Map<String, int[]> secondaryValues;
+
+	public OCRConfiguration rescale(float rescale) {
+		int skewTrim = Math.round(this.skewTrim * rescale);
+		int skewSecondaryTrim = Math.round(this.skewSecondaryTrim * rescale);
+		int fontSize = Math.round(this.fontSize * rescale);
+		int secondaryFontSize = Math.round(this.secondaryFontSize * rescale);
+
+		Map<String, int[]> values = new HashMap<>();
+		Map<String, int[]> secondaryValues = new HashMap<>();
+		int[] secondaryDataFieldSize = new int[this.secondaryDataFieldSize.length];
+		int[] dataFieldSize = new int[this.dataFieldSize.length];
+		for (int i = 0; i < this.dataFieldSize.length; i++) {
+			dataFieldSize[i] = Math.round(this.dataFieldSize[i] * rescale);
+		}
+		for (int i = 0; i < this.secondaryDataFieldSize.length; i++) {
+			secondaryDataFieldSize[i] = Math.round(this.secondaryDataFieldSize[i] * rescale);
+		}
+		Set<String> valuesKeys = this.values.keySet();
+		for (String key : valuesKeys) {
+			int[] xy = this.values.get(key);
+			int[] nxy = new int[xy.length];
+			for (int i = 0; i < xy.length; i++) {
+				nxy[i] = Math.round(xy[i] * rescale);
+			}
+			values.put(key, nxy);
+		}
+		valuesKeys = this.secondaryValues.keySet();
+		for (String key : valuesKeys) {
+			int[] xy = this.secondaryValues.get(key);
+			int[] nxy = new int[xy.length];
+			for (int i = 0; i < xy.length; i++) {
+				nxy[i] = Math.round(xy[i] * rescale);
+			}
+			secondaryValues.put(key, nxy);
+		}
+		return new OCRConfiguration(values, secondaryValues, dataFieldSize, secondaryDataFieldSize, fontSize,
+				secondaryFontSize, skew, skewSecondary, skewTrim, skewSecondaryTrim, doRecolor,
+				dataColor, secondaryDataColor);
+	}
 
 	public OCRConfiguration(Map<String, int[]> values, Map<String, int[]> secondaryValues, int[] dataFieldSize,
 			int[] secondaryDataFieldSize, int fontSize, int secondaryFontSize, double skew, double skewSecondary,
@@ -86,40 +160,6 @@ public class OCRConfiguration {
 		this.doRecolor = doRecolor;
 		this.dataColor = dataColor;
 		this.secondaryDataColor = secondaryDataColor;
-	}
-
-	public static OCRConfiguration getInstance(Dimension dimension, String alias) {
-		OCRConfiguration configuration = null;
-		String resolution = ((int) dimension.getWidth()) + "x" + ((int) dimension.getHeight());
-		Gson gson = new Gson();
-		File ocrFile = new File("lib" + File.separator + "owdata" + File.separator + resolution + File.separator + alias
-				+ File.separator + "ocr_fields.json");
-		System.out.println(ocrFile.getAbsolutePath());
-		if (configurations.containsKey(resolution) && configurations.get(resolution).containsKey(alias)) {
-			return configurations.get(resolution).get(alias);
-		} else if (!configurations.containsKey(resolution)) {
-			configurations.put(resolution, new HashMap<>());
-		}
-		if (ocrFile.exists()) {
-			try {
-				String text = new String(Files.readAllBytes(Paths.get(ocrFile.getAbsolutePath())),
-						StandardCharsets.UTF_8);
-				configuration = gson.fromJson(text, OCRConfiguration.class);
-			} catch (JsonIOException | JsonSyntaxException | IOException e) {
-				e.printStackTrace();
-			}
-		}
-		configurations.get(resolution).put(alias, configuration);
-		return configuration;
-	}
-
-	public static void save(String libPath, String resolution, String alias, OCRConfiguration ocr)
-			throws UnsupportedEncodingException, IOException {
-		Gson gson = new GsonBuilder().setPrettyPrinting().create();
-		Path ocrFile = Paths.get(libPath, resolution, alias, "ocr_fields.json");
-		System.out.println(ocrFile.toString());
-		String text = gson.toJson(ocr);
-		Files.write(ocrFile, text.getBytes("UTF-8"));
 	}
 
 	/**

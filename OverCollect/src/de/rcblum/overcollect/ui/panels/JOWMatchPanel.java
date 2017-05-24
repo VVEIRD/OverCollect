@@ -1,23 +1,24 @@
 package de.rcblum.overcollect.ui.panels;
 
-import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Paths;
 import java.util.Date;
 
-import javax.imageio.ImageIO;
-import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.Timer;
+import javax.swing.SwingConstants;
+
+import com.jgoodies.forms.layout.ColumnSpec;
+import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.layout.RowSpec;
 
 import de.rcblum.overcollect.configuration.OWLib;
 import de.rcblum.overcollect.data.OWMatch;
@@ -25,21 +26,25 @@ import de.rcblum.overcollect.ui.animation.Animation;
 import de.rcblum.overcollect.ui.animation.IAnimatable;
 import de.rcblum.overcollect.ui.utils.ImageCache;
 import de.rcblum.overcollect.ui.utils.UiStatics;
-import com.jgoodies.forms.layout.FormLayout;
-import com.jgoodies.forms.layout.ColumnSpec;
-import com.jgoodies.forms.layout.RowSpec;
-import javax.swing.JLabel;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import javax.swing.SwingConstants;
-import javax.swing.JButton;
 
 public class JOWMatchPanel extends JPanel implements IAnimatable {
+	public static void main(String[] args) {
+		JFrame f = new JFrame();
+		OWMatch match = OWLib.getInstance().getMatch("d56c1237-9f17-4635-9229-b0cacb8289f9");
+		JOWMatchPanel matchPanel = new JOWMatchPanel(match, -1);
+		f.getContentPane().setLayout(new BoxLayout(f.getContentPane(), BoxLayout.Y_AXIS));
+		f.getContentPane().add(matchPanel);
+		f.getContentPane().add(new JOWMatchPanel(match, -1));
+		f.pack();
+		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		f.setVisible(true);
+	}
+
 	private OWMatch match = null;
 
 	private int lastSr = -1;
-
 	private int minHeight = 125;
+
 	private int maxHeight = 525;
 
 	private int currentHeight = minHeight;
@@ -47,7 +52,6 @@ public class JOWMatchPanel extends JPanel implements IAnimatable {
 	private boolean expanding = false;
 
 	private Animation animation = null;
-
 	private BufferedImage background = null;
 	private JLabel lblMapName;
 	private JLabel lblSrDesc;
@@ -62,6 +66,7 @@ public class JOWMatchPanel extends JPanel implements IAnimatable {
 	private JLabel lblResult;
 	private JLabel lblSrDiff;
 	private JButton btnHeroes;
+
 	private JOWMatchContentPanel pContent;
 
 	/**
@@ -207,6 +212,82 @@ public class JOWMatchPanel extends JPanel implements IAnimatable {
 		this.animation.start();
 	}
 
+	public void clicked() {
+		expanding = !expanding;
+	}
+
+	private void drawBackground(Graphics2D g2d, BufferedImage img) {
+		if (background != null)
+			g2d.drawImage(background, 0, 0, null);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see de.rcblum.overcollect.ui.panels.Animatable#getCurrentValue()
+	 */
+	@Override
+	public int getCurrentValue() {
+		return currentHeight;
+	}
+
+	@Override
+	public Dimension getMaximumSize() {
+		Dimension d = super.getPreferredSize();
+		d.setSize(2500, this.currentHeight);
+		return d;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see de.rcblum.overcollect.ui.panels.Animatable#getMaxValue()
+	 */
+	@Override
+	public int getMaxValue() {
+		return maxHeight;
+	}
+
+	@Override
+	public Dimension getMinimumSize() {
+		Dimension d = super.getPreferredSize();
+		d.setSize(d.getWidth(), this.minHeight);
+		return d;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see de.rcblum.overcollect.ui.panels.Animatable#getMinValue()
+	 */
+	@Override
+	public int getMinValue() {
+		return minHeight;
+	}
+
+	@Override
+	public Dimension getPreferredSize() {
+		Dimension d = super.getPreferredSize();
+		d.setSize(d.getWidth(), this.currentHeight);
+		return d;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see de.rcblum.overcollect.ui.panels.Animatable#isExpanding()
+	 */
+	@Override
+	public boolean isExpanding() {
+		return expanding;
+	}
+
+	@Override
+	protected void paintComponent(Graphics g) {
+		super.paintComponent(g);
+		drawBackground((Graphics2D) g, background);
+	}
+
 	private void setData() {
 		this.background = ImageCache.getImageFromResource(
 				"/resources/ui/background/" + this.match.getMap().replaceAll("_", "").trim() + ".png");
@@ -242,62 +323,6 @@ public class JOWMatchPanel extends JPanel implements IAnimatable {
 		this.lblMatchduration.setText(time);
 	}
 
-	@Override
-	protected void paintComponent(Graphics g) {
-		super.paintComponent(g);
-		drawBackground((Graphics2D) g, background);
-	}
-
-	private void drawBackground(Graphics2D g2d, BufferedImage img) {
-		if (background != null)
-			g2d.drawImage(background, 0, 0, null);
-	}
-
-	public void clicked() {
-		expanding = !expanding;
-	}
-
-	@Override
-	public Dimension getPreferredSize() {
-		Dimension d = super.getPreferredSize();
-		d.setSize(d.getWidth(), this.currentHeight);
-		return d;
-	}
-
-	@Override
-	public Dimension getMaximumSize() {
-		Dimension d = super.getPreferredSize();
-		d.setSize(2500, this.currentHeight);
-		return d;
-	}
-
-	@Override
-	public Dimension getMinimumSize() {
-		Dimension d = super.getPreferredSize();
-		d.setSize(d.getWidth(), this.minHeight);
-		return d;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see de.rcblum.overcollect.ui.panels.Animatable#getMinValue()
-	 */
-	@Override
-	public int getMinValue() {
-		return minHeight;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see de.rcblum.overcollect.ui.panels.Animatable#getMaxValue()
-	 */
-	@Override
-	public int getMaxValue() {
-		return maxHeight;
-	}
-
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -309,38 +334,6 @@ public class JOWMatchPanel extends JPanel implements IAnimatable {
 		this.currentHeight = v;
 		this.revalidate();
 		this.repaint();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see de.rcblum.overcollect.ui.panels.Animatable#getCurrentValue()
-	 */
-	@Override
-	public int getCurrentValue() {
-		return currentHeight;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see de.rcblum.overcollect.ui.panels.Animatable#isExpanding()
-	 */
-	@Override
-	public boolean isExpanding() {
-		return expanding;
-	}
-
-	public static void main(String[] args) {
-		JFrame f = new JFrame();
-		OWMatch match = OWLib.getInstance().getMatch("d56c1237-9f17-4635-9229-b0cacb8289f9");
-		JOWMatchPanel matchPanel = new JOWMatchPanel(match, -1);
-		f.getContentPane().setLayout(new BoxLayout(f.getContentPane(), BoxLayout.Y_AXIS));
-		f.getContentPane().add(matchPanel);
-		f.getContentPane().add(new JOWMatchPanel(match, -1));
-		f.pack();
-		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		f.setVisible(true);
 	}
 
 }

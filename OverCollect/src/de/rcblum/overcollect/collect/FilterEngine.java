@@ -26,61 +26,6 @@ import de.rcblum.overcollect.configuration.OWLib;
  */
 public class FilterEngine implements ImageListener {
 
-	private List<OWItemImageListener> listeners = new LinkedList<>();
-
-	private ExecutorService worker = Executors.newSingleThreadExecutor();
-
-	private boolean dropDuplicateFilter = true;
-
-	private String lastFilter = "";
-
-	public FilterEngine() {
-		this.dropDuplicateFilter = OWLib.getInstance().getBoolean("dropDuplicateFilter");
-	}
-
-	@Override
-	public void addImage(BufferedImage i) {
-		if (OWLib.getInstance().supportScreenResolution(i.getWidth(), i.getHeight())) {
-			worker.submit(new FilterTask(i));
-		} else {
-			System.out.println("Image resolution " + i.getWidth() + " x " + i.getHeight() + " not supported");
-		}
-	}
-
-	/**
-	 * Adds a {@link OWItemImageListener}, that will be triggered if a filter is
-	 * matched
-	 * 
-	 * @param listener
-	 */
-	public void addOWItemImageListener(OWItemImageListener listener) {
-		this.listeners.add(listener);
-	}
-
-	/**
-	 * Removes a {@link OWItemImageListener}
-	 * 
-	 * @param listener
-	 */
-	public void removeOWItemImageListener(OWItemImageListener listener) {
-		this.listeners.remove(listener);
-	}
-
-	/**
-	 * Informs all listeners that a Filter matched a screenshot
-	 * 
-	 * @param i
-	 *            Image that matched the filter
-	 * @param item
-	 *            {@link OWItem} that contains the filter which matched the
-	 *            image.
-	 */
-	private void fireImage(BufferedImage i, OWItem item) {
-		for (OWItemImageListener owItemImageListener : listeners) {
-			owItemImageListener.addOWItem(i, item);
-		}
-	}
-
 	/**
 	 * Task tah will check the screenshot against the filters of the appropriate
 	 * screen resolution.
@@ -116,6 +61,61 @@ public class FilterEngine implements ImageListener {
 			}
 		}
 
+	}
+
+	private List<OWItemImageListener> listeners = new LinkedList<>();
+
+	private ExecutorService worker = Executors.newSingleThreadExecutor();
+
+	private boolean dropDuplicateFilter = true;
+
+	private String lastFilter = "";
+
+	public FilterEngine() {
+		this.dropDuplicateFilter = OWLib.getInstance().getBoolean("dropDuplicateFilter");
+	}
+
+	@Override
+	public void addImage(BufferedImage i) {
+		if (OWLib.getInstance().supportScreenResolution(i.getWidth(), i.getHeight())) {
+			worker.submit(new FilterTask(i));
+		} else {
+			System.out.println("Image resolution " + i.getWidth() + " x " + i.getHeight() + " not supported");
+		}
+	}
+
+	/**
+	 * Adds a {@link OWItemImageListener}, that will be triggered if a filter is
+	 * matched
+	 * 
+	 * @param listener
+	 */
+	public void addOWItemImageListener(OWItemImageListener listener) {
+		this.listeners.add(listener);
+	}
+
+	/**
+	 * Informs all listeners that a Filter matched a screenshot
+	 * 
+	 * @param i
+	 *            Image that matched the filter
+	 * @param item
+	 *            {@link OWItem} that contains the filter which matched the
+	 *            image.
+	 */
+	private void fireImage(BufferedImage i, OWItem item) {
+		for (OWItemImageListener owItemImageListener : listeners) {
+			owItemImageListener.addOWItem(i, item);
+		}
+	}
+
+	/**
+	 * Removes a {@link OWItemImageListener}
+	 * 
+	 * @param listener
+	 */
+	public void removeOWItemImageListener(OWItemImageListener listener) {
+		this.listeners.remove(listener);
 	}
 
 }

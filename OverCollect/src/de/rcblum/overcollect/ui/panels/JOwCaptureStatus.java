@@ -3,11 +3,9 @@ package de.rcblum.overcollect.ui.panels;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
@@ -15,27 +13,22 @@ import java.util.Date;
 import java.util.Objects;
 
 import javax.imageio.ImageIO;
-import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.border.Border;
-import javax.swing.border.CompoundBorder;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.LineBorder;
+import javax.swing.SwingConstants;
+import javax.swing.Timer;
+
+import com.jgoodies.forms.layout.ColumnSpec;
+import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.layout.FormSpecs;
+import com.jgoodies.forms.layout.RowSpec;
 
 import de.rcblum.overcollect.capture.listener.ImageListener;
 import de.rcblum.overcollect.collect.listener.owmatch.OWMatchEvent;
 import de.rcblum.overcollect.collect.listener.owmatch.OWMatchListener;
 import de.rcblum.overcollect.configuration.OWItem;
 import de.rcblum.overcollect.ui.utils.UiStatics;
-
-import com.jgoodies.forms.layout.FormLayout;
-import com.jgoodies.forms.layout.ColumnSpec;
-import com.jgoodies.forms.layout.RowSpec;
-import com.jgoodies.forms.layout.FormSpecs;
-import javax.swing.JLabel;
-import javax.swing.SwingConstants;
-import javax.swing.Timer;
 
 public class JOwCaptureStatus extends JPanel implements OWMatchListener, ActionListener, ImageListener {
 
@@ -44,24 +37,45 @@ public class JOwCaptureStatus extends JPanel implements OWMatchListener, ActionL
 	 */
 	private static final long serialVersionUID = 5710708290677918754L;
 
+	private static BufferedImage getImageFrom(Path matchPath, OWItem item) throws IOException {
+		matchPath = Objects.requireNonNull(matchPath);
+		item = Objects.requireNonNull(item);
+		BufferedImage img = ImageIO.read(matchPath.resolve(item.getItemName() + ".png").toFile());
+		return img;
+	}
+
+	public static void main(String[] args) throws IOException, InterruptedException {
+		JFrame f = new JFrame("");
+		JOwCaptureStatus mapPanel = new JOwCaptureStatus();
+		mapPanel.matchStarted(null);
+		f.getContentPane().add(mapPanel);
+		f.pack();
+		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		f.setVisible(true);
+		Thread.sleep(64_000);
+		mapPanel.matchCompleted(null);
+		Thread.sleep(5_000);
+		mapPanel.matchEnded(null);
+	}
+
 	private boolean matchRunning = false;
-
 	private SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss dd.MM.yyyy");
-
 	private JMapPanel pMap;
 	private JLabel lblMatchStartet;
 	private JLabel lblMatchEndedDesc;
 	private JLabel lblMatchEnded;
 	private JLabel lblMatchTimeDesc;
 	private JLabel lblMatchTime;
+
 	private JLabel lblSrRecorded;
+
 	private JLabel lblHeroStatsRecorded;
 
 	private long startTime = -1;
-
 	private long endTime = -1;
 
 	private Timer t = null;
+
 	private JLabel lblResult;
 
 	/**
@@ -153,25 +167,22 @@ public class JOwCaptureStatus extends JPanel implements OWMatchListener, ActionL
 	}
 
 	@Override
-	public void matchStarted(OWMatchEvent e) {
-		this.endTime = -1;
-		this.pMap.setMap(" ", null);
-		this.pMap.setSecondText(" ");
-		lblHeroStatsRecorded.setText(" ");
-		lblSrRecorded.setText(" ");
-		lblResult.setText(" ");
-		startTime = System.currentTimeMillis();
-		lblMatchStartet.setText(sdf.format(new Date(startTime)));
-		lblMatchEnded.setText(" ");
-		matchRunning = true;
-		this.pMap.setMap(e.item.getItemName().replace("_", " ").trim(), e.screenshot);
+	public void actionPerformed(ActionEvent e) {
+		if (this.startTime != -1) {
+			long curr = this.endTime != -1 ? this.endTime : System.currentTimeMillis();
+			long start = this.startTime;
+			long minutes = ((curr - start) / (1000 * 60)) % 60;
+			long seconds = ((curr - start) / (1000)) % 60;
+			String time = String.format("%02d:%02d", minutes, seconds);
+			this.lblMatchTime.setText(time);
+		} else {
+			this.lblMatchTime.setText("");
+		}
 	}
 
-	private static BufferedImage getImageFrom(Path matchPath, OWItem item) throws IOException {
-		matchPath = Objects.requireNonNull(matchPath);
-		item = Objects.requireNonNull(item);
-		BufferedImage img = ImageIO.read(matchPath.resolve(item.getItemName() + ".png").toFile());
-		return img;
+	@Override
+	public void addImage(BufferedImage i) {
+		this.pMap.setBackgroundImage(i);
 	}
 
 	@Override
@@ -192,19 +203,6 @@ public class JOwCaptureStatus extends JPanel implements OWMatchListener, ActionL
 	}
 
 	@Override
-	public void matchStatRecorded(OWMatchEvent e) {
-		System.out.println("Stat ev fired");
-		if (matchRunning)
-			lblHeroStatsRecorded.setText("Hero Stat recorded");
-	}
-
-	@Override
-	public void matchSrRecorded(OWMatchEvent e) {
-		if (matchRunning)
-			lblSrRecorded.setText("SR Recorded");
-	}
-
-	@Override
 	public void matchEnded(OWMatchEvent e) {
 		matchRunning = false;
 		if (this.endTime == -1) {
@@ -217,36 +215,31 @@ public class JOwCaptureStatus extends JPanel implements OWMatchListener, ActionL
 	}
 
 	@Override
-	public void actionPerformed(ActionEvent e) {
-		if (this.startTime != -1) {
-			long curr = this.endTime != -1 ? this.endTime : System.currentTimeMillis();
-			long start = this.startTime;
-			long minutes = ((curr - start) / (1000 * 60)) % 60;
-			long seconds = ((curr - start) / (1000)) % 60;
-			String time = String.format("%02d:%02d", minutes, seconds);
-			this.lblMatchTime.setText(time);
-		} else {
-			this.lblMatchTime.setText("");
-		}
-	}
-
-	public static void main(String[] args) throws IOException, InterruptedException {
-		JFrame f = new JFrame("");
-		JOwCaptureStatus mapPanel = new JOwCaptureStatus();
-		mapPanel.matchStarted(null);
-		f.getContentPane().add(mapPanel);
-		f.pack();
-		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		f.setVisible(true);
-		Thread.sleep(64_000);
-		mapPanel.matchCompleted(null);
-		Thread.sleep(5_000);
-		mapPanel.matchEnded(null);
+	public void matchSrRecorded(OWMatchEvent e) {
+		if (matchRunning)
+			lblSrRecorded.setText("SR Recorded");
 	}
 
 	@Override
-	public void addImage(BufferedImage i) {
-		this.pMap.setBackgroundImage(i);
+	public void matchStarted(OWMatchEvent e) {
+		this.endTime = -1;
+		this.pMap.setMap(" ", null);
+		this.pMap.setSecondText(" ");
+		lblHeroStatsRecorded.setText(" ");
+		lblSrRecorded.setText(" ");
+		lblResult.setText(" ");
+		startTime = System.currentTimeMillis();
+		lblMatchStartet.setText(sdf.format(new Date(startTime)));
+		lblMatchEnded.setText(" ");
+		matchRunning = true;
+		this.pMap.setMap(e.item.getItemName().replace("_", " ").trim(), e.screenshot);
+	}
+
+	@Override
+	public void matchStatRecorded(OWMatchEvent e) {
+		System.out.println("Stat ev fired");
+		if (matchRunning)
+			lblHeroStatsRecorded.setText("Hero Stat recorded");
 	}
 
 }

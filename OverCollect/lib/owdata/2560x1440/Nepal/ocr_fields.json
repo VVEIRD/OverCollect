@@ -1,0 +1,38 @@
+{
+  "doRecolor": true,
+  "fontSize": 68,
+  "dataColor": [
+    0,
+    0,
+    0
+  ],
+  "dataFieldSize": [
+    229,
+    107
+  ],
+  "secondaryFontSize": 25,
+  "secondaryDataColor": [
+    0,
+    0,
+    0
+  ],
+  "secondaryDataFieldSize": [
+    0,
+    0
+  ],
+  "skew": 0.255,
+  "skewTrim": 27,
+  "skewSecondary": 0.0,
+  "skewSecondaryTrim": 0,
+  "values": {
+    "teamSR": [
+      827,
+      287
+    ],
+    "enemySR": [
+      1600,
+      287
+    ]
+  },
+  "secondaryValues": {}
+}

@@ -18,6 +18,7 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -34,10 +35,7 @@ import javax.swing.table.DefaultTableModel;
 import de.rcblum.overcollect.configuration.Filter;
 import de.rcblum.overcollect.configuration.OWItem;
 import de.rcblum.overcollect.configuration.OWLib;
-import de.rcblum.overcollect.utils.FontUtils;
 import de.rcblum.overcollect.utils.Helper;
-
-import javax.swing.JCheckBox;
 
 public class JFilterSetup extends JFrame {
 
@@ -97,6 +95,7 @@ public class JFilterSetup extends JFrame {
 
 		JButton btnSave = new JButton("save");
 		btnSave.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
 					int rows = model.getRowCount();
@@ -135,6 +134,7 @@ public class JFilterSetup extends JFrame {
 
 		JButton btnTestFilters = new JButton("Test Filters");
 		btnTestFilters.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				new JFilterTest((String) cbResolution.getSelectedItem()).setVisible(true);
 			}
@@ -198,6 +198,7 @@ public class JFilterSetup extends JFrame {
 			Class<?>[] columnTypes = new Class[] { Integer.class, Integer.class, Integer.class, Integer.class,
 					Integer.class };
 
+			@Override
 			public Class<?> getColumnClass(int columnIndex) {
 				return columnTypes[columnIndex];
 			}
@@ -209,6 +210,7 @@ public class JFilterSetup extends JFrame {
 
 		JButton btnDeleteEntry = new JButton("Delete Entry");
 		btnDeleteEntry.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (tPoints.getSelectedRow() != -1) {
 					int selNextRow = -1;
@@ -278,6 +280,7 @@ public class JFilterSetup extends JFrame {
 		panel_2.add(label);
 
 		cbResolution.addItemListener(new ItemListener() {
+			@Override
 			public void itemStateChanged(ItemEvent e) {
 				if (cbResolution.getSelectedItem() != null) {
 					String resolution = (String) cbResolution.getSelectedItem();
@@ -294,6 +297,7 @@ public class JFilterSetup extends JFrame {
 		});
 
 		cbItem.addItemListener(new ItemListener() {
+			@Override
 			public void itemStateChanged(ItemEvent e) {
 				if (cbItem.getSelectedItem() != null && e.getStateChange() == ItemEvent.SELECTED) {
 					String resolution = (String) cbResolution.getSelectedItem();
@@ -350,10 +354,12 @@ public class JFilterSetup extends JFrame {
 				if (e.getFirstRow() < model.getRowCount() && e.getType() == TableModelEvent.INSERT) {
 					int x = (int) JFilterSetup.this.model.getValueAt(e.getFirstRow(), 0);
 					int y = (int) JFilterSetup.this.model.getValueAt(e.getFirstRow(), 1);
-					Graphics2D g = image.createGraphics();
-					g.setColor(Color.YELLOW);
-					g.drawRect(x, y, 1, 1);
-					g.dispose();
+					if (image != null) {
+						Graphics2D g = image.createGraphics();
+						g.setColor(Color.YELLOW);
+						g.drawRect(x, y, 1, 1);
+						g.dispose();
+					}
 				}
 			}
 		});

@@ -24,6 +24,7 @@ import java.awt.geom.AffineTransform;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.SwingConstants;
 import javax.swing.border.LineBorder;
 
 public class JLabel2D extends JLabel {
@@ -36,6 +37,74 @@ public class JLabel2D extends JLabel {
 	public static final int EFFECT_IMAGE_ANIMATION = 3;
 
 	public static final int EFFECT_COLOR_ANIMATION = 4;
+
+	public static void main(String argv[]) {
+		JFrame f = new JFrame("2D Labels");
+		f.setSize(600, 300);
+		f.getContentPane().setLayout(new GridLayout(6, 1, 5, 5));
+		f.getContentPane().setBackground(Color.white);
+		Font bigFont = new Font("Helvetica", Font.BOLD, 24);
+
+		JLabel2D lbl = new JLabel2D("Java Source and Support With Outline", SwingConstants.CENTER);
+		lbl.setFont(bigFont);
+		lbl.setForeground(Color.blue);
+		lbl.setBorder(new LineBorder(Color.black));
+		lbl.setBackground(Color.cyan);
+		lbl.setOutlineColor(Color.yellow);
+		lbl.setStroke(new BasicStroke(5f));
+		lbl.setOpaque(true);
+		lbl.setShearFactor(0.3);
+		f.getContentPane().add(lbl);
+
+		lbl = new JLabel2D("Java Source and Support With Color Gradient", SwingConstants.CENTER);
+		lbl.setFont(bigFont);
+		lbl.setOutlineColor(Color.black);
+		lbl.setEffectIndex(JLabel2D.EFFECT_GRADIENT);
+		GradientPaint gp = new GradientPaint(0, 0, Color.red, 100, 50, Color.blue, true);
+		lbl.setGradient(gp);
+		f.getContentPane().add(lbl);
+
+		lbl = new JLabel2D("Java Source and Support Filled With Image", SwingConstants.CENTER);
+		lbl.setFont(bigFont);
+		lbl.setEffectIndex(JLabel2D.EFFECT_IMAGE);
+		ImageIcon icon = new ImageIcon("mars.gif");
+		lbl.setForegroundImage(icon.getImage());
+		lbl.setOutlineColor(Color.red);
+		f.getContentPane().add(lbl);
+
+		lbl = new JLabel2D("Java Source and Support With Image Animation", SwingConstants.CENTER);
+		lbl.setFont(bigFont);
+		lbl.setEffectIndex(JLabel2D.EFFECT_IMAGE_ANIMATION);
+		icon = new ImageIcon("ocean.gif");
+		lbl.setForegroundImage(icon.getImage());
+		lbl.setOutlineColor(Color.black);
+		lbl.startAnimation(400);
+		f.getContentPane().add(lbl);
+
+		lbl = new JLabel2D("Java Source and Support With Color Animation", SwingConstants.CENTER);
+		lbl.setFont(bigFont);
+		lbl.setEffectIndex(JLabel2D.EFFECT_COLOR_ANIMATION);
+		lbl.setGradient(gp);
+		lbl.setOutlineColor(Color.black);
+		lbl.startAnimation(400);
+		f.getContentPane().add(lbl);
+
+		JLabel lbl1 = new JLabel("Plain Java Source and Support For Comparison", SwingConstants.CENTER);
+		lbl1.setFont(bigFont);
+		lbl1.setForeground(Color.black);
+		f.getContentPane().add(lbl1);
+
+		WindowListener wndCloser = new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent e) {
+				System.exit(0);
+			}
+		};
+		f.addWindowListener(wndCloser);
+
+		f.setVisible(true);
+
+	}
 
 	protected int effectIndex = EFFECT_PLAIN;
 
@@ -69,107 +138,45 @@ public class JLabel2D extends JLabel {
 		super(text, alignment);
 	}
 
-	public void setEffectIndex(int e) {
-		effectIndex = e;
-		repaint();
+	protected void fillByImage(Graphics2D g2, Shape shape, int xOffset) {
+		if (foregroundImage == null)
+			return;
+		int wImg = foregroundImage.getWidth(this);
+		int hImg = foregroundImage.getHeight(this);
+		if (wImg <= 0 || hImg <= 0)
+			return;
+		g2.setClip(shape);
+		Rectangle bounds = shape.getBounds();
+		for (int xx = bounds.x + xOffset; xx < bounds.x + bounds.width; xx += wImg)
+			for (int yy = bounds.y; yy < bounds.y + bounds.height; yy += hImg)
+				g2.drawImage(foregroundImage, xx, yy, this);
 	}
 
 	public int getEffectIndex() {
 		return effectIndex;
 	}
 
-	public void setShearFactor(double s) {
-		shearFactor = s;
-		repaint();
-	}
-
-	public double getShearFactor() {
-		return shearFactor;
-	}
-
-	public void setOutlineColor(Color c) {
-		outlineColor = c;
-		repaint();
-	}
-
-	public Color getOutlineColor() {
-		return outlineColor;
-	}
-
-	public void setStroke(Stroke s) {
-		stroke = s;
-		repaint();
-	}
-
-	public Stroke getStroke() {
-		return stroke;
-	}
-
-	public void setGradient(GradientPaint g) {
-		gradient = g;
-		repaint();
+	public Image getForegroundImage() {
+		return foregroundImage;
 	}
 
 	public GradientPaint getGradient() {
 		return gradient;
 	}
 
-	public void setForegroundImage(Image img) {
-		foregroundImage = img;
-		repaint();
+	public Color getOutlineColor() {
+		return outlineColor;
 	}
 
-	public Image getForegroundImage() {
-		return foregroundImage;
+	public double getShearFactor() {
+		return shearFactor;
 	}
 
-	public void startAnimation(int delay) {
-		if (animator != null)
-			return;
-		m_delay = delay;
-		m_xShift = 0;
-		isRunning = true;
-		animator = new Thread() {
-			double arg = 0;
-
-			public void run() {
-				while (isRunning) {
-					if (effectIndex == EFFECT_IMAGE_ANIMATION)
-						m_xShift += 10;
-					else if (effectIndex == EFFECT_COLOR_ANIMATION && gradient != null) {
-						arg += Math.PI / 10;
-						double cos = Math.cos(arg);
-						double f1 = (1 + cos) / 2;
-						double f2 = (1 - cos) / 2;
-						arg = arg % (Math.PI * 2);
-
-						Color c1 = gradient.getColor1();
-						Color c2 = gradient.getColor2();
-						int r = (int) (c1.getRed() * f1 + c2.getRed() * f2);
-						r = Math.min(Math.max(r, 0), 255);
-						int g = (int) (c1.getGreen() * f1 + c2.getGreen() * f2);
-						g = Math.min(Math.max(g, 0), 255);
-						int b = (int) (c1.getBlue() * f1 + c2.getBlue() * f2);
-						b = Math.min(Math.max(b, 0), 255);
-						setForeground(new Color(r, g, b));
-					}
-					repaint();
-					try {
-						sleep(m_delay);
-					} catch (InterruptedException ex) {
-						break;
-					}
-				}
-			}
-		};
-		animator.start();
+	public Stroke getStroke() {
+		return stroke;
 	}
 
-	public void stopAnimation() {
-		isRunning = false;
-		animator = null;
-	}
-
+	@Override
 	public void paintComponent(Graphics g) {
 		Dimension d = getSize();
 		Insets ins = getInsets();
@@ -249,85 +256,82 @@ public class JLabel2D extends JLabel {
 		}
 	}
 
-	protected void fillByImage(Graphics2D g2, Shape shape, int xOffset) {
-		if (foregroundImage == null)
-			return;
-		int wImg = foregroundImage.getWidth(this);
-		int hImg = foregroundImage.getHeight(this);
-		if (wImg <= 0 || hImg <= 0)
-			return;
-		g2.setClip(shape);
-		Rectangle bounds = shape.getBounds();
-		for (int xx = bounds.x + xOffset; xx < bounds.x + bounds.width; xx += wImg)
-			for (int yy = bounds.y; yy < bounds.y + bounds.height; yy += hImg)
-				g2.drawImage(foregroundImage, xx, yy, this);
+	public void setEffectIndex(int e) {
+		effectIndex = e;
+		repaint();
 	}
 
-	public static void main(String argv[]) {
-		JFrame f = new JFrame("2D Labels");
-		f.setSize(600, 300);
-		f.getContentPane().setLayout(new GridLayout(6, 1, 5, 5));
-		f.getContentPane().setBackground(Color.white);
-		Font bigFont = new Font("Helvetica", Font.BOLD, 24);
+	public void setForegroundImage(Image img) {
+		foregroundImage = img;
+		repaint();
+	}
 
-		JLabel2D lbl = new JLabel2D("Java Source and Support With Outline", JLabel.CENTER);
-		lbl.setFont(bigFont);
-		lbl.setForeground(Color.blue);
-		lbl.setBorder(new LineBorder(Color.black));
-		lbl.setBackground(Color.cyan);
-		lbl.setOutlineColor(Color.yellow);
-		lbl.setStroke(new BasicStroke(5f));
-		lbl.setOpaque(true);
-		lbl.setShearFactor(0.3);
-		f.getContentPane().add(lbl);
+	public void setGradient(GradientPaint g) {
+		gradient = g;
+		repaint();
+	}
 
-		lbl = new JLabel2D("Java Source and Support With Color Gradient", JLabel.CENTER);
-		lbl.setFont(bigFont);
-		lbl.setOutlineColor(Color.black);
-		lbl.setEffectIndex(JLabel2D.EFFECT_GRADIENT);
-		GradientPaint gp = new GradientPaint(0, 0, Color.red, 100, 50, Color.blue, true);
-		lbl.setGradient(gp);
-		f.getContentPane().add(lbl);
+	public void setOutlineColor(Color c) {
+		outlineColor = c;
+		repaint();
+	}
 
-		lbl = new JLabel2D("Java Source and Support Filled With Image", JLabel.CENTER);
-		lbl.setFont(bigFont);
-		lbl.setEffectIndex(JLabel2D.EFFECT_IMAGE);
-		ImageIcon icon = new ImageIcon("mars.gif");
-		lbl.setForegroundImage(icon.getImage());
-		lbl.setOutlineColor(Color.red);
-		f.getContentPane().add(lbl);
+	public void setShearFactor(double s) {
+		shearFactor = s;
+		repaint();
+	}
 
-		lbl = new JLabel2D("Java Source and Support With Image Animation", JLabel.CENTER);
-		lbl.setFont(bigFont);
-		lbl.setEffectIndex(JLabel2D.EFFECT_IMAGE_ANIMATION);
-		icon = new ImageIcon("ocean.gif");
-		lbl.setForegroundImage(icon.getImage());
-		lbl.setOutlineColor(Color.black);
-		lbl.startAnimation(400);
-		f.getContentPane().add(lbl);
+	public void setStroke(Stroke s) {
+		stroke = s;
+		repaint();
+	}
 
-		lbl = new JLabel2D("Java Source and Support With Color Animation", JLabel.CENTER);
-		lbl.setFont(bigFont);
-		lbl.setEffectIndex(JLabel2D.EFFECT_COLOR_ANIMATION);
-		lbl.setGradient(gp);
-		lbl.setOutlineColor(Color.black);
-		lbl.startAnimation(400);
-		f.getContentPane().add(lbl);
+	public void startAnimation(int delay) {
+		if (animator != null)
+			return;
+		m_delay = delay;
+		m_xShift = 0;
+		isRunning = true;
+		animator = new Thread() {
+			double arg = 0;
 
-		JLabel lbl1 = new JLabel("Plain Java Source and Support For Comparison", JLabel.CENTER);
-		lbl1.setFont(bigFont);
-		lbl1.setForeground(Color.black);
-		f.getContentPane().add(lbl1);
+			@Override
+			public void run() {
+				while (isRunning) {
+					if (effectIndex == EFFECT_IMAGE_ANIMATION)
+						m_xShift += 10;
+					else if (effectIndex == EFFECT_COLOR_ANIMATION && gradient != null) {
+						arg += Math.PI / 10;
+						double cos = Math.cos(arg);
+						double f1 = (1 + cos) / 2;
+						double f2 = (1 - cos) / 2;
+						arg = arg % (Math.PI * 2);
 
-		WindowListener wndCloser = new WindowAdapter() {
-			public void windowClosing(WindowEvent e) {
-				System.exit(0);
+						Color c1 = gradient.getColor1();
+						Color c2 = gradient.getColor2();
+						int r = (int) (c1.getRed() * f1 + c2.getRed() * f2);
+						r = Math.min(Math.max(r, 0), 255);
+						int g = (int) (c1.getGreen() * f1 + c2.getGreen() * f2);
+						g = Math.min(Math.max(g, 0), 255);
+						int b = (int) (c1.getBlue() * f1 + c2.getBlue() * f2);
+						b = Math.min(Math.max(b, 0), 255);
+						setForeground(new Color(r, g, b));
+					}
+					repaint();
+					try {
+						sleep(m_delay);
+					} catch (InterruptedException ex) {
+						break;
+					}
+				}
 			}
 		};
-		f.addWindowListener(wndCloser);
+		animator.start();
+	}
 
-		f.setVisible(true);
-
+	public void stopAnimation() {
+		isRunning = false;
+		animator = null;
 	}
 
 }

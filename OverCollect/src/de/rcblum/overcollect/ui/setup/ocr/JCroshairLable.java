@@ -10,13 +10,17 @@ import javax.swing.JLabel;
 
 public class JCroshairLable extends JLabel {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -61182742534371331L;
+
+	private int mouseX = -1;
+
+	private int mouseY = -1;
+
 	public JCroshairLable() {
 		super();
-	}
-
-	public JCroshairLable(Icon image, int horizontalAlignment) {
-		super(image, horizontalAlignment);
-		addListener();
 	}
 
 	public JCroshairLable(Icon image) {
@@ -24,13 +28,8 @@ public class JCroshairLable extends JLabel {
 		addListener();
 	}
 
-	public JCroshairLable(String text, Icon icon, int horizontalAlignment) {
-		super(text, icon, horizontalAlignment);
-		addListener();
-	}
-
-	public JCroshairLable(String text, int horizontalAlignment) {
-		super(text, horizontalAlignment);
+	public JCroshairLable(Icon image, int horizontalAlignment) {
+		super(image, horizontalAlignment);
 		addListener();
 	}
 
@@ -39,15 +38,17 @@ public class JCroshairLable extends JLabel {
 		addListener();
 	}
 
+	public JCroshairLable(String text, Icon icon, int horizontalAlignment) {
+		super(text, icon, horizontalAlignment);
+		addListener();
+	}
+	public JCroshairLable(String text, int horizontalAlignment) {
+		super(text, horizontalAlignment);
+		addListener();
+	}
+
 	private void addListener() {
 		this.addMouseMotionListener(new MouseMotionListener() {
-
-			@Override
-			public void mouseMoved(MouseEvent e) {
-				mouseX = e.getX();
-				mouseY = e.getY();
-				repaint();
-			}
 
 			@Override
 			public void mouseDragged(MouseEvent e) {
@@ -55,16 +56,15 @@ public class JCroshairLable extends JLabel {
 				mouseY = e.getY();
 				repaint();
 			}
+
+			@Override
+			public void mouseMoved(MouseEvent e) {
+				mouseX = e.getX();
+				mouseY = e.getY();
+				repaint();
+			}
 		});
 	}
-
-	private int mouseX = -1;
-	private int mouseY = -1;
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -61182742534371331L;
 
 	@Override
 	public void paint(Graphics g) {

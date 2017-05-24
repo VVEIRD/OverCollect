@@ -43,13 +43,6 @@ public class CaptureEngine implements ActionListener, ImageSource {
 		t = new Timer(this.captureInterval, this);
 	}
 
-	public CaptureEngine(int captureInterval) throws AWTException {
-		this.captureInterval = captureInterval;
-		// this.screen = Objects.requireNonNull(screen);
-		// this.r = new Robot(screen);
-		t = new Timer(this.captureInterval, this);
-	}
-
 	public CaptureEngine(GraphicsDevice screen) throws AWTException {
 		this.screen = Objects.requireNonNull(screen);
 		this.captureInterval = OWLib.getInstance().getInteger("captureInterval", 1000);
@@ -57,24 +50,11 @@ public class CaptureEngine implements ActionListener, ImageSource {
 		t = new Timer(this.captureInterval, this);
 	}
 
-	public void start() {
-		System.out.println("Start capture");
-		this.t.start();
-	}
-
-	public void stop() {
-		System.out.println("Stop capture");
-		this.t.stop();
-	}
-
-	public void setScreen(GraphicsDevice screen) throws AWTException {
-		boolean isRunning = this.t.isRunning();
-		if (isRunning)
-			this.stop();
-		this.screen = Objects.requireNonNull(screen);
-		this.r = new Robot(this.screen);
-		if (isRunning)
-			this.start();
+	public CaptureEngine(int captureInterval) throws AWTException {
+		this.captureInterval = captureInterval;
+		// this.screen = Objects.requireNonNull(screen);
+		// this.r = new Robot(screen);
+		t = new Timer(this.captureInterval, this);
 	}
 
 	@Override
@@ -85,6 +65,11 @@ public class CaptureEngine implements ActionListener, ImageSource {
 			BufferedImage br = r.createScreenCapture(this.screen.getDefaultConfiguration().getBounds());
 			this.fireImage(br);
 		}
+	}
+
+	@Override
+	public void addImageListener(ImageListener i) {
+		listeners.add(i);
 	}
 
 	private void autodetectScreen() {
@@ -127,32 +112,18 @@ public class CaptureEngine implements ActionListener, ImageSource {
 		// this.start();
 	}
 
-	@Override
-	public void addImageListener(ImageListener i) {
-		listeners.add(i);
-	}
-
-	@Override
-	public void removeImageListener(ImageListener i) {
-		listeners.remove(i);
-	}
-
 	public void fireImage(BufferedImage i) {
 		for (ImageListener imageListener : listeners) {
 			imageListener.addImage(i);
 		}
 	}
 
-	public Rectangle getResolution() {
-		return this.screen.getDefaultConfiguration().getBounds();
-	}
-
-	public void setCaptureInterval(int captureInterval) {
-		this.captureInterval = captureInterval;
-	}
-
 	public int getCaptureInterval() {
 		return captureInterval;
+	}
+
+	public Rectangle getResolution() {
+		return this.screen.getDefaultConfiguration().getBounds();
 	}
 
 	public GraphicsDevice getScreen() {
@@ -161,6 +132,35 @@ public class CaptureEngine implements ActionListener, ImageSource {
 
 	public boolean isRunning() {
 		return this.t.isRunning();
+	}
+
+	@Override
+	public void removeImageListener(ImageListener i) {
+		listeners.remove(i);
+	}
+
+	public void setCaptureInterval(int captureInterval) {
+		this.captureInterval = captureInterval;
+	}
+
+	public void setScreen(GraphicsDevice screen) throws AWTException {
+		boolean isRunning = this.t.isRunning();
+		if (isRunning)
+			this.stop();
+		this.screen = Objects.requireNonNull(screen);
+		this.r = new Robot(this.screen);
+		if (isRunning)
+			this.start();
+	}
+
+	public void start() {
+		System.out.println("Start capture");
+		this.t.start();
+	}
+
+	public void stop() {
+		System.out.println("Stop capture");
+		this.t.stop();
 	}
 
 }

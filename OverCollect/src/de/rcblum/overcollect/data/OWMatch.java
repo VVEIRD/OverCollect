@@ -17,7 +17,23 @@ import de.rcblum.overcollect.utils.Helper;
 
 public class OWMatch {
 
+	public static enum Result {
+		VICTORY, DEFEAT, DRAW;
+	}
+
 	private final static SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+	public static OWMatch fromJsonFile(File jFile) {
+		OWMatch match = null;
+		Gson g = new Gson();
+		try {
+			String text = new String(Files.readAllBytes(jFile.toPath()), StandardCharsets.UTF_8);
+			match = g.fromJson(text, OWMatch.class);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return match;
+	}
 
 	private String matchId = null;
 
@@ -43,25 +59,12 @@ public class OWMatch {
 		this.matchId = matchId;
 	}
 
-	public String getMatchId() {
-		return matchId;
+	public void addCharacterStats(OWCharacterStats cStats) {
+		this.characterStats.add(cStats);
 	}
 
-	public void setMatchId(String matchId) {
-		this.matchId = matchId;
-	}
-
-	public Date getStartTime() {
-		try {
-			return SDF.parse(this.startTime);
-		} catch (ParseException | NullPointerException e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-
-	public void setStartTime(String startTime) {
-		this.startTime = startTime;
+	public List<OWCharacterStats> getCharacterStats() {
+		return characterStats;
 	}
 
 	public Date getEndTime() {
@@ -73,20 +76,43 @@ public class OWMatch {
 		return null;
 	}
 
-	public void setEndTime(String endTime) {
-		this.endTime = endTime;
+	public String getEnemySr() {
+		return enemySr;
 	}
 
-	public void setStacksize(int stacksize) {
-		this.stacksize = stacksize;
+	public String getMap() {
+		return map;
+	}
+
+	public String getMatchId() {
+		return matchId;
+	}
+
+	public Result getResult() {
+		return result;
+	}
+
+	public int getSr() {
+		if (Helper.isInteger(this.sr))
+			return Integer.valueOf(this.sr);
+		return -1;
 	}
 
 	public int getStacksize() {
 		return stacksize;
 	}
 
-	public boolean isVictory() {
-		return result == Result.VICTORY;
+	public Date getStartTime() {
+		try {
+			return SDF.parse(this.startTime);
+		} catch (ParseException | NullPointerException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	public String getTeamSr() {
+		return teamSr;
 	}
 
 	public boolean isDefeat() {
@@ -97,78 +123,52 @@ public class OWMatch {
 		return result == Result.DRAW;
 	}
 
-	public void setResult(Result result) {
-		this.result = result;
-	}
-
-	public Result getResult() {
-		return result;
-	}
-
-	public String getTeamSr() {
-		return teamSr;
-	}
-
-	public void setTeamSr(String teamSr) {
-		this.teamSr = teamSr;
-	}
-
-	public String getEnemySr() {
-		return enemySr;
-	}
-
-	public void setEnemySr(String enemySr) {
-		this.enemySr = enemySr;
-	}
-
-	public String getMap() {
-		return map;
-	}
-
-	public void setMap(String map) {
-		this.map = map;
-	}
-
-	public List<OWCharacterStats> getCharacterStats() {
-		return characterStats;
+	public boolean isVictory() {
+		return result == Result.VICTORY;
 	}
 
 	public void setCharacterStats(List<OWCharacterStats> characterStats) {
 		this.characterStats = characterStats;
 	}
 
-	public int getSr() {
-		if (Helper.isInteger(this.sr))
-			return Integer.valueOf(this.sr);
-		return -1;
+	public void setEndTime(String endTime) {
+		this.endTime = endTime;
+	}
+
+	public void setEnemySr(String enemySr) {
+		this.enemySr = enemySr;
+	}
+
+	public void setMap(String map) {
+		this.map = map;
+	}
+
+	public void setMatchId(String matchId) {
+		this.matchId = matchId;
+	}
+
+	public void setResult(Result result) {
+		this.result = result;
 	}
 
 	public void setSr(String sr) {
 		this.sr = sr;
 	}
 
-	public void addCharacterStats(OWCharacterStats cStats) {
-		this.characterStats.add(cStats);
+	public void setStacksize(int stacksize) {
+		this.stacksize = stacksize;
+	}
+
+	public void setStartTime(String startTime) {
+		this.startTime = startTime;
+	}
+
+	public void setTeamSr(String teamSr) {
+		this.teamSr = teamSr;
 	}
 
 	public String toJson() {
 		Gson g = new GsonBuilder().setPrettyPrinting().create();
 		return g.toJson(this);
-	}
-
-	public static OWMatch fromJsonFile(File jFile) {
-		OWMatch match = null;
-		Gson g = new Gson();
-		try {
-			String text = new String(Files.readAllBytes(jFile.toPath()), StandardCharsets.UTF_8);
-			match = g.fromJson(text, OWMatch.class);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return match;
-	}
-
-	public static enum Result {
-		VICTORY, DEFEAT, DRAW;
 	}
 }

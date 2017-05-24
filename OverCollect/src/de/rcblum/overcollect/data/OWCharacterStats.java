@@ -8,10 +8,6 @@ public class OWCharacterStats extends OWStats {
 
 	Map<String, Integer> secondaryStats = new HashMap<>();
 
-	public void setName(String name) {
-		this.name = name;
-	}
-
 	public void addSecondaryStat(String name, Integer value) {
 		this.secondaryStats.put(name, value);
 	}
@@ -22,5 +18,9 @@ public class OWCharacterStats extends OWStats {
 
 	public Map<String, Integer> getSecondaryStats() {
 		return secondaryStats;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 }

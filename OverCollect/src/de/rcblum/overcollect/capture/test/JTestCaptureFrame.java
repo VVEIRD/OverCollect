@@ -2,14 +2,23 @@ package de.rcblum.overcollect.capture.test;
 
 import java.awt.AWTException;
 import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.EventQueue;
+import java.awt.FlowLayout;
 import java.awt.Graphics2D;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.Image;
 import java.awt.RenderingHints;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 
+import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -19,16 +28,6 @@ import javax.swing.border.EmptyBorder;
 import de.rcblum.overcollect.capture.CaptureEngine;
 import de.rcblum.overcollect.capture.listener.ImageListener;
 
-import javax.swing.ImageIcon;
-import javax.swing.JComboBox;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-import javax.swing.JCheckBox;
-import java.awt.FlowLayout;
-import javax.swing.BoxLayout;
-import java.awt.Component;
-import java.awt.Dimension;
-
 public class JTestCaptureFrame extends JFrame implements ImageListener {
 
 	/**
@@ -36,20 +35,12 @@ public class JTestCaptureFrame extends JFrame implements ImageListener {
 	 */
 	private static final long serialVersionUID = -6380383693767869767L;
 
-	private JPanel contentPane;
-	private JLabel pImage;
-	private JComboBox<GraphicsDevice> cboxDevices;
-
-	private CaptureEngine engine = null;
-	private JCheckBox chckbxPreview;
-	private JPanel panel;
-	private JPanel panel_1;
-
 	/**
 	 * Launch the application.
 	 */
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
+			@Override
 			public void run() {
 				try {
 					JTestCaptureFrame frame = new JTestCaptureFrame();
@@ -60,6 +51,15 @@ public class JTestCaptureFrame extends JFrame implements ImageListener {
 			}
 		});
 	}
+	private JPanel contentPane;
+	private JLabel pImage;
+
+	private JComboBox<GraphicsDevice> cboxDevices;
+	private CaptureEngine engine = null;
+	private JCheckBox chckbxPreview;
+	private JPanel panel;
+
+	private JPanel panel_1;
 
 	/**
 	 * Create the frame.
@@ -90,6 +90,7 @@ public class JTestCaptureFrame extends JFrame implements ImageListener {
 		cboxDevices.setSelectedItem(GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice());
 		this.engine = new CaptureEngine((GraphicsDevice) cboxDevices.getSelectedItem());
 		cboxDevices.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
 					if (cboxDevices.getSelectedItem() != null)

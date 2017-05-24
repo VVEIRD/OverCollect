@@ -25,8 +25,8 @@ import java.util.concurrent.Executors;
 import javax.imageio.ImageIO;
 
 import de.rcblum.overcollect.collect.listener.OWItemImageListener;
-import de.rcblum.overcollect.collect.listener.owmatch.OWMatchListener;
 import de.rcblum.overcollect.collect.listener.owmatch.OWMatchEvent;
+import de.rcblum.overcollect.collect.listener.owmatch.OWMatchListener;
 import de.rcblum.overcollect.configuration.Filter;
 import de.rcblum.overcollect.configuration.OWItem;
 import de.rcblum.overcollect.configuration.OWLib;
@@ -42,6 +42,60 @@ import de.rcblum.overcollect.utils.Helper;
  */
 public class MatchComposer implements OWItemImageListener, Runnable {
 	// final static Logger logger = Logger.getLogger(MatchComposer.class);
+
+	/**
+	 * This Class sorts the received image into the flow of a match, e. g. it
+	 * recognises when a Match starts, finishes, when stats come up etc.
+	 * 
+	 * @author Roland von Werden
+	 *
+	 */
+	public class ComposerTask implements Runnable {
+		private final BufferedImage i;
+
+		private final OWItem item;
+
+		public ComposerTask(BufferedImage i, OWItem item) {
+			this.i = Objects.requireNonNull(i);
+			this.item = Objects.requireNonNull(item);
+		}
+
+		@Override
+		public void run() {
+			try {
+				if (!duplicateThreshold.containsKey(item.getItemName()) || duplicateThreshold
+						.get(item.getItemName()) < OWLib.getInstance().getInteger("duplicateThreshold", 4)) {
+					System.out.println("Filter found: " + item.getItemName());
+					if (matchIndicators.contains(item.getItemName()) && !matchIndicators.contains(lastItem))
+						newMatch(i, item);
+					if (currentMatch != null && item.isMap())
+						setMap(i, item);
+					if (currentMatch != null && "_sr_screen".equals(item.getItemName()))
+						addSrScreen(i, item);
+					if (currentMatch != null && ("_defeat".equals(item.getItemName())
+							|| "_victory".equals(item.getItemName()) || "_draw".equals(item.getItemName())))
+						addRoundEnd(i, item);
+					if (currentMatch != null && "_main_menu".equals(item.getItemName()))
+						endMatch(i, item);
+					if (gameFinished && item.isHero())
+						addStats(i, item);
+					if (gameFinished && item.getItemName().contains("_stack"))
+						addStacksize(i, item);
+					duplicateThreshold.put(item.getItemName(), duplicateThreshold.containsKey(item.getItemName())
+							? duplicateThreshold.get(item.getItemName()) + 1 : 1);
+					lastItem = item.getItemName();
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	private static boolean isDirEmpty(final Path directory) throws IOException {
+		try (DirectoryStream<Path> dirStream = Files.newDirectoryStream(directory)) {
+			return !dirStream.iterator().hasNext();
+		}
+	}
 
 	/**
 	 * 
@@ -148,49 +202,10 @@ public class MatchComposer implements OWItemImageListener, Runnable {
 		this.worker.submit(new ComposerTask(i, item));
 	}
 
-	/**
-	 * Instances a new match. If there is a previous match taht has not been
-	 * closed, it will be by this.
-	 * 
-	 * @param i
-	 *            Screenshot that registered the match-screen which lead to an
-	 *            new match
-	 * @param item
-	 *            OWItem that correspondents with the screenshot through its
-	 *            {@link Filter}
-	 */
-	private void newMatch(BufferedImage i, OWItem item) {
-		// End match if one is still active
-		this.endMatch(i, item);
-
-		this.currentMatch = UUID.randomUUID();
-		this.duplicateThreshold.clear();
-		this.screenshots.clear();
-		this.stacksize = 1;
-		System.out.println("New Match detected: " + this.currentMatch.toString());
-		this.startDate = Calendar.getInstance().getTime();
-		this.screenshots.put(item, i);
-		OWMatchEvent e = new OWMatchEvent(this.currentMatch, this.startDate,
-				Paths.get(this.matchRoot, this.currentMatch.toString()), item, OWMatchEvent.Type.NEW_MATCH, i);
-		this.fireMatchEndEvent(e);
-	}
-
-	/**
-	 * Sets the map of the match. if no match is currently active, nothing
-	 * happens. If there is already a map, nothing happens.
-	 * 
-	 * @param i
-	 *            Screenshot that registered the match-screen which lead to an
-	 *            new match
-	 * @param item
-	 *            OWItem that correspondents with the screenshot through its
-	 *            {@link Filter}
-	 */
-	private void setMap(BufferedImage i, OWItem item) {
-		if (currentMatch != null) {
-			System.out.println("Map detected: " + item.getItemName().replace("_", " "));
-			this.map = item.getItemName();
-			this.screenshots.put(item, i);
+	public void addOWMatchListener(OWMatchListener listener) {
+		synchronized (this.listenerLock) {
+			System.out.println("OWMatchListener added: " + listener);
+			this.listeners.add(listener);
 		}
 	}
 
@@ -217,6 +232,35 @@ public class MatchComposer implements OWItemImageListener, Runnable {
 	}
 
 	/**
+	 * Saves the registered SR-Screen to the match. if no match is currently
+	 * active, nothing happens.
+	 * 
+	 * @param i
+	 *            Screenshot that registered the sr-screen.
+	 * @param item
+	 *            OWItem that correspondents with the screenshot through its
+	 *            {@link Filter}
+	 */
+	private void addSrScreen(BufferedImage i, OWItem item) {
+		if (this.currentMatch != null) {
+			System.out.println("..SR Info recorded");
+			this.screenshots.put(item, i);
+			OWMatchEvent e = new OWMatchEvent(this.currentMatch, this.startDate,
+					Paths.get(this.matchRoot, this.currentMatch.toString()), item, OWMatchEvent.Type.SR_RECORDED, i);
+			this.fireMatchEndEvent(e);
+		}
+	}
+
+	private void addStacksize(BufferedImage i, OWItem item) {
+		String stackSize = item.getItemName().substring(1, 2);
+		if (Helper.isInteger(stackSize)) {
+			int stacksize = Helper.toInteger(stackSize, this.stacksize);
+			if (stacksize > this.stacksize)
+				this.stacksize = stacksize;
+		}
+	}
+
+	/**
 	 * Stat Screen has been detected and will be saved. if no match is currently
 	 * active, nothing happens.
 	 * 
@@ -237,23 +281,47 @@ public class MatchComposer implements OWItemImageListener, Runnable {
 	}
 
 	/**
-	 * Saves the registered SR-Screen to the match. if no match is currently
-	 * active, nothing happens.
-	 * 
-	 * @param i
-	 *            Screenshot that registered the sr-screen.
-	 * @param item
-	 *            OWItem that correspondents with the screenshot through its
-	 *            {@link Filter}
+	 * Checks if match is complete and fires an OWMatchEvent to its listeners.
 	 */
-	private void addSrScreen(BufferedImage i, OWItem item) {
-		if (this.currentMatch != null) {
-			System.out.println("..SR Info recorded");
-			this.screenshots.put(item, i);
-			OWMatchEvent e = new OWMatchEvent(this.currentMatch, this.startDate,
-					Paths.get(this.matchRoot, this.currentMatch.toString()), item, OWMatchEvent.Type.SR_RECORDED, i);
-			this.fireMatchEndEvent(e);
+	private void checkMatchAndFireEvent(OWItem item) {
+		// Check for completion
+		boolean finished = false;
+		boolean complete = false;
+		try {
+			finished = Files.exists(Paths.get(this.matchRoot, this.currentMatch.toString(), this.map + ".png"))
+					&& (Files.exists(Paths.get(this.matchRoot, this.currentMatch.toString(), "_victory.png"))
+							|| Files.exists(Paths.get(this.matchRoot, this.currentMatch.toString(), "_defeat.png")))
+					&& Files.exists(Paths.get(this.matchRoot, this.currentMatch.toString(), "data.properties"));
+
+			complete = Files.exists(Paths.get(this.matchRoot, this.currentMatch.toString(), "_sr_screen.png"))
+					&& !isDirEmpty(Paths.get(this.matchRoot, this.currentMatch.toString(), "stats"));
+
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
+		if (!finished) {
+			try {
+				Files.createFile(Paths.get(this.matchRoot, this.currentMatch.toString(), "aborted"));
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
+		}
+
+		if (!complete) {
+			try {
+				Files.createFile(Paths.get(this.matchRoot, this.currentMatch.toString(), "incomplete"));
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
+		}
+
+		OWMatchEvent e = new OWMatchEvent(this.currentMatch, this.startDate,
+				Paths.get(this.matchRoot, this.currentMatch.toString()), item,
+				finished && complete ? OWMatchEvent.Type.END_NORMAL
+						: finished ? OWMatchEvent.Type.END_PARTIAL : OWMatchEvent.Type.END_ABORTED,
+				null);
+		this.fireMatchEndEvent(e);
 	}
 
 	/**
@@ -326,52 +394,147 @@ public class MatchComposer implements OWItemImageListener, Runnable {
 	}
 
 	/**
-	 * Checks if match is complete and fires an OWMatchEvent to its listeners.
+	 * Queues a {@link OWMatchEvent} to be fired by the dispatcherDaemon
+	 * 
+	 * @param e
+	 *            Event to be fired
 	 */
-	private void checkMatchAndFireEvent(OWItem item) {
-		// Check for completion
-		boolean finished = false;
-		boolean complete = false;
-		try {
-			finished = Files.exists(Paths.get(this.matchRoot, this.currentMatch.toString(), this.map + ".png"))
-					&& (Files.exists(Paths.get(this.matchRoot, this.currentMatch.toString(), "_victory.png"))
-							|| Files.exists(Paths.get(this.matchRoot, this.currentMatch.toString(), "_defeat.png")))
-					&& Files.exists(Paths.get(this.matchRoot, this.currentMatch.toString(), "data.properties"));
+	private void fireMatchEndEvent(OWMatchEvent e) {
+		this.dispatchQueue.add(e);
+	}
 
-			complete = Files.exists(Paths.get(this.matchRoot, this.currentMatch.toString(), "_sr_screen.png"))
-					&& !isDirEmpty(Paths.get(this.matchRoot, this.currentMatch.toString(), "stats"));
+	/**
+	 * @return The name of the current map, if no match is active,
+	 *         <code>null</code>;
+	 */
+	public String getMap() {
+		return this.map;
+	}
 
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		if (!finished) {
-			try {
-				Files.createFile(Paths.get(this.matchRoot, this.currentMatch.toString(), "aborted"));
-			} catch (IOException e1) {
-				e1.printStackTrace();
-			}
-		}
+	/**
+	 * The UUID as String of the current match. This is also used as the sub
+	 * directory in which the match screenshots are written to disk.
+	 * 
+	 * @return The match UUID or <code>null</code> if no match is active.
+	 */
+	public String getMatchId() {
+		return this.currentMatch != null ? this.currentMatch.toString() : null;
+	}
 
-		if (!complete) {
-			try {
-				Files.createFile(Paths.get(this.matchRoot, this.currentMatch.toString(), "incomplete"));
-			} catch (IOException e1) {
-				e1.printStackTrace();
-			}
-		}
+	/**
+	 * @return Returns the start date of the match or null, if no match is
+	 *         currently being recorded.
+	 */
+	public Date getStartDate() {
+		return startDate;
+	}
 
+	/**
+	 * Returns the match-state of the composer.
+	 * 
+	 * @return <code>true</code> if a match is being recorded,
+	 *         <code>false</code> if not.
+	 */
+	public boolean isRecording() {
+		return this.currentMatch != null;
+	}
+
+	/**
+	 * @return <code>true</code> if a map was recognized, <code>false</code> if
+	 *         not
+	 */
+	public boolean mapRecognised() {
+		return this.map != null;
+	}
+
+	/**
+	 * Instances a new match. If there is a previous match taht has not been
+	 * closed, it will be by this.
+	 * 
+	 * @param i
+	 *            Screenshot that registered the match-screen which lead to an
+	 *            new match
+	 * @param item
+	 *            OWItem that correspondents with the screenshot through its
+	 *            {@link Filter}
+	 */
+	private void newMatch(BufferedImage i, OWItem item) {
+		// End match if one is still active
+		this.endMatch(i, item);
+
+		this.currentMatch = UUID.randomUUID();
+		this.duplicateThreshold.clear();
+		this.screenshots.clear();
+		this.stacksize = 1;
+		System.out.println("New Match detected: " + this.currentMatch.toString());
+		this.startDate = Calendar.getInstance().getTime();
+		this.screenshots.put(item, i);
 		OWMatchEvent e = new OWMatchEvent(this.currentMatch, this.startDate,
-				Paths.get(this.matchRoot, this.currentMatch.toString()), item,
-				finished && complete ? OWMatchEvent.Type.END_NORMAL
-						: finished ? OWMatchEvent.Type.END_PARTIAL : OWMatchEvent.Type.END_ABORTED,
-				null);
+				Paths.get(this.matchRoot, this.currentMatch.toString()), item, OWMatchEvent.Type.NEW_MATCH, i);
 		this.fireMatchEndEvent(e);
 	}
 
-	private static boolean isDirEmpty(final Path directory) throws IOException {
-		try (DirectoryStream<Path> dirStream = Files.newDirectoryStream(directory)) {
-			return !dirStream.iterator().hasNext();
+	public void removeOWMatchListener(OWMatchListener listener) {
+		synchronized (this.listenerLock) {
+			this.listeners.remove(listener);
+		}
+	}
+
+	@Override
+	public void run() {
+
+		for (;;) {
+			while (!this.dispatchQueue.isEmpty()) {
+				OWMatchEvent e = this.dispatchQueue.poll();
+				synchronized (this.listenerLock) {
+					for (OWMatchListener listener : this.listeners) {
+						switch (e.type) {
+						case NEW_MATCH:
+							listener.matchStarted(e);
+							break;
+						case MATCH_DECIDED:
+							listener.matchCompleted(e);
+							break;
+						case SR_RECORDED:
+							listener.matchSrRecorded(e);
+							break;
+						case STAT_RECORDED:
+							listener.matchStatRecorded(e);
+							break;
+						case END_ABORTED:
+						case END_NORMAL:
+						case END_PARTIAL:
+							listener.matchEnded(e);
+							break;
+						}
+					}
+				}
+			}
+			try {
+				Thread.sleep(OWLib.getInstance().getInteger("captureInterval", 1000));
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+				break;
+			}
+		}
+	}
+
+	/**
+	 * Sets the map of the match. if no match is currently active, nothing
+	 * happens. If there is already a map, nothing happens.
+	 * 
+	 * @param i
+	 *            Screenshot that registered the match-screen which lead to an
+	 *            new match
+	 * @param item
+	 *            OWItem that correspondents with the screenshot through its
+	 *            {@link Filter}
+	 */
+	private void setMap(BufferedImage i, OWItem item) {
+		if (currentMatch != null) {
+			System.out.println("Map detected: " + item.getItemName().replace("_", " "));
+			this.map = item.getItemName();
+			this.screenshots.put(item, i);
 		}
 	}
 
@@ -430,169 +593,6 @@ public class MatchComposer implements OWItemImageListener, Runnable {
 		} catch (IOException e) {
 			System.out.println("Error writing image: " + imagePath.toAbsolutePath().toString());
 			e.printStackTrace();
-		}
-	}
-
-	/**
-	 * Queues a {@link OWMatchEvent} to be fired by the dispatcherDaemon
-	 * 
-	 * @param e
-	 *            Event to be fired
-	 */
-	private void fireMatchEndEvent(OWMatchEvent e) {
-		this.dispatchQueue.add(e);
-	}
-
-	/**
-	 * @return Returns the start date of the match or null, if no match is
-	 *         currently being recorded.
-	 */
-	public Date getStartDate() {
-		return startDate;
-	}
-
-	/**
-	 * Returns the match-state of the composer.
-	 * 
-	 * @return <code>true</code> if a match is being recorded,
-	 *         <code>false</code> if not.
-	 */
-	public boolean isRecording() {
-		return this.currentMatch != null;
-	}
-
-	/**
-	 * @return <code>true</code> if a map was recognized, <code>false</code> if
-	 *         not
-	 */
-	public boolean mapRecognised() {
-		return this.map != null;
-	}
-
-	/**
-	 * @return The name of the current map, if no match is active,
-	 *         <code>null</code>;
-	 */
-	public String getMap() {
-		return this.map;
-	}
-
-	/**
-	 * The UUID as String of the current match. This is also used as the sub
-	 * directory in which the match screenshots are written to disk.
-	 * 
-	 * @return The match UUID or <code>null</code> if no match is active.
-	 */
-	public String getMatchId() {
-		return this.currentMatch != null ? this.currentMatch.toString() : null;
-	}
-
-	public void addOWMatchListener(OWMatchListener listener) {
-		synchronized (this.listenerLock) {
-			System.out.println("OWMatchListener added: " + listener);
-			this.listeners.add(listener);
-		}
-	}
-
-	public void removeOWMatchListener(OWMatchListener listener) {
-		synchronized (this.listenerLock) {
-			this.listeners.remove(listener);
-		}
-	}
-
-	@Override
-	public void run() {
-
-		for (;;) {
-			while (!this.dispatchQueue.isEmpty()) {
-				OWMatchEvent e = this.dispatchQueue.poll();
-				synchronized (this.listenerLock) {
-					for (OWMatchListener listener : this.listeners) {
-						switch (e.type) {
-						case NEW_MATCH:
-							listener.matchStarted(e);
-							break;
-						case MATCH_DECIDED:
-							listener.matchCompleted(e);
-							break;
-						case SR_RECORDED:
-							listener.matchSrRecorded(e);
-							break;
-						case STAT_RECORDED:
-							listener.matchStatRecorded(e);
-							break;
-						case END_ABORTED:
-						case END_NORMAL:
-						case END_PARTIAL:
-							listener.matchEnded(e);
-							break;
-						}
-					}
-				}
-			}
-			try {
-				Thread.sleep(OWLib.getInstance().getInteger("captureInterval", 1000));
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-				break;
-			}
-		}
-	}
-
-	private void addStacksize(BufferedImage i, OWItem item) {
-		String stackSize = item.getItemName().substring(1, 2);
-		if (Helper.isInteger(stackSize)) {
-			int stacksize = Helper.toInteger(stackSize, this.stacksize);
-			if (stacksize > this.stacksize)
-				this.stacksize = stacksize;
-		}
-	}
-
-	/**
-	 * This Class sorts the received image into the flow of a match, e. g. it
-	 * recognises when a Match starts, finishes, when stats come up etc.
-	 * 
-	 * @author Roland von Werden
-	 *
-	 */
-	public class ComposerTask implements Runnable {
-		private final BufferedImage i;
-
-		private final OWItem item;
-
-		public ComposerTask(BufferedImage i, OWItem item) {
-			this.i = Objects.requireNonNull(i);
-			this.item = Objects.requireNonNull(item);
-		}
-
-		@Override
-		public void run() {
-			try {
-				if (!duplicateThreshold.containsKey(item.getItemName()) || duplicateThreshold
-						.get(item.getItemName()) < OWLib.getInstance().getInteger("duplicateThreshold", 4)) {
-					System.out.println("Filter found: " + item.getItemName());
-					if (matchIndicators.contains(item.getItemName()) && !matchIndicators.contains(lastItem))
-						newMatch(i, item);
-					if (currentMatch != null && item.isMap())
-						setMap(i, item);
-					if (currentMatch != null && "_sr_screen".equals(item.getItemName()))
-						addSrScreen(i, item);
-					if (currentMatch != null && ("_defeat".equals(item.getItemName())
-							|| "_victory".equals(item.getItemName()) || "_draw".equals(item.getItemName())))
-						addRoundEnd(i, item);
-					if (currentMatch != null && "_main_menu".equals(item.getItemName()))
-						endMatch(i, item);
-					if (gameFinished && item.isHero())
-						addStats(i, item);
-					if (gameFinished && item.getItemName().contains("_stack"))
-						addStacksize(i, item);
-					duplicateThreshold.put(item.getItemName(), duplicateThreshold.containsKey(item.getItemName())
-							? duplicateThreshold.get(item.getItemName()) + 1 : 1);
-					lastItem = item.getItemName();
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
 		}
 	}
 }

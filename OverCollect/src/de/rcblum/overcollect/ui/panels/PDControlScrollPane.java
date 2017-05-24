@@ -14,17 +14,24 @@ import javax.swing.JScrollPane;
  */
 public class PDControlScrollPane extends JScrollPane {
 
-	public PDControlScrollPane() {
-		super();
-
-		addMouseWheelListener(new PDMouseWheelListener());
-	}
-
 	class PDMouseWheelListener implements MouseWheelListener {
 
 		private JScrollBar bar;
 		private int previousValue = 0;
 		private JScrollPane parentScrollPane;
+
+		public PDMouseWheelListener() {
+			bar = PDControlScrollPane.this.getVerticalScrollBar();
+		}
+
+		private MouseWheelEvent cloneEvent(MouseWheelEvent e) {
+			return new MouseWheelEvent(getParentScrollPane(), e.getID(), e.getWhen(), e.getModifiers(), 1, 1,
+					e.getClickCount(), false, e.getScrollType(), e.getScrollAmount(), e.getWheelRotation());
+		}
+
+		private int getMax() {
+			return bar.getMaximum() - bar.getVisibleAmount();
+		}
 
 		private JScrollPane getParentScrollPane() {
 			if (parentScrollPane == null) {
@@ -37,10 +44,7 @@ public class PDControlScrollPane extends JScrollPane {
 			return parentScrollPane;
 		}
 
-		public PDMouseWheelListener() {
-			bar = PDControlScrollPane.this.getVerticalScrollBar();
-		}
-
+		@Override
 		public void mouseWheelMoved(MouseWheelEvent e) {
 			JScrollPane parent = getParentScrollPane();
 			System.out.println("Parent scroll pane " + parent);
@@ -73,14 +77,11 @@ public class PDControlScrollPane extends JScrollPane {
 				PDControlScrollPane.this.removeMouseWheelListener(this);
 			}
 		}
+	}
 
-		private int getMax() {
-			return bar.getMaximum() - bar.getVisibleAmount();
-		}
+	public PDControlScrollPane() {
+		super();
 
-		private MouseWheelEvent cloneEvent(MouseWheelEvent e) {
-			return new MouseWheelEvent(getParentScrollPane(), e.getID(), e.getWhen(), e.getModifiers(), 1, 1,
-					e.getClickCount(), false, e.getScrollType(), e.getScrollAmount(), e.getWheelRotation());
-		}
+		addMouseWheelListener(new PDMouseWheelListener());
 	}
 }

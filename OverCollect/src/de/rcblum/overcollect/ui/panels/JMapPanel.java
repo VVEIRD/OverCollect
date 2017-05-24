@@ -31,6 +31,23 @@ public class JMapPanel extends JPanel {
 	 */
 	private static final long serialVersionUID = 6792531438908056066L;
 
+	public static void main(String[] args) throws IOException, InterruptedException {
+		BufferedImage bImg = ImageIO.read(
+				new File("C:\\Java-Projekte\\OverCollect\\lib\\owdata\\1920x1080\\_Volskaya_Industries\\template.png"));
+		JFrame f = new JFrame("");
+		JMapPanel mapPanel = new JMapPanel();
+		f.getContentPane().add(mapPanel);
+		f.pack();
+		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		f.setVisible(true);
+		Thread.sleep(5_000);
+		mapPanel.setMap("Volskaya Industries", bImg);
+		Thread.sleep(5_000);
+		bImg = ImageIO.read(
+				new File("C:\\Java-Projekte\\OverCollect\\lib\\owdata\\1920x1080\\_Temple_of_Anubis\\template.png"));
+		mapPanel.setMap("Temple of Anubis", bImg);
+	}
+
 	private BufferedImage background = null;
 
 	private BufferedImage _draw = new BufferedImage(220, 123, BufferedImage.TYPE_INT_ARGB);
@@ -83,6 +100,12 @@ public class JMapPanel extends JPanel {
 		add(lblRecording);
 	}
 
+	private void drawBackground(Graphics2D g2d, BufferedImage img) {
+		Image tmp = img.getScaledInstance(this.getWidth(),
+				(int) (img.getHeight() * ((float) this.getWidth()) / img.getWidth()), Image.SCALE_SMOOTH);
+		g2d.drawImage(tmp, 0, 0, null);
+	}
+
 	@Override
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
@@ -94,10 +117,12 @@ public class JMapPanel extends JPanel {
 		}
 	}
 
-	private void drawBackground(Graphics2D g2d, BufferedImage img) {
-		Image tmp = img.getScaledInstance(this.getWidth(),
-				(int) (img.getHeight() * ((float) this.getWidth()) / img.getWidth()), Image.SCALE_SMOOTH);
-		g2d.drawImage(tmp, 0, 0, null);
+	public void setBackgroundImage(BufferedImage background) {
+		this.background = background;// != null ? resize(background,
+										// this.getWidth(), (int)
+										// (background.getHeight()*((float)this.getWidth())/background.getWidth()))
+										// : null;
+		repaint();
 	}
 
 	public void setMap(String name, BufferedImage background) {
@@ -119,32 +144,7 @@ public class JMapPanel extends JPanel {
 		repaint();
 	}
 
-	public void setBackgroundImage(BufferedImage background) {
-		this.background = background;// != null ? resize(background,
-										// this.getWidth(), (int)
-										// (background.getHeight()*((float)this.getWidth())/background.getWidth()))
-										// : null;
-		repaint();
-	}
-
 	public void setSecondText(String stext) {
 		this.lblRecording.setText(stext != null && stext.length() > 0 ? stext : " ");
-	}
-
-	public static void main(String[] args) throws IOException, InterruptedException {
-		BufferedImage bImg = ImageIO.read(
-				new File("C:\\Java-Projekte\\OverCollect\\lib\\owdata\\1920x1080\\_Volskaya_Industries\\template.png"));
-		JFrame f = new JFrame("");
-		JMapPanel mapPanel = new JMapPanel();
-		f.getContentPane().add(mapPanel);
-		f.pack();
-		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		f.setVisible(true);
-		Thread.sleep(5_000);
-		mapPanel.setMap("Volskaya Industries", bImg);
-		Thread.sleep(5_000);
-		bImg = ImageIO.read(
-				new File("C:\\Java-Projekte\\OverCollect\\lib\\owdata\\1920x1080\\_Temple_of_Anubis\\template.png"));
-		mapPanel.setMap("Temple of Anubis", bImg);
 	}
 }

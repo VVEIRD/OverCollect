@@ -13,10 +13,10 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CreationHelper;
+import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
@@ -27,6 +27,14 @@ import de.rcblum.overcollect.data.OWMatch;
 import de.rcblum.overcollect.data.OWMatch.Result;
 
 public class XSSFExporter {
+	public static void main(String[] args) {
+		XSSFExporter eExport = new XSSFExporter();
+		eExport.generateMatchSheet();
+		eExport.generateHeroSheets();
+		eExport.save(Paths.get("export.xlsx"));
+
+	}
+
 	private List<OWMatch> matches = null;
 
 	private List<String> maps = null;
@@ -41,68 +49,6 @@ public class XSSFExporter {
 		this.heroes = OWLib.getInstance().getHeroes();
 		this.maps = OWLib.getInstance().getMaps();
 		this.workbook = new XSSFWorkbook();
-	}
-
-	public XSSFSheet generateMatchSheet() {
-		XSSFSheet sheet = null;
-		sheet = workbook.createSheet("match_data");
-		int rowIndex = 0;
-		Row row = sheet.createRow(rowIndex++);
-		Cell c = row.createCell(0);
-		c.setCellValue("Starttime");
-		c = row.createCell(1);
-		c.setCellValue("Endtime");
-		c = row.createCell(2);
-		c.setCellValue("Map");
-		c = row.createCell(3);
-		c.setCellValue("Team SR");
-		c = row.createCell(4);
-		c.setCellValue("Enemy SR");
-		c = row.createCell(5);
-		c.setCellValue("Result");
-		c = row.createCell(6);
-		c.setCellValue("SR after Match");
-		c = row.createCell(7);
-		c.setCellValue("SR Difference");
-		c = row.createCell(8);
-		c.setCellValue("Match ID");
-		CellStyle cellStyle = workbook.createCellStyle();
-		CreationHelper createHelper = workbook.getCreationHelper();
-		cellStyle.setDataFormat(createHelper.createDataFormat().getFormat("DD.MM.YYYY hh:mm:ss"));
-		// Set values
-		OWMatch previousMatch = null;
-		for (OWMatch match : matches) {
-			row = sheet.createRow(rowIndex++);
-			int cellIndex = 0;
-			c = row.createCell(cellIndex++);
-			c.setCellValue(match.getStartTime());
-			c.setCellStyle(cellStyle);
-			c = row.createCell(cellIndex++);
-			c.setCellValue(match.getEndTime());
-			c.setCellStyle(cellStyle);
-			c = row.createCell(cellIndex++);
-			c.setCellValue(match.getMap());
-			c = row.createCell(cellIndex++);
-			c.setCellValue(match.getTeamSr());
-			c = row.createCell(cellIndex++);
-			c.setCellValue(match.getEnemySr());
-			c = row.createCell(cellIndex++);
-			c.setCellValue(match.getResult().toString());
-			c = row.createCell(cellIndex++);
-			c.setCellValue(match.getSr());
-			c = row.createCell(cellIndex++);
-			c.setCellValue(match.getSr() - (previousMatch != null ? previousMatch.getSr() : match.getSr()));
-			c = row.createCell(cellIndex++);
-			c.setCellValue(match.getMatchId());
-			previousMatch = match;
-		}
-		return sheet;
-	}
-
-	public void generateHeroSheets() {
-		for (OWItem hero : heroes) {
-			this.createHeroSheet(hero);
-		}
 	}
 
 	private XSSFSheet createHeroSheet(OWItem hero) {
@@ -242,6 +188,68 @@ public class XSSFExporter {
 		return sheet;
 	}
 
+	public void generateHeroSheets() {
+		for (OWItem hero : heroes) {
+			this.createHeroSheet(hero);
+		}
+	}
+
+	public XSSFSheet generateMatchSheet() {
+		XSSFSheet sheet = null;
+		sheet = workbook.createSheet("match_data");
+		int rowIndex = 0;
+		Row row = sheet.createRow(rowIndex++);
+		Cell c = row.createCell(0);
+		c.setCellValue("Starttime");
+		c = row.createCell(1);
+		c.setCellValue("Endtime");
+		c = row.createCell(2);
+		c.setCellValue("Map");
+		c = row.createCell(3);
+		c.setCellValue("Team SR");
+		c = row.createCell(4);
+		c.setCellValue("Enemy SR");
+		c = row.createCell(5);
+		c.setCellValue("Result");
+		c = row.createCell(6);
+		c.setCellValue("SR after Match");
+		c = row.createCell(7);
+		c.setCellValue("SR Difference");
+		c = row.createCell(8);
+		c.setCellValue("Match ID");
+		CellStyle cellStyle = workbook.createCellStyle();
+		CreationHelper createHelper = workbook.getCreationHelper();
+		cellStyle.setDataFormat(createHelper.createDataFormat().getFormat("DD.MM.YYYY hh:mm:ss"));
+		// Set values
+		OWMatch previousMatch = null;
+		for (OWMatch match : matches) {
+			row = sheet.createRow(rowIndex++);
+			int cellIndex = 0;
+			c = row.createCell(cellIndex++);
+			c.setCellValue(match.getStartTime());
+			c.setCellStyle(cellStyle);
+			c = row.createCell(cellIndex++);
+			c.setCellValue(match.getEndTime());
+			c.setCellStyle(cellStyle);
+			c = row.createCell(cellIndex++);
+			c.setCellValue(match.getMap());
+			c = row.createCell(cellIndex++);
+			c.setCellValue(match.getTeamSr());
+			c = row.createCell(cellIndex++);
+			c.setCellValue(match.getEnemySr());
+			c = row.createCell(cellIndex++);
+			c.setCellValue(match.getResult().toString());
+			c = row.createCell(cellIndex++);
+			c.setCellValue(match.getSr());
+			c = row.createCell(cellIndex++);
+			c.setCellValue(match.getSr() - (previousMatch != null ? previousMatch.getSr() : match.getSr()));
+			c = row.createCell(cellIndex++);
+			c.setCellValue(match.getMatchId());
+			previousMatch = match;
+		}
+		return sheet;
+	}
+
 	public void save(Path path) {
 		try (OutputStream out = Files.newOutputStream(path)) {
 			workbook.write(out);
@@ -251,14 +259,6 @@ public class XSSFExporter {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-	}
-
-	public static void main(String[] args) {
-		XSSFExporter eExport = new XSSFExporter();
-		eExport.generateMatchSheet();
-		eExport.generateHeroSheets();
-		eExport.save(Paths.get("export.xlsx"));
-
 	}
 
 }

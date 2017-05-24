@@ -18,41 +18,20 @@ import java.util.function.Supplier;
  * @param <T>
  */
 public class CacheOptional<T> {
+	private class ExpireTask extends TimerTask {
+		@Override
+		public void run() {
+			synchronized (valueLock) {
+				value = null;
+			}
+		}
+
+	}
+
 	/**
 	 * Common instance for {@code empty()}.
 	 */
 	private static final CacheOptional<?> EMPTY = new CacheOptional<>();
-
-	/**
-	 * If non-null, the value; if null, indicates no value is present
-	 */
-	private T value;
-
-	/**
-	 * Lock for multitheaded access
-	 */
-	private final Object valueLock = new Object();
-
-	/**
-	 * Default cache lifetime is 10 minutes
-	 */
-	private final long cacheLifetime;
-
-	/**
-	 * Timer that triggers the expiration. Is reset every time the
-	 */
-	private Timer t = null;
-
-	/**
-	 * Constructs an empty instance.
-	 *
-	 * @implNote Generally only one empty instance, {@link CacheOptional#EMPTY},
-	 *           should exist per VM.
-	 */
-	private CacheOptional() {
-		this.value = null;
-		this.cacheLifetime = 600_000;
-	}
 
 	/**
 	 * Returns an empty {@code CacheOptional} instance. No value is present for
@@ -71,33 +50,6 @@ public class CacheOptional<T> {
 		@SuppressWarnings("unchecked")
 		CacheOptional<T> t = (CacheOptional<T>) EMPTY;
 		return t;
-	}
-
-	/**
-	 * Constructs an instance with the value present.
-	 *
-	 * @param value
-	 *            the non-null value to be present
-	 * @throws NullPointerException
-	 *             if value is null
-	 */
-	private CacheOptional(T value) {
-		this(value, 600_000);
-	}
-
-	/**
-	 * Constructs an instance with the value present.
-	 *
-	 * @param value
-	 *            the non-null value to be present
-	 * @throws NullPointerException
-	 *             if value is null
-	 */
-	private CacheOptional(T value, long cacheLifetime) {
-		this.cacheLifetime = cacheLifetime;
-		this.value = value;
-		this.t = new Timer(true);
-		t.schedule(new ExpireTask(), this.cacheLifetime);
 	}
 
 	/**
@@ -148,53 +100,92 @@ public class CacheOptional<T> {
 	}
 
 	/**
-	 * If a value is present in this {@code CacheOptional}, returns the value,
-	 * otherwise throws {@code NoSuchElementException}.
-	 *
-	 * @return the non-null value held by this {@code CacheOptional}
-	 * @throws NoSuchElementException
-	 *             if there is no value present
-	 *
-	 * @see CacheOptional#isPresent()
+	 * If non-null, the value; if null, indicates no value is present
 	 */
-	public T get() {
-		synchronized (valueLock) {
-			if (value == null) {
-				throw new NoSuchElementException("No value present");
-			}
-			resetTimer();
-			return value;
-		}
+	private T value;
+
+	/**
+	 * Lock for multitheaded access
+	 */
+	private final Object valueLock = new Object();
+
+	/**
+	 * Default cache lifetime is 10 minutes
+	 */
+	private final long cacheLifetime;
+
+	/**
+	 * Timer that triggers the expiration. Is reset every time the
+	 */
+	private Timer t = null;
+
+	/**
+	 * Constructs an empty instance.
+	 *
+	 * @implNote Generally only one empty instance, {@link CacheOptional#EMPTY},
+	 *           should exist per VM.
+	 */
+	private CacheOptional() {
+		this.value = null;
+		this.cacheLifetime = 600_000;
 	}
 
 	/**
-	 * Return {@code true} if there is a value present, otherwise {@code false}.
+	 * Constructs an instance with the value present.
 	 *
-	 * @return {@code true} if there is a value present, otherwise {@code false}
-	 */
-	public boolean isPresent() {
-		synchronized (valueLock) {
-			if (this.value != null)
-				resetTimer();
-			return value != null;
-		}
-	}
-
-	/**
-	 * If a value is present, invoke the specified consumer with the value,
-	 * otherwise do nothing.
-	 *
-	 * @param consumer
-	 *            block to be executed if a value is present
+	 * @param value
+	 *            the non-null value to be present
 	 * @throws NullPointerException
-	 *             if value is present and {@code consumer} is null
+	 *             if value is null
 	 */
-	public void ifPresent(Consumer<? super T> consumer) {
+	private CacheOptional(T value) {
+		this(value, 600_000);
+	}
+
+	/**
+	 * Constructs an instance with the value present.
+	 *
+	 * @param value
+	 *            the non-null value to be present
+	 * @throws NullPointerException
+	 *             if value is null
+	 */
+	private CacheOptional(T value, long cacheLifetime) {
+		this.cacheLifetime = cacheLifetime;
+		this.value = value;
+		this.t = new Timer(true);
+		t.schedule(new ExpireTask(), this.cacheLifetime);
+	}
+
+	/**
+	 * Indicates whether some other object is "equal to" this CacheOptional. The
+	 * other object is considered equal if:
+	 * <ul>
+	 * <li>it is also an {@code CacheOptional} and;
+	 * <li>both instances have no value present or;
+	 * <li>the present values are "equal to" each other via {@code equals()}.
+	 * </ul>
+	 *
+	 * @param obj
+	 *            an object to be tested for equality
+	 * @return {code true} if the other object is "equal to" this object
+	 *         otherwise {@code false}
+	 */
+	@Override
+	public boolean equals(Object obj) {
 		synchronized (valueLock) {
 			if (this.value != null)
 				resetTimer();
-			if (value != null)
-				consumer.accept(value);
+			if (this == obj) {
+				return true;
+			}
+
+			if (!(obj instanceof CacheOptional)) {
+				return false;
+			}
+
+			CacheOptional<?> other = (CacheOptional<?>) obj;
+			return Objects.equals(value, other.value);
 		}
 	}
 
@@ -218,6 +209,101 @@ public class CacheOptional<T> {
 				return this;
 			else
 				return predicate.test(value) ? this : empty();
+		}
+	}
+
+	/**
+	 * If a value is present, apply the provided {@code CacheOptional}-bearing
+	 * mapping function to it, return that result, otherwise return an empty
+	 * {@code CacheOptional}. This method is similar to {@link #map(Function)},
+	 * but the provided mapper is one whose result is already an
+	 * {@code CacheOptional}, and if invoked, {@code flatMap} does not wrap it
+	 * with an additional {@code CacheOptional}.
+	 *
+	 * @param <U>
+	 *            The type parameter to the {@code CacheOptional} returned by
+	 * @param mapper
+	 *            a mapping function to apply to the value, if present the
+	 *            mapping function
+	 * @return the result of applying an {@code CacheOptional}-bearing mapping
+	 *         function to the value of this {@code CacheOptional}, if a value
+	 *         is present, otherwise an empty {@code CacheOptional}
+	 * @throws NullPointerException
+	 *             if the mapping function is null or returns a null result
+	 */
+	public <U> CacheOptional<U> flatMap(Function<? super T, CacheOptional<U>> mapper) {
+		Objects.requireNonNull(mapper);
+		synchronized (valueLock) {
+			if (!isPresent())
+				return empty();
+			else
+				return Objects.requireNonNull(mapper.apply(value));
+		}
+	}
+
+	/**
+	 * If a value is present in this {@code CacheOptional}, returns the value,
+	 * otherwise throws {@code NoSuchElementException}.
+	 *
+	 * @return the non-null value held by this {@code CacheOptional}
+	 * @throws NoSuchElementException
+	 *             if there is no value present
+	 *
+	 * @see CacheOptional#isPresent()
+	 */
+	public T get() {
+		synchronized (valueLock) {
+			if (value == null) {
+				throw new NoSuchElementException("No value present");
+			}
+			resetTimer();
+			return value;
+		}
+	}
+
+	/**
+	 * Returns the hash code value of the present value, if any, or 0 (zero) if
+	 * no value is present.
+	 *
+	 * @return hash code value of the present value or 0 if no value is present
+	 */
+	@Override
+	public int hashCode() {
+		synchronized (valueLock) {
+			if (this.value != null)
+				resetTimer();
+			return Objects.hashCode(value);
+		}
+	}
+
+	/**
+	 * If a value is present, invoke the specified consumer with the value,
+	 * otherwise do nothing.
+	 *
+	 * @param consumer
+	 *            block to be executed if a value is present
+	 * @throws NullPointerException
+	 *             if value is present and {@code consumer} is null
+	 */
+	public void ifPresent(Consumer<? super T> consumer) {
+		synchronized (valueLock) {
+			if (this.value != null)
+				resetTimer();
+			if (value != null)
+				consumer.accept(value);
+		}
+	}
+
+	/**
+	 * Return {@code true} if there is a value present, otherwise {@code false}.
+	 *
+	 * @return {@code true} if there is a value present, otherwise {@code false}
+	 */
+	public boolean isPresent() {
+		synchronized (valueLock) {
+			if (this.value != null)
+				resetTimer();
+			return value != null;
 		}
 	}
 
@@ -267,35 +353,6 @@ public class CacheOptional<T> {
 	}
 
 	/**
-	 * If a value is present, apply the provided {@code CacheOptional}-bearing
-	 * mapping function to it, return that result, otherwise return an empty
-	 * {@code CacheOptional}. This method is similar to {@link #map(Function)},
-	 * but the provided mapper is one whose result is already an
-	 * {@code CacheOptional}, and if invoked, {@code flatMap} does not wrap it
-	 * with an additional {@code CacheOptional}.
-	 *
-	 * @param <U>
-	 *            The type parameter to the {@code CacheOptional} returned by
-	 * @param mapper
-	 *            a mapping function to apply to the value, if present the
-	 *            mapping function
-	 * @return the result of applying an {@code CacheOptional}-bearing mapping
-	 *         function to the value of this {@code CacheOptional}, if a value
-	 *         is present, otherwise an empty {@code CacheOptional}
-	 * @throws NullPointerException
-	 *             if the mapping function is null or returns a null result
-	 */
-	public <U> CacheOptional<U> flatMap(Function<? super T, CacheOptional<U>> mapper) {
-		Objects.requireNonNull(mapper);
-		synchronized (valueLock) {
-			if (!isPresent())
-				return empty();
-			else
-				return Objects.requireNonNull(mapper.apply(value));
-		}
-	}
-
-	/**
 	 * Return the value if present, otherwise return {@code other}.
 	 *
 	 * @param other
@@ -330,12 +387,6 @@ public class CacheOptional<T> {
 		}
 	}
 
-	private void resetTimer() {
-		t.cancel();
-		t = new Timer(true);
-		t.schedule(new ExpireTask(), this.cacheLifetime);
-	}
-
 	/**
 	 * Return the contained value, if present, otherwise throw an exception to
 	 * be created by the provided supplier.
@@ -366,51 +417,10 @@ public class CacheOptional<T> {
 		}
 	}
 
-	/**
-	 * Indicates whether some other object is "equal to" this CacheOptional. The
-	 * other object is considered equal if:
-	 * <ul>
-	 * <li>it is also an {@code CacheOptional} and;
-	 * <li>both instances have no value present or;
-	 * <li>the present values are "equal to" each other via {@code equals()}.
-	 * </ul>
-	 *
-	 * @param obj
-	 *            an object to be tested for equality
-	 * @return {code true} if the other object is "equal to" this object
-	 *         otherwise {@code false}
-	 */
-	@Override
-	public boolean equals(Object obj) {
-		synchronized (valueLock) {
-			if (this.value != null)
-				resetTimer();
-			if (this == obj) {
-				return true;
-			}
-
-			if (!(obj instanceof CacheOptional)) {
-				return false;
-			}
-
-			CacheOptional<?> other = (CacheOptional<?>) obj;
-			return Objects.equals(value, other.value);
-		}
-	}
-
-	/**
-	 * Returns the hash code value of the present value, if any, or 0 (zero) if
-	 * no value is present.
-	 *
-	 * @return hash code value of the present value or 0 if no value is present
-	 */
-	@Override
-	public int hashCode() {
-		synchronized (valueLock) {
-			if (this.value != null)
-				resetTimer();
-			return Objects.hashCode(value);
-		}
+	private void resetTimer() {
+		t.cancel();
+		t = new Timer(true);
+		t.schedule(new ExpireTask(), this.cacheLifetime);
 	}
 
 	/**
@@ -431,15 +441,5 @@ public class CacheOptional<T> {
 				resetTimer();
 			return value != null ? String.format("Optional[%s]", value) : "Optional.empty";
 		}
-	}
-
-	private class ExpireTask extends TimerTask {
-		@Override
-		public void run() {
-			synchronized (valueLock) {
-				value = null;
-			}
-		}
-
 	}
 }

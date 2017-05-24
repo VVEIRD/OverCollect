@@ -1,13 +1,11 @@
 package de.rcblum.overcollect.ui.panels;
 
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 
@@ -43,6 +41,11 @@ public class JOWMatchListPanel extends JPanel implements OWMatchExtractionListen
 	}
 
 	@Override
+	public void extractionError(BufferedImage image, Glyph probableGlyph, OWMatchExtractionListener.StatType type) {
+		// TODO Auto-generated method stub
+	}
+
+	@Override
 	public void matchExtracted(OWMatch match) {
 		int lastSr = this.lastSr >= 0 ? this.lastSr : match.getSr();
 		JOWMatchPanel mp = new JOWMatchPanel(match, lastSr);
@@ -58,11 +61,6 @@ public class JOWMatchListPanel extends JPanel implements OWMatchExtractionListen
 		newMatches.add(match);
 		newMatches.addAll(matches);
 		matches = newMatches;
-	}
-
-	@Override
-	public void extractionError(BufferedImage image, Glyph probableGlyph, OWMatchExtractionListener.StatType type) {
-		// TODO Auto-generated method stub
 	}
 
 }

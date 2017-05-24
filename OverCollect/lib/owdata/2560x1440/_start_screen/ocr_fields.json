@@ -1,0 +1,44 @@
+{
+  "doRecolor": false,
+  "fontSize": 0,
+  "dataFieldSize": [
+    320,
+    100
+  ],
+  "secondaryFontSize": 0,
+  "secondaryDataFieldSize": [
+    0,
+    0
+  ],
+  "skew": 0.0,
+  "skewTrim": 0,
+  "skewSecondary": 0.0,
+  "skewSecondaryTrim": 0,
+  "values": {
+    "healingDone": [
+      1660,
+      583
+    ],
+    "objectiveKills": [
+      580,
+      583
+    ],
+    "eliminations": [
+      220,
+      583
+    ],
+    "objectiveTime": [
+      940,
+      583
+    ],
+    "damageDone": [
+      1300,
+      583
+    ],
+    "deaths": [
+      2020,
+      583
+    ]
+  },
+  "secondaryValues": {}
+}

@@ -2,21 +2,12 @@ package de.rcblum.overcollect;
 
 import java.awt.AWTException;
 import java.awt.EventQueue;
-import java.awt.Font;
-import java.awt.FontFormatException;
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.URL;
-import java.nio.channels.Channels;
-import java.nio.channels.ReadableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
@@ -30,13 +21,114 @@ import de.rcblum.overcollect.extract.MatchExtractor;
 import de.rcblum.overcollect.extract.listener.OWMatchExtractionListener;
 import de.rcblum.overcollect.extract.ocr.Glyph;
 import de.rcblum.overcollect.ui.JOverCollectFrame;
-import de.rcblum.overcollect.ui.panels.JOwCaptureStatus;
 import de.rcblum.overcollect.ui.setup.filter.JFilterSetup;
 import de.rcblum.overcollect.ui.setup.filter.JFilterTest;
 import de.rcblum.overcollect.ui.setup.ocr.JOCRSetup;
-import de.rcblum.overcollect.ui.utils.UiStatics;
 
 public class OverWatchCollectorApp {
+
+	public static void main(String[] args) throws AWTException, IOException {
+		try {
+			// Set System L&F
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		} catch (UnsupportedLookAndFeelException e) {
+			// handle exception
+		} catch (ClassNotFoundException e) {
+			// handle exception
+		} catch (InstantiationException e) {
+			// handle exception
+		} catch (IllegalAccessException e) {
+			// handle exception
+		}
+		// java.util.Enumeration keys = UIManager.getDefaults().keys();
+		// while (keys.hasMoreElements()) {
+		// Object key = keys.nextElement();
+		// Object value = UIManager.get (key);
+		// if (value != null && value instanceof
+		// javax.swing.plaf.FontUIResource)
+		// UIManager.put (key, new
+		// javax.swing.plaf.FontUIResource(UiStatics.OW_FONT_NORMAL.deriveFont(Font.PLAIN,
+		// 18)));
+		// if (value != null && value instanceof
+		// javax.swing.plaf.ColorUIResource &&
+		// (key.toString().toLowerCase().contains("background") ||
+		// key.toString().toLowerCase().contains("border")))
+		// UIManager.put (key, new
+		// javax.swing.plaf.ColorUIResource(UiStatics.COLOR_BACKGROUND));
+		// }
+		System.out.println("OverCollect Version " + OWLib.VERSION_STRING);
+		System.out.println("Made By Roland von Werden");
+		System.out.println("Copyright @2017");
+		System.out.println("Uses the folowing, not modified, Open Source Libraries:");
+		System.out.println("  GSON 2.8.0, Licenced under Apache 2.0 Licence");
+		System.out.println("  JGOODIES 1.8.0, Licenced under BSD 2-clause Licence");
+		System.out.println();
+		if (args.length > 0 && (args[0].equalsIgnoreCase("/?") || args[0].equalsIgnoreCase("/help"))) {
+			System.out.println("Commandline Arguments:");
+			System.out.println("/? or /help                 Show this help text");
+			System.out.println("/filter_setup               Start Filter configuration utility");
+			System.out.println("/filter_test                Start Testframework for existing filters");
+			System.out.println("/ocr_setup                  Start OCR configuration utility");
+			System.out.println("/glyph_update               Update glyph data unsing the Filter data");
+			System.exit(0);
+		} else if (args.length > 0 && args[0].equalsIgnoreCase("/filter_setup")) {
+			EventQueue.invokeLater(new Runnable() {
+				@Override
+				public void run() {
+					try {
+						JFilterSetup frame = new JFilterSetup();
+						frame.setVisible(true);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			});
+		} else if (args.length > 0 && args[0].equalsIgnoreCase("/filter_test")) {
+			EventQueue.invokeLater(new Runnable() {
+				@Override
+				public void run() {
+					try {
+						JFilterTest frame = new JFilterTest();
+						frame.setVisible(true);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			});
+		} else if (args.length > 0 && args[0].equalsIgnoreCase("/ocr_setup")) {
+			EventQueue.invokeLater(new Runnable() {
+				@Override
+				public void run() {
+					try {
+						JOCRSetup frame = new JOCRSetup();
+						frame.setVisible(true);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			});
+		} else if (args.length > 0 && args[0].equalsIgnoreCase("/glyph_update")) {
+			Glyph.main(args);
+		} else {
+			OverWatchCollectorApp app = new OverWatchCollectorApp();
+			app.startCapture();
+			JOverCollectFrame f = new JOverCollectFrame(app);
+			// JOwCaptureStatus mapPanel = new JOwCaptureStatus();
+			// f.getContentPane().add(mapPanel);
+			// f.pack();
+			// f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			f.setVisible(true);
+			// app.addOWMatchListener(mapPanel);
+			// app.addImageListener(mapPanel);
+
+		}
+		try {
+			Thread.sleep(50_000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 
 	private CaptureEngine captureEngine = null;
 
@@ -101,20 +193,8 @@ public class OverWatchCollectorApp {
 		}
 	}
 
-	public void startCapture() {
-		captureEngine.start();
-	}
-
-	public void stopCapture() {
-		captureEngine.stop();
-	}
-
-	public void addOWMatchListener(OWMatchListener listener) {
-		this.matchComposer.addOWMatchListener(listener);
-	}
-
-	public void removeOWMatchListener(OWMatchListener listener) {
-		this.matchComposer.removeOWMatchListener(listener);
+	public void addImageListener(ImageListener listener) {
+		this.captureEngine.addImageListener(listener);
 	}
 
 	public void addOWMatchExtractionListener(OWMatchExtractionListener listener) {
@@ -122,17 +202,26 @@ public class OverWatchCollectorApp {
 		this.extractor.addExtractionListener(listener);
 	}
 
+	public void addOWMatchListener(OWMatchListener listener) {
+		this.matchComposer.addOWMatchListener(listener);
+	}
+
+	public boolean isRecording() {
+		// TODO Auto-generated method stub
+		return this.captureEngine.isRunning();
+	}
+
+	public void removeImageListener(ImageListener listener) {
+		this.captureEngine.removeImageListener(listener);
+	}
+
 	public void removeOWMatchExtractionListener(OWMatchExtractionListener listener) {
 
 		this.extractor.removeExtractionListener(listener);
 	}
 
-	public void addImageListener(ImageListener listener) {
-		this.captureEngine.addImageListener(listener);
-	}
-
-	public void removeImageListener(ImageListener listener) {
-		this.captureEngine.removeImageListener(listener);
+	public void removeOWMatchListener(OWMatchListener listener) {
+		this.matchComposer.removeOWMatchListener(listener);
 	}
 
 	public void setLibraryPath(String libPath) {
@@ -143,112 +232,11 @@ public class OverWatchCollectorApp {
 		System.getProperties().setProperty("owcollect.match.dir", matchPath);
 	}
 
-	//
-	// MAIN
-	//
-
-	public static void main(String[] args) throws AWTException, IOException {
-		try {
-			// Set System L&F
-			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		} catch (UnsupportedLookAndFeelException e) {
-			// handle exception
-		} catch (ClassNotFoundException e) {
-			// handle exception
-		} catch (InstantiationException e) {
-			// handle exception
-		} catch (IllegalAccessException e) {
-			// handle exception
-		}
-		// java.util.Enumeration keys = UIManager.getDefaults().keys();
-		// while (keys.hasMoreElements()) {
-		// Object key = keys.nextElement();
-		// Object value = UIManager.get (key);
-		// if (value != null && value instanceof
-		// javax.swing.plaf.FontUIResource)
-		// UIManager.put (key, new
-		// javax.swing.plaf.FontUIResource(UiStatics.OW_FONT_NORMAL.deriveFont(Font.PLAIN,
-		// 18)));
-		// if (value != null && value instanceof
-		// javax.swing.plaf.ColorUIResource &&
-		// (key.toString().toLowerCase().contains("background") ||
-		// key.toString().toLowerCase().contains("border")))
-		// UIManager.put (key, new
-		// javax.swing.plaf.ColorUIResource(UiStatics.COLOR_BACKGROUND));
-		// }
-		System.out.println("OverCollect Version " + OWLib.VERSION_STRING);
-		System.out.println("Made By Roland von Werden");
-		System.out.println("Copyright @2017");
-		System.out.println("Uses the folowing, not modified, Open Source Libraries:");
-		System.out.println("  GSON 2.8.0, Licenced under Apache 2.0 Licence");
-		System.out.println("  JGOODIES 1.8.0, Licenced under BSD 2-clause Licence");
-		System.out.println();
-		if (args.length > 0 && (args[0].equalsIgnoreCase("/?") || args[0].equalsIgnoreCase("/help"))) {
-			System.out.println("Commandline Arguments:");
-			System.out.println("/? or /help                 Show this help text");
-			System.out.println("/filter_setup               Start Filter configuration utility");
-			System.out.println("/filter_test                Start Testframework for existing filters");
-			System.out.println("/ocr_setup                  Start OCR configuration utility");
-			System.out.println("/glyph_update               Update glyph data unsing the Filter data");
-			System.exit(0);
-		} else if (args.length > 0 && args[0].equalsIgnoreCase("/filter_setup")) {
-			EventQueue.invokeLater(new Runnable() {
-				public void run() {
-					try {
-						JFilterSetup frame = new JFilterSetup();
-						frame.setVisible(true);
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-				}
-			});
-		} else if (args.length > 0 && args[0].equalsIgnoreCase("/filter_test")) {
-			EventQueue.invokeLater(new Runnable() {
-				public void run() {
-					try {
-						JFilterTest frame = new JFilterTest();
-						frame.setVisible(true);
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-				}
-			});
-		} else if (args.length > 0 && args[0].equalsIgnoreCase("/ocr_setup")) {
-			EventQueue.invokeLater(new Runnable() {
-				public void run() {
-					try {
-						JOCRSetup frame = new JOCRSetup();
-						frame.setVisible(true);
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-				}
-			});
-		} else if (args.length > 0 && args[0].equalsIgnoreCase("/glyph_update")) {
-			Glyph.main(args);
-		} else {
-			OverWatchCollectorApp app = new OverWatchCollectorApp();
-			app.startCapture();
-			JOverCollectFrame f = new JOverCollectFrame(app);
-			// JOwCaptureStatus mapPanel = new JOwCaptureStatus();
-			// f.getContentPane().add(mapPanel);
-			// f.pack();
-			// f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-			f.setVisible(true);
-			// app.addOWMatchListener(mapPanel);
-			// app.addImageListener(mapPanel);
-
-		}
-		try {
-			Thread.sleep(50_000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	public void startCapture() {
+		captureEngine.start();
 	}
 
-	public boolean isRecording() {
-		// TODO Auto-generated method stub
-		return this.captureEngine.isRunning();
+	public void stopCapture() {
+		captureEngine.stop();
 	}
 }

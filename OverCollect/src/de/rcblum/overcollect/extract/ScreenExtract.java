@@ -26,6 +26,88 @@ import de.rcblum.overcollect.extract.ocr.ImageGlyphSplitter;
 
 public class ScreenExtract {
 
+	public static BufferedImage adjustImage(BufferedImage source, Color primaryColor, double skewX, int skewTrim,
+			boolean doRecolor) {
+		if (doRecolor) {
+			// Reverse color
+			for (int x = 0; x < source.getWidth(); x++) {
+				for (int y = 0; y < source.getHeight(); y++) {
+					int rgba = source.getRGB(x, y);
+					Color col = new Color(rgba, true);
+					int red = col.getRed();
+					int green = col.getGreen();
+					int blue = col.getBlue();
+					col = new Color(255 - red, 255 - green, 255 - blue);
+					if (Math.abs(red - 16) < 15 && Math.abs(green - 209) < 15 && Math.abs(blue - 24) < 15)
+						col = Color.BLACK;
+					source.setRGB(x, y, col.getRGB());
+				}
+			}
+			// Test against primary text color
+			for (int x = 0; x < source.getWidth(); x++) {
+				for (int y = 0; y < source.getHeight(); y++) {
+					int rgba = source.getRGB(x, y);
+					Color col = new Color(rgba, true);
+					int pixelR = col.getRed();
+					int pixelG = col.getGreen();
+					int pixelB = col.getBlue();
+
+					int textR = primaryColor.getRed();
+					int textG = primaryColor.getGreen();
+					int textB = primaryColor.getBlue();
+					Color c = null;
+					int tolerance = 80;
+					if (Math.abs(pixelR - textR) < tolerance && Math.abs(pixelG - textG) < tolerance
+							&& Math.abs(pixelB - textB) < tolerance)
+						c = primaryColor;
+					else
+						c = new Color(255 - textR, 255 - textG, 255 - textB);
+
+					// int colorValue = (pixelR - 16 < 15 && pixelG - 205 < 12
+					// && pixelB - 22 < 10) ? 203 + 205 + 208
+					// : (col.getRed() + col.getGreen() + col.getBlue());
+					// colorValue = colorValue <= 200 ? colorValue / 15 :
+					// colorValue / 2;
+					// colorValue = colorValue > 255 ? 255 : colorValue;
+					// col = new Color(255 - colorValue, 255 - colorValue, 255 -
+					// colorValue);
+					source.setRGB(x, y, c.getRGB());
+				}
+			}
+		}
+		BufferedImage image = new BufferedImage(source.getWidth(), source.getHeight(), BufferedImage.TYPE_INT_ARGB);
+		if (skewX > 0.05 || skewX < 0.05) {
+			// Adjust the image width if we use a negative skew...
+			// double skewX = config.skew; //0.225d;
+			double xSkew = (skewX < 0) ? -skewX * source.getHeight() : 0;
+			AffineTransform at = AffineTransform.getTranslateInstance(xSkew, 0);
+			at.shear(skewX, 0);
+			AffineTransformOp op = new AffineTransformOp(at,
+					new RenderingHints(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC));
+			image = op.filter(source, null);
+			image = image.getSubimage(skewTrim/* 17 */, 0, image.getWidth() - (skewTrim * 2), image.getHeight());
+		}
+		Graphics2D g = image.createGraphics();
+		g.setColor(doRecolor ? new Color(249, 249, 249) : new Color(26, 31, 38));
+		g.fillRect(0, 0, image.getWidth(), 7);
+		g.dispose();
+		return image;
+	}
+
+	public static BufferedImage resize(BufferedImage img, int newW, int newH) {
+		try {
+			Image tmp = img.getScaledInstance(newW, newH, Image.SCALE_SMOOTH);
+			BufferedImage dimg = new BufferedImage(newW, newH, BufferedImage.TYPE_INT_ARGB);
+			Graphics2D g2d = dimg.createGraphics();
+			g2d.drawImage(tmp, 0, 0, null);
+			g2d.dispose();
+			return dimg;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
 	private OCRConfiguration config = null;
 
 	private BufferedImage screenImg = null;
@@ -74,6 +156,30 @@ public class ScreenExtract {
 			}
 		}
 		readValues();
+	}
+
+	public BufferedImage getImage(String string) {
+		return this.valueImages.get(string);
+	}
+
+	public BufferedImage getSecondaryImage(String string) {
+		return this.secondaryValueImages.get(string);
+	}
+
+	public String getSecondaryValue(String key) {
+		return this.secondaryValues.get(key);
+	}
+
+	public List<String> getSecondaryValueNames() {
+		return new ArrayList<>(this.secondaryValues.keySet());
+	}
+
+	public String getValue(String key) {
+		return this.values.get(key);
+	}
+
+	public List<String> getValueNames() {
+		return new ArrayList<>(this.values.keySet());
 	}
 
 	private void readValues() {
@@ -219,111 +325,5 @@ public class ScreenExtract {
 			// e.printStackTrace();
 			// }
 		}
-	}
-
-	public static BufferedImage resize(BufferedImage img, int newW, int newH) {
-		try {
-			Image tmp = img.getScaledInstance(newW, newH, Image.SCALE_SMOOTH);
-			BufferedImage dimg = new BufferedImage(newW, newH, BufferedImage.TYPE_INT_ARGB);
-			Graphics2D g2d = dimg.createGraphics();
-			g2d.drawImage(tmp, 0, 0, null);
-			g2d.dispose();
-			return dimg;
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-
-	public static BufferedImage adjustImage(BufferedImage source, Color primaryColor, double skewX, int skewTrim,
-			boolean doRecolor) {
-		if (doRecolor) {
-			// Reverse color
-			for (int x = 0; x < source.getWidth(); x++) {
-				for (int y = 0; y < source.getHeight(); y++) {
-					int rgba = source.getRGB(x, y);
-					Color col = new Color(rgba, true);
-					int red = col.getRed();
-					int green = col.getGreen();
-					int blue = col.getBlue();
-					col = new Color(255 - red, 255 - green, 255 - blue);
-					if (Math.abs(red - 16) < 15 && Math.abs(green - 209) < 15 && Math.abs(blue - 24) < 15)
-						col = Color.BLACK;
-					source.setRGB(x, y, col.getRGB());
-				}
-			}
-			// Test against primary text color
-			for (int x = 0; x < source.getWidth(); x++) {
-				for (int y = 0; y < source.getHeight(); y++) {
-					int rgba = source.getRGB(x, y);
-					Color col = new Color(rgba, true);
-					int pixelR = col.getRed();
-					int pixelG = col.getGreen();
-					int pixelB = col.getBlue();
-
-					int textR = primaryColor.getRed();
-					int textG = primaryColor.getGreen();
-					int textB = primaryColor.getBlue();
-					Color c = null;
-					int tolerance = 80;
-					if (Math.abs(pixelR - textR) < tolerance && Math.abs(pixelG - textG) < tolerance
-							&& Math.abs(pixelB - textB) < tolerance)
-						c = primaryColor;
-					else
-						c = new Color(255 - textR, 255 - textG, 255 - textB);
-
-					// int colorValue = (pixelR - 16 < 15 && pixelG - 205 < 12
-					// && pixelB - 22 < 10) ? 203 + 205 + 208
-					// : (col.getRed() + col.getGreen() + col.getBlue());
-					// colorValue = colorValue <= 200 ? colorValue / 15 :
-					// colorValue / 2;
-					// colorValue = colorValue > 255 ? 255 : colorValue;
-					// col = new Color(255 - colorValue, 255 - colorValue, 255 -
-					// colorValue);
-					source.setRGB(x, y, c.getRGB());
-				}
-			}
-		}
-		BufferedImage image = new BufferedImage(source.getWidth(), source.getHeight(), BufferedImage.TYPE_INT_ARGB);
-		if (skewX > 0.05 || skewX < 0.05) {
-			// Adjust the image width if we use a negative skew...
-			// double skewX = config.skew; //0.225d;
-			double xSkew = (skewX < 0) ? -skewX * source.getHeight() : 0;
-			AffineTransform at = AffineTransform.getTranslateInstance(xSkew, 0);
-			at.shear(skewX, 0);
-			AffineTransformOp op = new AffineTransformOp(at,
-					new RenderingHints(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC));
-			image = op.filter(source, null);
-			image = image.getSubimage(skewTrim/* 17 */, 0, image.getWidth() - (skewTrim * 2), image.getHeight());
-		}
-		Graphics2D g = image.createGraphics();
-		g.setColor(doRecolor ? new Color(249, 249, 249) : new Color(26, 31, 38));
-		g.fillRect(0, 0, image.getWidth(), 7);
-		g.dispose();
-		return image;
-	}
-
-	public String getValue(String key) {
-		return this.values.get(key);
-	}
-
-	public String getSecondaryValue(String key) {
-		return this.secondaryValues.get(key);
-	}
-
-	public List<String> getValueNames() {
-		return new ArrayList<>(this.values.keySet());
-	}
-
-	public List<String> getSecondaryValueNames() {
-		return new ArrayList<>(this.secondaryValues.keySet());
-	}
-
-	public BufferedImage getImage(String string) {
-		return this.valueImages.get(string);
-	}
-
-	public BufferedImage getSecondaryImage(String string) {
-		return this.secondaryValueImages.get(string);
 	}
 }

@@ -15,14 +15,6 @@ public class Animation implements ActionListener {
 		this.t = new Timer(25, this);
 	}
 
-	public void start() {
-		t.start();
-	}
-
-	public void stop() {
-		t.stop();
-	}
-
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (this.animatable.isExpanding() && this.animatable.getCurrentValue() < this.animatable.getMaxValue()) {
@@ -39,5 +31,13 @@ public class Animation implements ActionListener {
 			else
 				this.animatable.setValue(this.animatable.getCurrentValue() - step);
 		}
+	}
+
+	public void start() {
+		t.start();
+	}
+
+	public void stop() {
+		t.stop();
 	}
 }

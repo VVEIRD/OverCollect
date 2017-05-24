@@ -27,8 +27,8 @@ import javax.imageio.stream.MemoryCacheImageOutputStream;
 
 import com.google.gson.Gson;
 
-import de.rcblum.overcollect.collect.listener.owmatch.OWMatchListener;
 import de.rcblum.overcollect.collect.listener.owmatch.OWMatchEvent;
+import de.rcblum.overcollect.collect.listener.owmatch.OWMatchListener;
 import de.rcblum.overcollect.configuration.OCRConfiguration;
 import de.rcblum.overcollect.configuration.OWLib;
 import de.rcblum.overcollect.data.OWCharacterStats;
@@ -39,132 +39,6 @@ import de.rcblum.overcollect.extract.ocr.Glyph;
 import de.rcblum.overcollect.utils.Helper;
 
 public class MatchExtractor implements Runnable, OWMatchListener {
-	/**
-	 * Root folder where all matches a saved as raws
-	 */
-	private Path matchRoot = null;
-
-	/**
-	 * Image root where all extracted Images will be saved for qs if some values
-	 * are wrong.
-	 */
-	private Path imageRoot = null;
-
-	/**
-	 * Root where all compiled match data will be stored
-	 */
-	private Path dataRoot = null;
-
-	/**
-	 * Daemon that checks for new matches
-	 */
-	private Thread daemon = null;
-
-	/**
-	 * Threadpool that processes new matches
-	 */
-	private ExecutorService worker = Executors.newSingleThreadExecutor();
-
-	/**
-	 * Listern for extraced matches
-	 */
-	private List<OWMatchExtractionListener> extractionListener = new LinkedList<>();
-
-	/**
-	 * queue with new matches
-	 */
-	private ConcurrentLinkedQueue<OWMatchEvent> events = new ConcurrentLinkedQueue<>();
-
-	/**
-	 * Creates a MatchExtractor to extract match information from gathered match
-	 * screenshots. Scans for finished matches that have not been finished.
-	 * 
-	 * @param matchRoot
-	 *            Rootfolder where all matches a saved as raws
-	 * @param imageRoot
-	 *            Image root where all extracted Images will be saved for qs if
-	 *            some values are wrong.
-	 * @param dataRoot
-	 *            Root where all compiled match data will be stored
-	 * @throws IOException
-	 *             Thrown when {@link #matchRoot} is inaccessible
-	 */
-	public MatchExtractor(Path matchRoot, Path imageRoot, Path dataRoot) throws IOException {
-		this.matchRoot = matchRoot;
-		this.imageRoot = imageRoot;
-		this.dataRoot = dataRoot;
-		Files.list(this.matchRoot).filter(p -> Files.exists(p.resolve("done")) && !Files.exists(p.resolve("extracted"))
-				&& !Files.exists(p.resolve("aborted"))).forEach(p -> this.addMatch(p));
-		this.daemon = new Thread(this);
-		this.daemon.setDaemon(true);
-		this.daemon.start();
-	}
-
-	public void addExtractionListener(OWMatchExtractionListener extractionListener) {
-		this.extractionListener.add(extractionListener);
-	}
-
-	public void removeExtractionListener(OWMatchExtractionListener extractionListener) {
-		this.extractionListener.add(extractionListener);
-	}
-
-	@Override
-	public void run() {
-		for (;;) {
-			while (!this.events.isEmpty())
-				addMatch(this.events.poll().matchPath);
-			try {
-				Thread.sleep(OWLib.getInstance().getInteger("captureInterval", 1000));
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-				break;
-			}
-		}
-
-	}
-
-	/**
-	 * Adds a finished match to the processing service;
-	 * 
-	 * @param matchPath
-	 *            path to the match-folder
-	 */
-	private void addMatch(Path matchPath) {
-		try {
-			Path imagePath = this.imageRoot.resolve(matchPath.getFileName().toString());
-			if (!Files.exists(imagePath))
-				Files.createDirectories(imagePath);
-			Path dataPath = this.dataRoot;
-			if (!Files.exists(dataPath))
-				Files.createDirectories(dataPath);
-			MatchExtractWorker w = new MatchExtractWorker(matchPath, imagePath, dataPath);
-			this.worker.submit(w);
-
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	@Override
-	public void matchEnded(OWMatchEvent e) {
-		System.out.println(this.getClass().toString() + " match ended: " + e.id.toString() + ", " + e.item.getItemName()
-				+ ", " + e.type);
-		if (e.type != OWMatchEvent.Type.END_ABORTED)
-			this.events.add(e);
-	}
-
-	private void fireMatchExtracted(OWMatch match) {
-		for (OWMatchExtractionListener owMatchExtractionListener : extractionListener) {
-			owMatchExtractionListener.matchExtracted(match);
-		}
-	}
-
-	private void fireExtractionError(BufferedImage image, Glyph glyph, OWMatchExtractionListener.StatType type) {
-		for (OWMatchExtractionListener owMatchExtractionListener : extractionListener) {
-			owMatchExtractionListener.extractionError(image, glyph, type);
-		}
-	}
-
 	/**
 	 * Subclass that processes the match screenshots into a OWMatch and saves it
 	 * as a JSON String on disk.
@@ -203,6 +77,55 @@ public class MatchExtractor implements Runnable, OWMatchListener {
 			this.dataPath = Objects.requireNonNull(dataPath);
 			this.imagePath = Objects.requireNonNull(imagePath);
 			this.match = new OWMatch(matchPath.getFileName().toString());
+		}
+
+		private ScreenExtract createScreenExtract(Path imagePath, Path ocrConfig) {
+			if (Files.exists(imagePath) && Files.exists(ocrConfig))
+				try {
+					BufferedImage image = ImageIO.read(imagePath.toFile());
+					String text = new String(Files.readAllBytes(ocrConfig), StandardCharsets.UTF_8);
+					OCRConfiguration config = g.fromJson(text, OCRConfiguration.class);
+					ScreenExtract sc = new ScreenExtract(image, config);
+					return sc;
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			return null;
+		}
+
+		private void readStats(Path hero) {
+			System.out.println("Hero: " + hero);
+			String filename = hero.getFileName().toString().replace(".png", "");
+			ScreenExtract sc = null;
+			if (Files.exists(hero) && Files.exists(hero.getParent().resolve(filename + ".ocr")))
+				sc = createScreenExtract(hero, hero.getParent().resolve(filename + ".ocr"));
+			if (sc != null) {
+				OWCharacterStats cStats = new OWCharacterStats();
+				cStats.setDamageDone(Helper.toInteger(sc.getValue("damageDone"), -1));
+				cStats.setDeaths(Helper.toInteger(sc.getValue("deaths"), 1));
+				cStats.setEliminations(Helper.toInteger(sc.getValue("eliminations"), -1));
+				cStats.setHealingDone(Helper.toInteger(sc.getValue("healingDone"), 1));
+				cStats.setObjectiveKills(Helper.toInteger(sc.getValue("objectiveKills"), -1));
+				cStats.setObjectiveTime(sc.getValue("objectiveTime"));
+				cStats.setName(filename);
+				for (String key : sc.getValueNames()) {
+					this.writeImage(this.imagePath.resolve(filename + "_" + key + ".png"), sc.getImage(key));
+				}
+				for (String secStat : sc.getSecondaryValueNames()) {
+					cStats.addSecondaryStat(secStat, Helper.toInteger(sc.getSecondaryValue(secStat), -1));
+					this.writeImage(this.imagePath.resolve(filename + "_" + secStat + ".png"),
+							sc.getSecondaryImage(secStat));
+				}
+				for (Map.Entry<BufferedImage, Glyph> entry : sc.nohitPrimary.entrySet()) {
+					fireExtractionError(entry.getKey(), entry.getValue(), OWMatchExtractionListener.StatType.PRIMARY);
+				}
+				for (Map.Entry<BufferedImage, Glyph> entry : sc.nohitSecondary.entrySet()) {
+					fireExtractionError(entry.getKey(), entry.getValue(), OWMatchExtractionListener.StatType.SECONDARY);
+				}
+				this.match.addCharacterStats(cStats);
+			} else {
+				System.out.println("..Stats could not be extracted, files missing");
+			}
 		}
 
 		@Override
@@ -292,41 +215,6 @@ public class MatchExtractor implements Runnable, OWMatchListener {
 			}
 		}
 
-		private void readStats(Path hero) {
-			System.out.println("Hero: " + hero);
-			String filename = hero.getFileName().toString().replace(".png", "");
-			ScreenExtract sc = null;
-			if (Files.exists(hero) && Files.exists(hero.getParent().resolve(filename + ".ocr")))
-				sc = createScreenExtract(hero, hero.getParent().resolve(filename + ".ocr"));
-			if (sc != null) {
-				OWCharacterStats cStats = new OWCharacterStats();
-				cStats.setDamageDone(Helper.toInteger(sc.getValue("damageDone"), -1));
-				cStats.setDeaths(Helper.toInteger(sc.getValue("deaths"), 1));
-				cStats.setEliminations(Helper.toInteger(sc.getValue("eliminations"), -1));
-				cStats.setHealingDone(Helper.toInteger(sc.getValue("healingDone"), 1));
-				cStats.setObjectiveKills(Helper.toInteger(sc.getValue("objectiveKills"), -1));
-				cStats.setObjectiveTime(sc.getValue("objectiveTime"));
-				cStats.setName(filename);
-				for (String key : sc.getValueNames()) {
-					this.writeImage(this.imagePath.resolve(filename + "_" + key + ".png"), sc.getImage(key));
-				}
-				for (String secStat : sc.getSecondaryValueNames()) {
-					cStats.addSecondaryStat(secStat, Helper.toInteger(sc.getSecondaryValue(secStat), -1));
-					this.writeImage(this.imagePath.resolve(filename + "_" + secStat + ".png"),
-							sc.getSecondaryImage(secStat));
-				}
-				for (Map.Entry<BufferedImage, Glyph> entry : sc.nohitPrimary.entrySet()) {
-					fireExtractionError(entry.getKey(), entry.getValue(), OWMatchExtractionListener.StatType.PRIMARY);
-				}
-				for (Map.Entry<BufferedImage, Glyph> entry : sc.nohitSecondary.entrySet()) {
-					fireExtractionError(entry.getKey(), entry.getValue(), OWMatchExtractionListener.StatType.SECONDARY);
-				}
-				this.match.addCharacterStats(cStats);
-			} else {
-				System.out.println("..Stats could not be extracted, files missing");
-			}
-		}
-
 		private void writeImage(Path imagePath, BufferedImage i) {
 			try (OutputStream os = Files.newOutputStream(imagePath)) {
 				writePNG(i, os);
@@ -350,19 +238,124 @@ public class MatchExtractor implements Runnable, OWMatchListener {
 			imageOutputStream.flush();
 		}
 
-		private ScreenExtract createScreenExtract(Path imagePath, Path ocrConfig) {
-			if (Files.exists(imagePath) && Files.exists(ocrConfig))
-				try {
-					BufferedImage image = ImageIO.read(imagePath.toFile());
-					String text = new String(Files.readAllBytes(ocrConfig), StandardCharsets.UTF_8);
-					OCRConfiguration config = g.fromJson(text, OCRConfiguration.class);
-					ScreenExtract sc = new ScreenExtract(image, config);
-					return sc;
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			return null;
+	}
+
+	/**
+	 * Root folder where all matches a saved as raws
+	 */
+	private Path matchRoot = null;
+
+	/**
+	 * Image root where all extracted Images will be saved for qs if some values
+	 * are wrong.
+	 */
+	private Path imageRoot = null;
+
+	/**
+	 * Root where all compiled match data will be stored
+	 */
+	private Path dataRoot = null;
+
+	/**
+	 * Daemon that checks for new matches
+	 */
+	private Thread daemon = null;
+
+	/**
+	 * Threadpool that processes new matches
+	 */
+	private ExecutorService worker = Executors.newSingleThreadExecutor();
+
+	/**
+	 * Listern for extraced matches
+	 */
+	private List<OWMatchExtractionListener> extractionListener = new LinkedList<>();
+
+	/**
+	 * queue with new matches
+	 */
+	private ConcurrentLinkedQueue<OWMatchEvent> events = new ConcurrentLinkedQueue<>();
+
+	/**
+	 * Creates a MatchExtractor to extract match information from gathered match
+	 * screenshots. Scans for finished matches that have not been finished.
+	 * 
+	 * @param matchRoot
+	 *            Rootfolder where all matches a saved as raws
+	 * @param imageRoot
+	 *            Image root where all extracted Images will be saved for qs if
+	 *            some values are wrong.
+	 * @param dataRoot
+	 *            Root where all compiled match data will be stored
+	 * @throws IOException
+	 *             Thrown when {@link #matchRoot} is inaccessible
+	 */
+	public MatchExtractor(Path matchRoot, Path imageRoot, Path dataRoot) throws IOException {
+		this.matchRoot = matchRoot;
+		this.imageRoot = imageRoot;
+		this.dataRoot = dataRoot;
+		Files.list(this.matchRoot).filter(p -> Files.exists(p.resolve("done")) && !Files.exists(p.resolve("extracted"))
+				&& !Files.exists(p.resolve("aborted"))).forEach(p -> this.addMatch(p));
+		this.daemon = new Thread(this);
+		this.daemon.setDaemon(true);
+		this.daemon.start();
+	}
+
+	public void addExtractionListener(OWMatchExtractionListener extractionListener) {
+		this.extractionListener.add(extractionListener);
+	}
+
+	/**
+	 * Adds a finished match to the processing service;
+	 * 
+	 * @param matchPath
+	 *            path to the match-folder
+	 */
+	private void addMatch(Path matchPath) {
+		try {
+			Path imagePath = this.imageRoot.resolve(matchPath.getFileName().toString());
+			if (!Files.exists(imagePath))
+				Files.createDirectories(imagePath);
+			Path dataPath = this.dataRoot;
+			if (!Files.exists(dataPath))
+				Files.createDirectories(dataPath);
+			MatchExtractWorker w = new MatchExtractWorker(matchPath, imagePath, dataPath);
+			this.worker.submit(w);
+
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
+	}
+
+	private void fireExtractionError(BufferedImage image, Glyph glyph, OWMatchExtractionListener.StatType type) {
+		for (OWMatchExtractionListener owMatchExtractionListener : extractionListener) {
+			owMatchExtractionListener.extractionError(image, glyph, type);
+		}
+	}
+
+	private void fireMatchExtracted(OWMatch match) {
+		for (OWMatchExtractionListener owMatchExtractionListener : extractionListener) {
+			owMatchExtractionListener.matchExtracted(match);
+		}
+	}
+
+	@Override
+	public void matchCompleted(OWMatchEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void matchEnded(OWMatchEvent e) {
+		System.out.println(this.getClass().toString() + " match ended: " + e.id.toString() + ", " + e.item.getItemName()
+				+ ", " + e.type);
+		if (e.type != OWMatchEvent.Type.END_ABORTED)
+			this.events.add(e);
+	}
+
+	@Override
+	public void matchSrRecorded(OWMatchEvent e) {
+		// TODO Auto-generated method stub
 
 	}
 
@@ -373,20 +366,27 @@ public class MatchExtractor implements Runnable, OWMatchListener {
 	}
 
 	@Override
-	public void matchCompleted(OWMatchEvent e) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
 	public void matchStatRecorded(OWMatchEvent e) {
 		// TODO Auto-generated method stub
 
 	}
 
+	public void removeExtractionListener(OWMatchExtractionListener extractionListener) {
+		this.extractionListener.add(extractionListener);
+	}
+
 	@Override
-	public void matchSrRecorded(OWMatchEvent e) {
-		// TODO Auto-generated method stub
+	public void run() {
+		for (;;) {
+			while (!this.events.isEmpty())
+				addMatch(this.events.poll().matchPath);
+			try {
+				Thread.sleep(OWLib.getInstance().getInteger("captureInterval", 1000));
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+				break;
+			}
+		}
 
 	}
 }

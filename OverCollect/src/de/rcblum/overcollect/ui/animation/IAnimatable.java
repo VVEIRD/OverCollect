@@ -2,14 +2,14 @@ package de.rcblum.overcollect.ui.animation;
 
 public interface IAnimatable {
 
-	int getMinValue();
+	int getCurrentValue();
 
 	int getMaxValue();
 
-	void setValue(int v);
-
-	int getCurrentValue();
+	int getMinValue();
 
 	boolean isExpanding();
+
+	void setValue(int v);
 
 }

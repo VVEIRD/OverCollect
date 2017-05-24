@@ -3,7 +3,6 @@ package de.rcblum.overcollect.extract.ocr;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -19,11 +18,91 @@ import de.rcblum.overcollect.configuration.OWItem;
 import de.rcblum.overcollect.configuration.OWLib;
 
 public class Glyph {
+	/**
+	 * Creates a glyph from a filter. Positive pixels are from Black dots,
+	 * negatives from all other
+	 * 
+	 * @param character
+	 * @param filter
+	 * @return
+	 */
+	public static Glyph fromFilter(char character, Filter filter, int fontSize) {
+		List<int[]> positivePixels = new LinkedList<>();
+		List<int[]> negativePixels = new LinkedList<>();
+		for (int i = 0; i < filter.points.length; i++) {
+			int[] pixel = filter.points[i];
+			if (pixel[2] / 255.0 < 0.06d && pixel[3] / 255.0 < 0.06d && pixel[3] / 255.0 < 0.06d)
+				positivePixels.add(new int[] { pixel[0], pixel[1] });
+			else
+				negativePixels.add(new int[] { pixel[0], pixel[1] });
+		}
+
+		return new Glyph(character, fontSize,
+				positivePixels.size() == 0 ? null : positivePixels.toArray(new int[][] { {} }),
+				negativePixels.size() == 0 ? null : negativePixels.toArray(new int[][] { {} }));
+	}
+
+	public static void main(String[] args) throws IOException {
+		List<OWItem> items = OWLib.getInstance().getItems("ocr_primary_font");
+		for (OWItem owItem : items) {
+			if (owItem.hasFilter()) {
+				Glyph g = fromFilter(owItem.getItemName().charAt(0) == '_' ? ':' : owItem.getItemName().charAt(0),
+						owItem.getFilter(), 55);
+				owItem.saveGlyph(g);
+			}
+		}
+		items = OWLib.getInstance().getItems("ocr_secondary_font");
+		for (OWItem owItem : items) {
+			if (owItem.hasFilter()) {
+				Glyph g = fromFilter(owItem.getItemName().charAt(0), owItem.getFilter(), 57);
+				owItem.saveGlyph(g);
+			}
+		}
+		testGlyph("ocr_primary_font", "1");
+		testGlyph("ocr_primary_font", "2");
+		testGlyph("ocr_primary_font", "3");
+		testGlyph("ocr_primary_font", "4");
+		testGlyph("ocr_primary_font", "5");
+		testGlyph("ocr_primary_font", "6");
+		testGlyph("ocr_primary_font", "7");
+		testGlyph("ocr_primary_font", "8");
+		testGlyph("ocr_primary_font", "9");
+
+		testGlyph("ocr_secondary_font", "1");
+		testGlyph("ocr_secondary_font", "2");
+		testGlyph("ocr_secondary_font", "3");
+		testGlyph("ocr_secondary_font", "4");
+		testGlyph("ocr_secondary_font", "5");
+		testGlyph("ocr_secondary_font", "6");
+		testGlyph("ocr_secondary_font", "7");
+		testGlyph("ocr_secondary_font", "8");
+		testGlyph("ocr_secondary_font", "9");
+
+		System.exit(0);
+	}
+
+	public static void save(String libPath, String resolution, String alias, Glyph glyph) throws IOException {
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		Path glyphFile = Paths.get(libPath, resolution, alias, "glyph.json");
+		System.out.println(glyphFile.toString());
+		String text = gson.toJson(glyph);
+		Files.write(glyphFile, text.getBytes("UTF-8"));
+	}
+	private static void testGlyph(String category, String itemId) {
+		System.out.println("Category: " + category + ", glyph: " + itemId);
+		Glyph g2 = OWLib.getInstance().getItem(category, itemId).getGlyph();
+		BufferedImage b = OWLib.getInstance().getItem(category, itemId).getTemplate();
+		System.out.println("    Matched: " + g2.match(b, Color.BLACK, 0.06f) + ", Percentage: "
+				+ Math.round(g2.matchPercentage(b, Color.BLACK, 0.06f) * 100));
+		System.out.println();
+	}
+
 	private int baseFontSize = 55;
 
 	private char character = '~';
 
 	private int[][] positivePixels = null;
+
 	private int[][] negativePixels = null;
 
 	public Glyph(char character, int fontSize, int[][] positivePixels) {
@@ -37,12 +116,13 @@ public class Glyph {
 		this.baseFontSize = fontSize;
 	}
 
-	public static void save(String libPath, String resolution, String alias, Glyph glyph) throws IOException {
-		Gson gson = new GsonBuilder().setPrettyPrinting().create();
-		Path glyphFile = Paths.get(libPath, resolution, alias, "glyph.json");
-		System.out.println(glyphFile.toString());
-		String text = gson.toJson(glyph);
-		Files.write(glyphFile, text.getBytes("UTF-8"));
+	public int getBaseFontSize() {
+		return baseFontSize;
+	}
+
+	public char getChar() {
+		// TODO Auto-generated method stub
+		return this.character;
 	}
 
 	public boolean match(BufferedImage image, Color primary, float tolerance) {
@@ -128,86 +208,5 @@ public class Glyph {
 			}
 		}
 		return ok / totalPoints;
-	}
-
-	public char getChar() {
-		// TODO Auto-generated method stub
-		return this.character;
-	}
-
-	public int getBaseFontSize() {
-		return baseFontSize;
-	}
-
-	/**
-	 * Creates a glyph from a filter. Positive pixels are from Black dots,
-	 * negatives from all other
-	 * 
-	 * @param character
-	 * @param filter
-	 * @return
-	 */
-	public static Glyph fromFilter(char character, Filter filter, int fontSize) {
-		List<int[]> positivePixels = new LinkedList<>();
-		List<int[]> negativePixels = new LinkedList<>();
-		for (int i = 0; i < filter.points.length; i++) {
-			int[] pixel = filter.points[i];
-			if (pixel[2] / 255.0 < 0.06d && pixel[3] / 255.0 < 0.06d && pixel[3] / 255.0 < 0.06d)
-				positivePixels.add(new int[] { pixel[0], pixel[1] });
-			else
-				negativePixels.add(new int[] { pixel[0], pixel[1] });
-		}
-
-		return new Glyph(character, fontSize,
-				positivePixels.size() == 0 ? null : positivePixels.toArray(new int[][] { {} }),
-				negativePixels.size() == 0 ? null : negativePixels.toArray(new int[][] { {} }));
-	}
-
-	public static void main(String[] args) throws IOException {
-		List<OWItem> items = OWLib.getInstance().getItems("ocr_primary_font");
-		for (OWItem owItem : items) {
-			if (owItem.hasFilter()) {
-				Glyph g = fromFilter(owItem.getItemName().charAt(0) == '_' ? ':' : owItem.getItemName().charAt(0),
-						owItem.getFilter(), 55);
-				owItem.saveGlyph(g);
-			}
-		}
-		items = OWLib.getInstance().getItems("ocr_secondary_font");
-		for (OWItem owItem : items) {
-			if (owItem.hasFilter()) {
-				Glyph g = fromFilter(owItem.getItemName().charAt(0), owItem.getFilter(), 57);
-				owItem.saveGlyph(g);
-			}
-		}
-		testGlyph("ocr_primary_font", "1");
-		testGlyph("ocr_primary_font", "2");
-		testGlyph("ocr_primary_font", "3");
-		testGlyph("ocr_primary_font", "4");
-		testGlyph("ocr_primary_font", "5");
-		testGlyph("ocr_primary_font", "6");
-		testGlyph("ocr_primary_font", "7");
-		testGlyph("ocr_primary_font", "8");
-		testGlyph("ocr_primary_font", "9");
-
-		testGlyph("ocr_secondary_font", "1");
-		testGlyph("ocr_secondary_font", "2");
-		testGlyph("ocr_secondary_font", "3");
-		testGlyph("ocr_secondary_font", "4");
-		testGlyph("ocr_secondary_font", "5");
-		testGlyph("ocr_secondary_font", "6");
-		testGlyph("ocr_secondary_font", "7");
-		testGlyph("ocr_secondary_font", "8");
-		testGlyph("ocr_secondary_font", "9");
-
-		System.exit(0);
-	}
-
-	private static void testGlyph(String category, String itemId) {
-		System.out.println("Category: " + category + ", glyph: " + itemId);
-		Glyph g2 = OWLib.getInstance().getItem(category, itemId).getGlyph();
-		BufferedImage b = OWLib.getInstance().getItem(category, itemId).getTemplate();
-		System.out.println("    Matched: " + g2.match(b, Color.BLACK, 0.06f) + ", Percentage: "
-				+ Math.round(g2.matchPercentage(b, Color.BLACK, 0.06f) * 100));
-		System.out.println();
 	}
 }

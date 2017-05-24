@@ -1,10 +1,11 @@
 package de.rcblum.overcollect.ui;
 
 import java.awt.BorderLayout;
-import java.awt.EventQueue;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.border.EmptyBorder;
 
 import de.rcblum.overcollect.OverWatchCollectorApp;
@@ -12,9 +13,6 @@ import de.rcblum.overcollect.ui.panels.JOWMatchListPanel;
 import de.rcblum.overcollect.ui.panels.JOWSidebar;
 import de.rcblum.overcollect.ui.panels.JOwCaptureStatus;
 import de.rcblum.overcollect.ui.utils.UiStatics;
-
-import javax.swing.JScrollPane;
-import javax.swing.ScrollPaneConstants;
 
 public class JOverCollectFrame extends JFrame {
 

@@ -21,7 +21,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 
@@ -35,22 +34,12 @@ public class JFilterTest extends JFrame {
 	 * 
 	 */
 	private static final long serialVersionUID = 4242809696601088803L;
-	private JPanel contentPane;
-	private JTable tItems;
-	private DefaultTableModel model;
-
-	private String selectedScreenResolution = null;
-
-	private JComboBox<String> cbScreenResolution;
-	private JScrollPane scrollPane;
-	private JButton btnTestFilter;
-	private JButton btnClose;
-
 	/**
 	 * Launch the application.
 	 */
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
+			@Override
 			public void run() {
 				try {
 					JFilterTest frame = new JFilterTest();
@@ -61,6 +50,17 @@ public class JFilterTest extends JFrame {
 			}
 		});
 	}
+	private JPanel contentPane;
+	private JTable tItems;
+
+	private DefaultTableModel model;
+
+	private String selectedScreenResolution = null;
+	private JComboBox<String> cbScreenResolution;
+	private JScrollPane scrollPane;
+	private JButton btnTestFilter;
+
+	private JButton btnClose;
 
 	/**
 	 * Create the frame.
@@ -118,6 +118,7 @@ public class JFilterTest extends JFrame {
 
 		btnClose = new JButton("Close");
 		btnClose.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				dispose();
 			}
@@ -140,12 +141,14 @@ public class JFilterTest extends JFrame {
 		}
 		updateItems();
 		cbScreenResolution.addItemListener(new ItemListener() {
+			@Override
 			public void itemStateChanged(ItemEvent e) {
 				if (e.getStateChange() == ItemEvent.SELECTED)
 					updateItems();
 			}
 		});
 		btnTestFilter.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				btnTestFilter.setEnabled(false);
 				Thread t = new Thread(new Runnable() {
@@ -164,7 +167,7 @@ public class JFilterTest extends JFrame {
 										System.out.println("Target: " + model.getColumnName(j));
 										System.out.println();
 										OWItem sourceItem = lib.getItem(res, (String) model.getValueAt(i, 0));
-										OWItem targetItem = lib.getItem(res, (String) model.getColumnName(j));
+										OWItem targetItem = lib.getItem(res, model.getColumnName(j));
 										if (sourceItem.hasFilter()) {
 											Filter f = sourceItem.getFilter();
 											if (targetItem.hasTemplate()) {
@@ -222,6 +225,7 @@ public class JFilterTest extends JFrame {
 		model = new DefaultTableModel(rows, columnNames) {
 			private static final long serialVersionUID = -2324701057366647233L;
 
+			@Override
 			public boolean isCellEditable(int row, int column) {
 				return false;
 			}

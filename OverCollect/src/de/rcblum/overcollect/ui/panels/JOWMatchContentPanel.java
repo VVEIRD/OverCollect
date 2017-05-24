@@ -2,11 +2,15 @@ package de.rcblum.overcollect.ui.panels;
 
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.ScrollPaneConstants;
 
 import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormLayout;
@@ -15,10 +19,6 @@ import com.jgoodies.forms.layout.RowSpec;
 import de.rcblum.overcollect.data.OWCharacterStats;
 import de.rcblum.overcollect.data.OWMatch;
 import de.rcblum.overcollect.ui.utils.UiStatics;
-import javax.swing.JScrollPane;
-import javax.swing.ScrollPaneConstants;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 
 public class JOWMatchContentPanel extends JPanel {
 

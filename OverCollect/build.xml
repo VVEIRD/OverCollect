@@ -4,7 +4,7 @@
     <!--ANT 1.7 is required                                        -->
     <!--define folder properties-->
     <property name="dir.buildfile" value="."/>
-    <property name="dir.workspace" value="C:/Users/rcBlum/Google Drive/Java/workspace"/>
+    <property name="dir.workspace" value="C:/Users/rcBlum/git/OverCollect"/>
     <property name="dir.jarfile" value="C:/Users/rcBlum/Google Drive/Overwatch/OWCollect/owc-dist"/>
     <target name="create_run_jar">
         <jar destfile="${dir.jarfile}/OverCollect.jar">

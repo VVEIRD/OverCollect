@@ -2,12 +2,41 @@ package de.rcblum.overcollect.ui.setup.ocr;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.EventQueue;
+import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.Graphics2D;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
+import java.awt.image.WritableRaster;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
+import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSpinner;
+import javax.swing.JTable;
+import javax.swing.SpinnerNumberModel;
+import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
@@ -17,42 +46,6 @@ import de.rcblum.overcollect.configuration.OCRConfiguration;
 import de.rcblum.overcollect.configuration.OWItem;
 import de.rcblum.overcollect.configuration.OWLib;
 import de.rcblum.overcollect.extract.ScreenExtract;
-
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import java.awt.event.ItemListener;
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.awt.event.ItemEvent;
-
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JScrollPane;
-import javax.swing.JSpinner;
-import javax.swing.JTable;
-import javax.swing.BoxLayout;
-import java.awt.Component;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.geom.Rectangle2D;
-import java.awt.image.BufferedImage;
-import java.awt.image.ColorModel;
-import java.awt.image.WritableRaster;
-
-import javax.swing.SpinnerNumberModel;
-import javax.swing.SwingUtilities;
-
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-import javax.swing.JCheckBox;
-import javax.swing.table.TableModel;
-
-import java.awt.FlowLayout;
-import java.awt.Font;
 
 public class JOCRSetup extends JFrame {
 
@@ -126,6 +119,7 @@ public class JOCRSetup extends JFrame {
 
 		JButton btnSave = new JButton("save");
 		btnSave.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				// Primary fields
 				int rows = tblmPrimaryDatafields.getRowCount();
@@ -216,6 +210,7 @@ public class JOCRSetup extends JFrame {
 
 		chckbxEnableRecolorfilter = new JCheckBox("Enable Recolorfilter Preview");
 		chckbxEnableRecolorfilter.addItemListener(new ItemListener() {
+			@Override
 			public void itemStateChanged(ItemEvent e) {
 				updateImage(image);
 			}
@@ -314,6 +309,7 @@ public class JOCRSetup extends JFrame {
 				new String[] { "R", "G", "B" }) {
 			Class[] columnTypes = new Class[] { Integer.class, Integer.class, Integer.class };
 
+			@Override
 			public Class getColumnClass(int columnIndex) {
 				return columnTypes[columnIndex];
 			}
@@ -322,6 +318,7 @@ public class JOCRSetup extends JFrame {
 				new String[] { "R", "G", "B" }) {
 			Class[] columnTypes = new Class[] { Integer.class, Integer.class, Integer.class };
 
+			@Override
 			public Class getColumnClass(int columnIndex) {
 				return columnTypes[columnIndex];
 			}
@@ -350,6 +347,7 @@ public class JOCRSetup extends JFrame {
 				new String[] { "Width", "Height" }) {
 			Class[] columnTypes = new Class[] { Integer.class, Integer.class, Integer.class };
 
+			@Override
 			public Class getColumnClass(int columnIndex) {
 				return columnTypes[columnIndex];
 			}
@@ -358,6 +356,7 @@ public class JOCRSetup extends JFrame {
 				new String[] { "Width", "Height" }) {
 			Class[] columnTypes = new Class[] { Integer.class, Integer.class, Integer.class };
 
+			@Override
 			public Class getColumnClass(int columnIndex) {
 				return columnTypes[columnIndex];
 			}
@@ -378,6 +377,7 @@ public class JOCRSetup extends JFrame {
 		tblmPrimaryDatafields = new DefaultTableModel(new Object[][] {}, new String[] { "Name", "X", "Y" }) {
 			Class[] columnTypes = new Class[] { String.class, Integer.class, Integer.class };
 
+			@Override
 			public Class getColumnClass(int columnIndex) {
 				return columnTypes[columnIndex];
 			}
@@ -385,6 +385,7 @@ public class JOCRSetup extends JFrame {
 		tblmSecondaryDatafields = new DefaultTableModel(new Object[][] {}, new String[] { "Name", "X", "Y" }) {
 			Class[] columnTypes = new Class[] { String.class, Integer.class, Integer.class };
 
+			@Override
 			public Class getColumnClass(int columnIndex) {
 				return columnTypes[columnIndex];
 			}
@@ -396,6 +397,7 @@ public class JOCRSetup extends JFrame {
 
 		JButton btnRemovePrimaryEntry = new JButton("Remove Entry");
 		btnRemovePrimaryEntry.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (tblPrimaryDatafields.getSelectedRow() >= 0) {
 					tblmPrimaryDatafields.removeRow(tblPrimaryDatafields.getSelectedRow());
@@ -493,6 +495,7 @@ public class JOCRSetup extends JFrame {
 
 		JButton btnRemoveSecondary = new JButton("Remove Entry");
 		btnRemoveSecondary.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (tblSecondaryPoints.getSelectedRow() >= 0) {
 					tblmSecondaryDatafields.removeRow(tblSecondaryPoints.getSelectedRow());
@@ -503,6 +506,7 @@ public class JOCRSetup extends JFrame {
 		panel_4.add(btnRemoveSecondary);
 
 		cbResolution.addItemListener(new ItemListener() {
+			@Override
 			public void itemStateChanged(ItemEvent e) {
 				if (cbResolution.getSelectedItem() != null) {
 					String resolution = (String) cbResolution.getSelectedItem();
@@ -519,6 +523,7 @@ public class JOCRSetup extends JFrame {
 		});
 
 		cbItem.addItemListener(new ItemListener() {
+			@Override
 			public void itemStateChanged(ItemEvent e) {
 				if (cbItem.getSelectedItem() != null && e.getStateChange() == ItemEvent.SELECTED) {
 					cbItem.setEnabled(false);
@@ -699,6 +704,10 @@ public class JOCRSetup extends JFrame {
 		return new BufferedImage(cm, raster, isAlphaPremultiplied, null);
 	}
 
+	public boolean doRecolor() {
+		return this.cbxRecolor.isSelected();
+	}
+
 	public Color getPrimaryColor() {
 		if (this.tblmPrimaryDatafieldColor.getRowCount() >= 1 && this.tblmPrimaryDatafieldColor.getColumnCount() >= 3)
 			return new Color((Integer) this.tblmPrimaryDatafieldColor.getValueAt(0, 0),
@@ -713,10 +722,6 @@ public class JOCRSetup extends JFrame {
 
 	public int getPrimarySkewTrim() {
 		return (Integer) this.spPrimarySkewTrim.getValue();
-	}
-
-	public boolean doRecolor() {
-		return this.cbxRecolor.isSelected();
 	}
 
 	public Color getSecondaryColor() {

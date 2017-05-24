@@ -18,6 +18,10 @@ import de.rcblum.overcollect.configuration.OWItem;
  */
 public class OWMatchEvent {
 
+	public static enum Type {
+		NEW_MATCH, SR_RECORDED, STAT_RECORDED, MATCH_DECIDED, END_NORMAL, END_PARTIAL, END_ABORTED;
+	}
+
 	/**
 	 * UUID of the match
 	 */
@@ -51,9 +55,5 @@ public class OWMatchEvent {
 		this.item = Objects.requireNonNull(item);
 		this.type = Objects.requireNonNull(type);
 		this.screenshot = screenshot;
-	}
-
-	public static enum Type {
-		NEW_MATCH, SR_RECORDED, STAT_RECORDED, MATCH_DECIDED, END_NORMAL, END_PARTIAL, END_ABORTED;
 	}
 }

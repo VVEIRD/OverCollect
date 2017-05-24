@@ -1,17 +1,5 @@
 package de.rcblum.overcollect.ui.panels;
 
-import javax.swing.JPanel;
-import com.jgoodies.forms.layout.FormLayout;
-import com.google.gson.Gson;
-import com.jgoodies.forms.layout.ColumnSpec;
-import com.jgoodies.forms.layout.RowSpec;
-
-import de.rcblum.overcollect.data.OWCharacterStats;
-import de.rcblum.overcollect.ui.utils.ImageCache;
-import de.rcblum.overcollect.ui.utils.UiStatics;
-
-import com.jgoodies.forms.layout.FormSpecs;
-
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -26,11 +14,38 @@ import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.SwingConstants;
+import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+
+import com.google.gson.Gson;
+import com.jgoodies.forms.layout.ColumnSpec;
+import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.layout.RowSpec;
+
+import de.rcblum.overcollect.data.OWCharacterStats;
+import de.rcblum.overcollect.ui.utils.ImageCache;
+import de.rcblum.overcollect.ui.utils.UiStatics;
 
 public class JHeroStatsPanel extends JPanel {
 
+	public static void main(String[] args) {
+		String json = "{" + "      \"name\": \"Reinhardt\"," + "      \"secondaryStats\": {"
+				+ "        \"killStreak\": \"8\"," + "        \"fireStrikeKills\": \"9\","
+				+ "        \"chargeKills\": \"4\"," + "        \"earthshatterKills\": \"5\","
+				+ "        \"damageBlocked\": \"26119\"" + "      }," + "      \"eliminations\": \"39\","
+				+ "      \"objectiveKills\": \"17\"," + "      \"objectiveTime\": \"0253\","
+				+ "      \"damageDone\": \"1513\"," + "      \"healingDone\": \"0\"," + "      \"deaths\": \"15\" "
+				+ "    }";
+		Gson g = new Gson();
+		OWCharacterStats owStats = g.fromJson(json, OWCharacterStats.class);
+		JHeroStatsPanel hPanel = new JHeroStatsPanel(owStats, null);
+		JFrame f = new JFrame();
+		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		f.getContentPane().add(hPanel);
+		f.pack();
+		f.setVisible(true);
+	}
 	OWCharacterStats hero = null;
 	private JOWMatchContentPanel parent = null;
 	private JTextField txtEliminations;
@@ -38,6 +53,7 @@ public class JHeroStatsPanel extends JPanel {
 	private JTextField txtObjTime;
 	private JTextField txtDmgdone;
 	private JTextField txtHealing;
+
 	private JTextField txtDeaths;
 
 	/**
@@ -196,15 +212,6 @@ public class JHeroStatsPanel extends JPanel {
 		setData();
 	}
 
-	public void setData() {
-		this.txtEliminations.setText("" + this.hero.getEliminations());
-		this.txtObjkills.setText("" + this.hero.getObjectiveKills());
-		this.txtObjTime.setText("" + this.hero.getObjectiveTime());
-		this.txtDmgdone.setText("" + this.hero.getDamageDone());
-		this.txtHealing.setText("" + this.hero.getHealingDone());
-		this.txtDeaths.setText("" + this.hero.getDeaths());
-	}
-
 	@Override
 	public void paint(Graphics g) {
 		g.setColor(new Color(0, 0, 0, 55));
@@ -212,22 +219,13 @@ public class JHeroStatsPanel extends JPanel {
 		super.paint(g);
 	}
 
-	public static void main(String[] args) {
-		String json = "{" + "      \"name\": \"Reinhardt\"," + "      \"secondaryStats\": {"
-				+ "        \"killStreak\": \"8\"," + "        \"fireStrikeKills\": \"9\","
-				+ "        \"chargeKills\": \"4\"," + "        \"earthshatterKills\": \"5\","
-				+ "        \"damageBlocked\": \"26119\"" + "      }," + "      \"eliminations\": \"39\","
-				+ "      \"objectiveKills\": \"17\"," + "      \"objectiveTime\": \"0253\","
-				+ "      \"damageDone\": \"1513\"," + "      \"healingDone\": \"0\"," + "      \"deaths\": \"15\" "
-				+ "    }";
-		Gson g = new Gson();
-		OWCharacterStats owStats = g.fromJson(json, OWCharacterStats.class);
-		JHeroStatsPanel hPanel = new JHeroStatsPanel(owStats, null);
-		JFrame f = new JFrame();
-		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		f.getContentPane().add(hPanel);
-		f.pack();
-		f.setVisible(true);
+	public void setData() {
+		this.txtEliminations.setText("" + this.hero.getEliminations());
+		this.txtObjkills.setText("" + this.hero.getObjectiveKills());
+		this.txtObjTime.setText("" + this.hero.getObjectiveTime());
+		this.txtDmgdone.setText("" + this.hero.getDamageDone());
+		this.txtHealing.setText("" + this.hero.getHealingDone());
+		this.txtDeaths.setText("" + this.hero.getDeaths());
 	}
 
 }

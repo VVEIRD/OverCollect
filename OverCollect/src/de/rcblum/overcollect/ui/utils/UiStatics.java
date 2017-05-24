@@ -4,8 +4,6 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontFormatException;
 import java.awt.Graphics;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -25,8 +23,66 @@ import javax.swing.border.LineBorder;
 
 public class UiStatics {
 
+	public static class OWButton extends JButton {
+
+		/**
+		* 
+		*/
+		private static final long serialVersionUID = 4494248002773780294L;
+		private Color hoverBackgroundColor;
+		private Color pressedBackgroundColor;
+
+		public OWButton() {
+			this(null);
+		}
+
+		public OWButton(String text) {
+			super(text);
+			super.setContentAreaFilled(false);
+		}
+
+		public Color getHoverBackgroundColor() {
+			return hoverBackgroundColor;
+		}
+
+		public Color getPressedBackgroundColor() {
+			return pressedBackgroundColor;
+		}
+
+		@Override
+		protected void paintComponent(Graphics g) {
+			if (getModel().isPressed()) {
+				g.setColor(pressedBackgroundColor);
+			} else if (getModel().isRollover()) {
+				g.setColor(hoverBackgroundColor);
+			} else {
+				g.setColor(getBackground());
+			}
+			g.fillRect(0, 0, getWidth(), getHeight());
+			super.paintComponent(g);
+		}
+
+		@Override
+		public void setContentAreaFilled(boolean b) {
+		}
+
+		@Override
+		public void setForeground(Color fg) {
+			super.setForeground(fg);
+			this.hoverBackgroundColor = fg;
+		}
+
+		public void setHoverBackgroundColor(Color hoverBackgroundColor) {
+			this.hoverBackgroundColor = hoverBackgroundColor;
+		}
+
+		public void setPressedBackgroundColor(Color pressedBackgroundColor) {
+			this.pressedBackgroundColor = pressedBackgroundColor;
+		}
+	}
 	public static final Font OW_FONT_NORMAL = getFont("fonts" + File.separator + "koverwatch.ttf",
 			"http://us.battle.net/forums/static/fonts/koverwatch/koverwatch.ttf");
+
 	public static final Font OW_FONT_ITALIC = getFont("fonts" + File.separator + "bignoodletoo.ttf",
 			"http://us.battle.net/forums/static/fonts/bignoodletoo/bignoodletoo.ttf").deriveFont(Font.PLAIN, 30);
 
@@ -45,6 +101,38 @@ public class UiStatics {
 	public static final Color TEXT_COLOR_DEFEAT = new Color(200, 0, 19);
 
 	public static final Color TEXT_COLOR_DRAW = new Color(255, 220, 0);
+
+	public static JButton createButton(String caption) {
+		OWButton btnNewButton = new OWButton(caption);
+		btnNewButton.setFont(UiStatics.OW_FONT_NORMAL.deriveFont(Font.PLAIN, 25));
+		btnNewButton.setForeground(UiStatics.TEXT_DESCRIPTION);
+		btnNewButton.setBackground(UiStatics.BUTTON_COLOR);
+		btnNewButton.setHoverBackgroundColor(UiStatics.BUTTON_COLOR);
+		btnNewButton.setPressedBackgroundColor(UiStatics.BUTTON_COLOR_PRESSED);
+		Border line = new LineBorder(Color.BLACK);
+		Border margin = new EmptyBorder(5, 15, 5, 15);
+		Border compound = new CompoundBorder(line, margin);
+		btnNewButton.setBorder(compound);
+		btnNewButton.setMargin(null);
+		btnNewButton.setFocusPainted(false);
+		return btnNewButton;
+	}
+
+	public static JButton createButton(String caption, int top, int left, int bottom, int right) {
+		OWButton btnNewButton = new OWButton(caption);
+		btnNewButton.setFont(UiStatics.OW_FONT_NORMAL.deriveFont(Font.PLAIN, 25));
+		btnNewButton.setForeground(UiStatics.TEXT_DESCRIPTION);
+		btnNewButton.setBackground(UiStatics.BUTTON_COLOR);
+		btnNewButton.setHoverBackgroundColor(UiStatics.BUTTON_COLOR);
+		btnNewButton.setPressedBackgroundColor(UiStatics.BUTTON_COLOR_PRESSED);
+		Border line = new LineBorder(UiStatics.BUTTON_COLOR.brighter());
+		Border margin = new EmptyBorder(top, left, bottom, right);
+		Border compound = new CompoundBorder(line, margin);
+		btnNewButton.setBorder(compound);
+		btnNewButton.setMargin(null);
+		btnNewButton.setFocusPainted(false);
+		return btnNewButton;
+	}
 
 	private static Font getFont(String localFontFile, String urlString) {
 		File fontFolder = Paths.get(localFontFile).getParent().toFile();
@@ -84,95 +172,5 @@ public class UiStatics {
 
 	public static SimpleDateFormat getUiDateFormat() {
 		return new SimpleDateFormat(System.getProperties().getProperty("owcollect.ui.dateformat"));
-	}
-
-	public static JButton createButton(String caption) {
-		OWButton btnNewButton = new OWButton(caption);
-		btnNewButton.setFont(UiStatics.OW_FONT_NORMAL.deriveFont(Font.PLAIN, 25));
-		btnNewButton.setForeground(UiStatics.TEXT_DESCRIPTION);
-		btnNewButton.setBackground(UiStatics.BUTTON_COLOR);
-		btnNewButton.setHoverBackgroundColor(UiStatics.BUTTON_COLOR);
-		btnNewButton.setPressedBackgroundColor(UiStatics.BUTTON_COLOR_PRESSED);
-		Border line = new LineBorder(Color.BLACK);
-		Border margin = new EmptyBorder(5, 15, 5, 15);
-		Border compound = new CompoundBorder(line, margin);
-		btnNewButton.setBorder(compound);
-		btnNewButton.setMargin(null);
-		btnNewButton.setFocusPainted(false);
-		return btnNewButton;
-	}
-
-	public static JButton createButton(String caption, int top, int left, int bottom, int right) {
-		OWButton btnNewButton = new OWButton(caption);
-		btnNewButton.setFont(UiStatics.OW_FONT_NORMAL.deriveFont(Font.PLAIN, 25));
-		btnNewButton.setForeground(UiStatics.TEXT_DESCRIPTION);
-		btnNewButton.setBackground(UiStatics.BUTTON_COLOR);
-		btnNewButton.setHoverBackgroundColor(UiStatics.BUTTON_COLOR);
-		btnNewButton.setPressedBackgroundColor(UiStatics.BUTTON_COLOR_PRESSED);
-		Border line = new LineBorder(UiStatics.BUTTON_COLOR.brighter());
-		Border margin = new EmptyBorder(top, left, bottom, right);
-		Border compound = new CompoundBorder(line, margin);
-		btnNewButton.setBorder(compound);
-		btnNewButton.setMargin(null);
-		btnNewButton.setFocusPainted(false);
-		return btnNewButton;
-	}
-
-	public static class OWButton extends JButton {
-
-		/**
-		* 
-		*/
-		private static final long serialVersionUID = 4494248002773780294L;
-		private Color hoverBackgroundColor;
-		private Color pressedBackgroundColor;
-
-		public OWButton() {
-			this(null);
-		}
-
-		public OWButton(String text) {
-			super(text);
-			super.setContentAreaFilled(false);
-		}
-
-		@Override
-		protected void paintComponent(Graphics g) {
-			if (getModel().isPressed()) {
-				g.setColor(pressedBackgroundColor);
-			} else if (getModel().isRollover()) {
-				g.setColor(hoverBackgroundColor);
-			} else {
-				g.setColor(getBackground());
-			}
-			g.fillRect(0, 0, getWidth(), getHeight());
-			super.paintComponent(g);
-		}
-
-		@Override
-		public void setContentAreaFilled(boolean b) {
-		}
-
-		@Override
-		public void setForeground(Color fg) {
-			super.setForeground(fg);
-			this.hoverBackgroundColor = fg;
-		}
-
-		public Color getHoverBackgroundColor() {
-			return hoverBackgroundColor;
-		}
-
-		public void setHoverBackgroundColor(Color hoverBackgroundColor) {
-			this.hoverBackgroundColor = hoverBackgroundColor;
-		}
-
-		public Color getPressedBackgroundColor() {
-			return pressedBackgroundColor;
-		}
-
-		public void setPressedBackgroundColor(Color pressedBackgroundColor) {
-			this.pressedBackgroundColor = pressedBackgroundColor;
-		}
 	}
 }
