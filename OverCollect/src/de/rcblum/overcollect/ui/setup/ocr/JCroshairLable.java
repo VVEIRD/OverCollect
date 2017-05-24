@@ -38,29 +38,26 @@ public class JCroshairLable extends JLabel {
 		super(text);
 		addListener();
 	}
-	
-	private void addListener()
-	{
+
+	private void addListener() {
 		this.addMouseMotionListener(new MouseMotionListener() {
-			
+
 			@Override
-			public void mouseMoved(MouseEvent e) 
-			{
+			public void mouseMoved(MouseEvent e) {
 				mouseX = e.getX();
 				mouseY = e.getY();
 				repaint();
 			}
-			
+
 			@Override
-			public void mouseDragged(MouseEvent e) 
-			{
+			public void mouseDragged(MouseEvent e) {
 				mouseX = e.getX();
 				mouseY = e.getY();
 				repaint();
 			}
 		});
 	}
-	
+
 	private int mouseX = -1;
 	private int mouseY = -1;
 
@@ -70,8 +67,7 @@ public class JCroshairLable extends JLabel {
 	private static final long serialVersionUID = -61182742534371331L;
 
 	@Override
-	public void paint(Graphics g) 
-	{
+	public void paint(Graphics g) {
 		super.paint(g);
 		if (mouseX >= 0 && mouseY >= 0) {
 			g.setColor(Color.YELLOW);

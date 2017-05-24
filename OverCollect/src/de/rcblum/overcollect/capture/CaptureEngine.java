@@ -19,61 +19,55 @@ import de.rcblum.overcollect.capture.listener.ImageSource;
 import de.rcblum.overcollect.configuration.OWItem;
 import de.rcblum.overcollect.configuration.OWLib;
 
-public class CaptureEngine implements ActionListener, ImageSource
-{
-	
+public class CaptureEngine implements ActionListener, ImageSource {
+
 	private static GraphicsDevice[] screens = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
-	
+
 	private List<ImageListener> listeners = new ArrayList<>(5);
 
 	private Robot r = null;
-	
+
 	private Timer t = null;
-	
+
 	private GraphicsDevice screen = null;
-	
+
 	private int captureInterval = 1000;
-	
+
 	long screenAutodetectCount = 0;
 
-	public CaptureEngine() throws AWTException 
-	{
+	public CaptureEngine() throws AWTException {
 		this.captureInterval = OWLib.getInstance().getInteger("captureInterval", 1000);
-		//this.screen = Objects.requireNonNull(screen);
-		//this.r = new Robot(screen);
+		// this.screen = Objects.requireNonNull(screen);
+		// this.r = new Robot(screen);
 		System.out.println(this.captureInterval);
-		t = new Timer(this.captureInterval, this); 
+		t = new Timer(this.captureInterval, this);
 	}
 
-	public CaptureEngine(int captureInterval) throws AWTException 
-	{
+	public CaptureEngine(int captureInterval) throws AWTException {
 		this.captureInterval = captureInterval;
-		//this.screen = Objects.requireNonNull(screen);
-		//this.r = new Robot(screen);
-		t = new Timer(this.captureInterval, this); 
+		// this.screen = Objects.requireNonNull(screen);
+		// this.r = new Robot(screen);
+		t = new Timer(this.captureInterval, this);
 	}
-	public CaptureEngine(GraphicsDevice screen) throws AWTException 
-	{
+
+	public CaptureEngine(GraphicsDevice screen) throws AWTException {
 		this.screen = Objects.requireNonNull(screen);
 		this.captureInterval = OWLib.getInstance().getInteger("captureInterval", 1000);
 		this.r = new Robot(screen);
-		t = new Timer(this.captureInterval, this); 
+		t = new Timer(this.captureInterval, this);
 	}
-	
-	public void start()
-	{
+
+	public void start() {
 		System.out.println("Start capture");
 		this.t.start();
 	}
-	
-	public void stop()
-	{
+
+	public void stop() {
 		System.out.println("Stop capture");
 		this.t.stop();
 	}
-	
-	public void setScreen(GraphicsDevice screen) throws AWTException
-	{
+
+	public void setScreen(GraphicsDevice screen) throws AWTException {
 		boolean isRunning = this.t.isRunning();
 		if (isRunning)
 			this.stop();
@@ -84,8 +78,7 @@ public class CaptureEngine implements ActionListener, ImageSource
 	}
 
 	@Override
-	public void actionPerformed(ActionEvent e) 
-	{
+	public void actionPerformed(ActionEvent e) {
 		if (this.screen == null)
 			autodetectScreen();
 		else {
@@ -94,14 +87,15 @@ public class CaptureEngine implements ActionListener, ImageSource
 		}
 	}
 
-	private void autodetectScreen()
-	{
+	private void autodetectScreen() {
 		// Wait for Overwatch to launch
 		OWLib lib = OWLib.getInstance();
-		
-//		if (screenAutodetectCount%(this.captureInterval/100)==0) {
-//			System.out.println("Autodetecting Overwatch["+Math.round(screenAutodetectCount/(this.captureInterval/1000.0))+" sec]...");
-//		}
+
+		// if (screenAutodetectCount%(this.captureInterval/100)==0) {
+		// System.out.println("Autodetecting
+		// Overwatch["+Math.round(screenAutodetectCount/(this.captureInterval/1000.0))+"
+		// sec]...");
+		// }
 		screenAutodetectCount++;
 		Robot[] robots = new Robot[screens.length];
 		for (int i = 0; i < robots.length; i++) {
@@ -111,7 +105,7 @@ public class CaptureEngine implements ActionListener, ImageSource
 				e.printStackTrace();
 			}
 		}
-		for (int i=0;i<robots.length;i++) {
+		for (int i = 0; i < robots.length; i++) {
 			Robot robot = robots[i];
 			GraphicsDevice screen = screens[i];
 			if (robot != null) {
@@ -129,48 +123,43 @@ public class CaptureEngine implements ActionListener, ImageSource
 				}
 			}
 		}
-//		if (isRunning)
-//			this.start();
+		// if (isRunning)
+		// this.start();
 	}
 
 	@Override
-	public void addImageListener(ImageListener i)
-	{
+	public void addImageListener(ImageListener i) {
 		listeners.add(i);
 	}
 
 	@Override
-	public void removeImageListener(ImageListener i)
-	{
+	public void removeImageListener(ImageListener i) {
 		listeners.remove(i);
 	}
-	
-	public void fireImage(BufferedImage i)
-	{
+
+	public void fireImage(BufferedImage i) {
 		for (ImageListener imageListener : listeners) {
 			imageListener.addImage(i);
 		}
 	}
-	
-	public Rectangle getResolution()
-	{
+
+	public Rectangle getResolution() {
 		return this.screen.getDefaultConfiguration().getBounds();
 	}
-	
+
 	public void setCaptureInterval(int captureInterval) {
 		this.captureInterval = captureInterval;
 	}
-	
+
 	public int getCaptureInterval() {
 		return captureInterval;
 	}
-	
+
 	public GraphicsDevice getScreen() {
 		return screen;
 	}
-	
-	public boolean isRunning() 
-	{
+
+	public boolean isRunning() {
 		return this.t.isRunning();
 	}
 

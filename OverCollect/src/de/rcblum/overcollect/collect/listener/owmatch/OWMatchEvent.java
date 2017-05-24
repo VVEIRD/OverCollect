@@ -16,36 +16,34 @@ import de.rcblum.overcollect.configuration.OWItem;
  * @author Roland von Werden
  *
  */
-public class OWMatchEvent 
-{
+public class OWMatchEvent {
 
 	/**
 	 * UUID of the match
 	 */
 	public final UUID id;
-	
+
 	public final Date startTime;
-	
+
 	/**
 	 * Folder in which the raw data of the match was saved to
 	 */
 	public final Path matchPath;
-	
+
 	/**
 	 * OWItem that triggered the event.
 	 */
 	public final OWItem item;
-	
+
 	/**
 	 * completion status of the recording
 	 */
 	public final OWMatchEvent.Type type;
-	
-	public final BufferedImage screenshot;
-	
 
-	public OWMatchEvent(UUID id, Date startTime, Path matchPath, OWItem item, OWMatchEvent.Type type, BufferedImage screenshot)
-	{
+	public final BufferedImage screenshot;
+
+	public OWMatchEvent(UUID id, Date startTime, Path matchPath, OWItem item, OWMatchEvent.Type type,
+			BufferedImage screenshot) {
 		super();
 		this.id = Objects.requireNonNull(id);
 		this.startTime = Objects.requireNonNull(startTime);
@@ -55,8 +53,7 @@ public class OWMatchEvent
 		this.screenshot = screenshot;
 	}
 
-	public static enum Type 
-	{
+	public static enum Type {
 		NEW_MATCH, SR_RECORDED, STAT_RECORDED, MATCH_DECIDED, END_NORMAL, END_PARTIAL, END_ABORTED;
 	}
 }

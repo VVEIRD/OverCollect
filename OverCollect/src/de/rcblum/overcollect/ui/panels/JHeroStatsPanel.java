@@ -39,11 +39,12 @@ public class JHeroStatsPanel extends JPanel {
 	private JTextField txtDmgdone;
 	private JTextField txtHealing;
 	private JTextField txtDeaths;
+
 	/**
 	 * Create the panel.
 	 */
 	public JHeroStatsPanel(OWCharacterStats hero, JOWMatchContentPanel parent) {
-		
+
 		addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseReleased(MouseEvent arg0) {
@@ -54,78 +55,33 @@ public class JHeroStatsPanel extends JPanel {
 		});
 		this.hero = hero;
 		this.setBorder(null);
-		setBackground(new Color(0,0,0,55));
+		setBackground(new Color(0, 0, 0, 55));
 		setOpaque(false);
-		setLayout(new FormLayout(new ColumnSpec[] {
-				ColumnSpec.decode("10px"),
-				ColumnSpec.decode("15px"),
-				ColumnSpec.decode("10px"),
-				ColumnSpec.decode("15px"),
-				ColumnSpec.decode("10px"),
-				ColumnSpec.decode("15px"),
-				ColumnSpec.decode("10px"),
-				ColumnSpec.decode("15px"),
-				ColumnSpec.decode("10px"),
-				ColumnSpec.decode("15px"),
-				ColumnSpec.decode("10px"),
-				ColumnSpec.decode("20px:grow"),
-				ColumnSpec.decode("10px"),
-				ColumnSpec.decode("20px"),
-				ColumnSpec.decode("10px"),
-				ColumnSpec.decode("20px"),
-				ColumnSpec.decode("10px"),
-				ColumnSpec.decode("20px:grow"),
-				ColumnSpec.decode("10px"),
-				ColumnSpec.decode("20px"),
-				ColumnSpec.decode("10px"),
-				ColumnSpec.decode("20px"),
-				ColumnSpec.decode("10px"),
-				ColumnSpec.decode("20px:grow"),
-				ColumnSpec.decode("10px"),
-				ColumnSpec.decode("20px"),
-				ColumnSpec.decode("10px"),
-				ColumnSpec.decode("20px"),
-				ColumnSpec.decode("10px"),
-				ColumnSpec.decode("20px:grow"),
-				ColumnSpec.decode("10px"),
-				ColumnSpec.decode("20px"),
-				ColumnSpec.decode("10px"),
-				ColumnSpec.decode("20px"),
-				ColumnSpec.decode("10px"),
-				ColumnSpec.decode("20px:grow"),
-				ColumnSpec.decode("10px"),
-				ColumnSpec.decode("20px"),
-				ColumnSpec.decode("10px"),
-				ColumnSpec.decode("20px"),
-				ColumnSpec.decode("10px"),
-				ColumnSpec.decode("20px:grow"),
-				ColumnSpec.decode("10px"),
-				ColumnSpec.decode("20px"),
-				ColumnSpec.decode("10px"),
-				ColumnSpec.decode("20px"),
-				ColumnSpec.decode("10px"),
-				ColumnSpec.decode("20px"),
-				ColumnSpec.decode("10px"),
-				ColumnSpec.decode("20px"),
-				ColumnSpec.decode("10px"),
-				ColumnSpec.decode("20px"),
-				ColumnSpec.decode("10px"),
-				ColumnSpec.decode("20px"),
-				ColumnSpec.decode("10px:grow"),
-				ColumnSpec.decode("20px:grow"),
-				ColumnSpec.decode("10px:grow"),},
-			new RowSpec[] {
-				RowSpec.decode("1px"),
-				RowSpec.decode("4px"),
-				RowSpec.decode("20px"),
-				RowSpec.decode("5px"),
-				RowSpec.decode("30px"),
-				RowSpec.decode("5px"),
-				RowSpec.decode("15px"),
-				RowSpec.decode("5px"),
-				RowSpec.decode("20px"),
-				RowSpec.decode("5px"),
-				RowSpec.decode("10px"),}));
+		setLayout(new FormLayout(
+				new ColumnSpec[] { ColumnSpec.decode("10px"), ColumnSpec.decode("15px"), ColumnSpec.decode("10px"),
+						ColumnSpec.decode("15px"), ColumnSpec.decode("10px"), ColumnSpec.decode("15px"),
+						ColumnSpec.decode("10px"), ColumnSpec.decode("15px"), ColumnSpec.decode("10px"),
+						ColumnSpec.decode("15px"), ColumnSpec.decode("10px"), ColumnSpec.decode("20px:grow"),
+						ColumnSpec.decode("10px"), ColumnSpec.decode("20px"), ColumnSpec.decode("10px"),
+						ColumnSpec.decode("20px"), ColumnSpec.decode("10px"), ColumnSpec.decode("20px:grow"),
+						ColumnSpec.decode("10px"), ColumnSpec.decode("20px"), ColumnSpec.decode("10px"),
+						ColumnSpec.decode("20px"), ColumnSpec.decode("10px"), ColumnSpec.decode("20px:grow"),
+						ColumnSpec.decode("10px"), ColumnSpec.decode("20px"), ColumnSpec.decode("10px"),
+						ColumnSpec.decode("20px"), ColumnSpec.decode("10px"), ColumnSpec.decode("20px:grow"),
+						ColumnSpec.decode("10px"), ColumnSpec.decode("20px"), ColumnSpec.decode("10px"),
+						ColumnSpec.decode("20px"), ColumnSpec.decode("10px"), ColumnSpec.decode("20px:grow"),
+						ColumnSpec.decode("10px"), ColumnSpec.decode("20px"), ColumnSpec.decode("10px"),
+						ColumnSpec.decode("20px"), ColumnSpec.decode("10px"), ColumnSpec.decode("20px:grow"),
+						ColumnSpec.decode("10px"), ColumnSpec.decode("20px"), ColumnSpec.decode("10px"),
+						ColumnSpec.decode("20px"), ColumnSpec.decode("10px"), ColumnSpec.decode("20px"),
+						ColumnSpec.decode("10px"), ColumnSpec.decode("20px"), ColumnSpec.decode("10px"),
+						ColumnSpec.decode("20px"), ColumnSpec.decode("10px"), ColumnSpec.decode("20px"),
+						ColumnSpec.decode("10px:grow"), ColumnSpec.decode("20px:grow"),
+						ColumnSpec.decode("10px:grow"), },
+				new RowSpec[] { RowSpec.decode("1px"), RowSpec.decode("4px"), RowSpec.decode("20px"),
+						RowSpec.decode("5px"), RowSpec.decode("30px"), RowSpec.decode("5px"), RowSpec.decode("15px"),
+						RowSpec.decode("5px"), RowSpec.decode("20px"), RowSpec.decode("5px"),
+						RowSpec.decode("10px"), }));
 
 		Properties p = new Properties();
 		BufferedImage b = null;
@@ -136,48 +92,48 @@ public class JHeroStatsPanel extends JPanel {
 		} catch (IOException e) {
 		}
 		ImageIcon image = b != null ? new ImageIcon(b) : null;
-		JLabel lblNewLabel = new JLabel(this.hero.getName().equalsIgnoreCase("allheroes") ? "All Heroes" : this.hero.getName());
+		JLabel lblNewLabel = new JLabel(
+				this.hero.getName().equalsIgnoreCase("allheroes") ? "All Heroes" : this.hero.getName());
 		lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		lblNewLabel.setForeground(UiStatics.TEXT_CONTENT);
 		if (image != null) {
 			lblNewLabel.setText(null);
 			lblNewLabel.setIcon(image);
 			lblNewLabel.setFont(UiStatics.OW_FONT_ITALIC.deriveFont(Font.PLAIN, 35));
-		}
-		else
+		} else
 			lblNewLabel.setFont(UiStatics.OW_FONT_ITALIC.deriveFont(Font.PLAIN, 15));
 		add(lblNewLabel, "1, 1, 10, 11");
-		
+
 		JLabel lblEliminations = new JLabel("Eliminations");
 		lblEliminations.setForeground(UiStatics.TEXT_DESCRIPTION);
 		lblEliminations.setFont(UiStatics.OW_FONT_NORMAL.deriveFont(Font.PLAIN, 15));
 		add(lblEliminations, "12, 3, 5, 1");
-		
+
 		JLabel lblObjectiveKills = new JLabel("Objective Kills");
 		lblObjectiveKills.setForeground(UiStatics.TEXT_DESCRIPTION);
 		lblObjectiveKills.setFont(UiStatics.OW_FONT_NORMAL.deriveFont(Font.PLAIN, 15));
 		add(lblObjectiveKills, "18, 3, 5, 1");
-		
+
 		JLabel lblObjectiveTime = new JLabel("Objective Time");
 		lblObjectiveTime.setForeground(UiStatics.TEXT_DESCRIPTION);
 		lblObjectiveTime.setFont(UiStatics.OW_FONT_NORMAL.deriveFont(Font.PLAIN, 15));
 		add(lblObjectiveTime, "24, 3, 5, 1");
-		
+
 		JLabel lblDamageDone = new JLabel("Damage Done");
 		lblDamageDone.setForeground(UiStatics.TEXT_DESCRIPTION);
 		lblDamageDone.setFont(UiStatics.OW_FONT_NORMAL.deriveFont(Font.PLAIN, 15));
 		add(lblDamageDone, "30, 3, 5, 1");
-		
+
 		JLabel lblHealingDone = new JLabel("Healing Done");
 		lblHealingDone.setForeground(UiStatics.TEXT_DESCRIPTION);
 		lblHealingDone.setFont(UiStatics.OW_FONT_NORMAL.deriveFont(Font.PLAIN, 15));
 		add(lblHealingDone, "36, 3, 5, 1");
-		
+
 		JLabel lblDeaths = new JLabel("Deaths");
 		lblDeaths.setForeground(UiStatics.TEXT_DESCRIPTION);
 		lblDeaths.setFont(UiStatics.OW_FONT_NORMAL.deriveFont(Font.PLAIN, 15));
 		add(lblDeaths, "42, 3, 5, 1");
-		
+
 		txtEliminations = new JTextField();
 		txtEliminations.setEditable(false);
 		txtEliminations.setFont(UiStatics.OW_FONT_ITALIC);
@@ -187,7 +143,7 @@ public class JHeroStatsPanel extends JPanel {
 		txtEliminations.setOpaque(false);
 		add(txtEliminations, "12, 5, 5, 1, fill, top");
 		txtEliminations.setColumns(10);
-		
+
 		txtObjkills = new JTextField();
 		txtObjkills.setEditable(false);
 		txtObjkills.setFont(UiStatics.OW_FONT_ITALIC);
@@ -197,7 +153,7 @@ public class JHeroStatsPanel extends JPanel {
 		txtObjkills.setOpaque(false);
 		add(txtObjkills, "18, 5, 5, 1, fill, top");
 		txtObjkills.setColumns(10);
-		
+
 		txtObjTime = new JTextField();
 		txtObjTime.setEditable(false);
 		txtObjTime.setFont(UiStatics.OW_FONT_ITALIC);
@@ -207,7 +163,7 @@ public class JHeroStatsPanel extends JPanel {
 		txtObjTime.setOpaque(false);
 		add(txtObjTime, "24, 5, 5, 1, fill, top");
 		txtObjTime.setColumns(10);
-		
+
 		txtDmgdone = new JTextField();
 		txtDmgdone.setEditable(false);
 		txtDmgdone.setFont(UiStatics.OW_FONT_ITALIC);
@@ -217,7 +173,7 @@ public class JHeroStatsPanel extends JPanel {
 		txtDmgdone.setOpaque(false);
 		add(txtDmgdone, "30, 5, 5, 1, fill, top");
 		txtDmgdone.setColumns(10);
-		
+
 		txtHealing = new JTextField();
 		txtHealing.setEditable(false);
 		txtHealing.setFont(UiStatics.OW_FONT_ITALIC);
@@ -227,7 +183,7 @@ public class JHeroStatsPanel extends JPanel {
 		txtHealing.setOpaque(false);
 		add(txtHealing, "36, 5, 5, 1, fill, top");
 		txtHealing.setColumns(10);
-		
+
 		txtDeaths = new JTextField();
 		txtDeaths.setEditable(false);
 		txtDeaths.setFont(UiStatics.OW_FONT_ITALIC);
@@ -239,41 +195,31 @@ public class JHeroStatsPanel extends JPanel {
 		txtDeaths.setColumns(10);
 		setData();
 	}
-	
-	public void setData()
-	{
-		this.txtEliminations.setText(""+ this.hero.getEliminations());
-		this.txtObjkills.setText(""+ this.hero.getObjectiveKills());
-		this.txtObjTime.setText(""+ this.hero.getObjectiveTime());
-		this.txtDmgdone.setText(""+ this.hero.getDamageDone());
-		this.txtHealing.setText(""+ this.hero.getHealingDone());
-		this.txtDeaths.setText(""+ this.hero.getDeaths());
+
+	public void setData() {
+		this.txtEliminations.setText("" + this.hero.getEliminations());
+		this.txtObjkills.setText("" + this.hero.getObjectiveKills());
+		this.txtObjTime.setText("" + this.hero.getObjectiveTime());
+		this.txtDmgdone.setText("" + this.hero.getDamageDone());
+		this.txtHealing.setText("" + this.hero.getHealingDone());
+		this.txtDeaths.setText("" + this.hero.getDeaths());
 	}
-	
+
 	@Override
 	public void paint(Graphics g) {
-		g.setColor(new Color(0,0,0,55));
+		g.setColor(new Color(0, 0, 0, 55));
 		g.fillRect(0, 0, this.getWidth(), this.getHeight());
 		super.paint(g);
 	}
-	
+
 	public static void main(String[] args) {
-		String json = "{" +
-				"      \"name\": \"Reinhardt\"," +
-				"      \"secondaryStats\": {" +
-				"        \"killStreak\": \"8\"," +
-				"        \"fireStrikeKills\": \"9\"," +
-				"        \"chargeKills\": \"4\"," +
-				"        \"earthshatterKills\": \"5\"," +
-				"        \"damageBlocked\": \"26119\"" +
-				"      }," +
-				"      \"eliminations\": \"39\"," +
-				"      \"objectiveKills\": \"17\"," +
-				"      \"objectiveTime\": \"0253\"," +
-				"      \"damageDone\": \"1513\"," +
-				"      \"healingDone\": \"0\"," +
-				"      \"deaths\": \"15\" " +
-				"    }";
+		String json = "{" + "      \"name\": \"Reinhardt\"," + "      \"secondaryStats\": {"
+				+ "        \"killStreak\": \"8\"," + "        \"fireStrikeKills\": \"9\","
+				+ "        \"chargeKills\": \"4\"," + "        \"earthshatterKills\": \"5\","
+				+ "        \"damageBlocked\": \"26119\"" + "      }," + "      \"eliminations\": \"39\","
+				+ "      \"objectiveKills\": \"17\"," + "      \"objectiveTime\": \"0253\","
+				+ "      \"damageDone\": \"1513\"," + "      \"healingDone\": \"0\"," + "      \"deaths\": \"15\" "
+				+ "    }";
 		Gson g = new Gson();
 		OWCharacterStats owStats = g.fromJson(json, OWCharacterStats.class);
 		JHeroStatsPanel hPanel = new JHeroStatsPanel(owStats, null);

@@ -26,11 +26,12 @@ public class JOWMatchContentPanel extends JPanel {
 	 * 
 	 */
 	private static final long serialVersionUID = -905919036292700510L;
-	
-	private OWMatch match = null; 
-	
+
+	private OWMatch match = null;
+
 	JButton btnHeroes;
 	private JScrollPane spContent;
+
 	/**
 	 * Create the panel.
 	 */
@@ -42,97 +43,40 @@ public class JOWMatchContentPanel extends JPanel {
 			}
 		});
 		this.match = match;
-		setLayout(new FormLayout(new ColumnSpec[] {
-				ColumnSpec.decode("20px"),
-				ColumnSpec.decode("5px"),
-				ColumnSpec.decode("left:20px"),
-				ColumnSpec.decode("5px"),
-				ColumnSpec.decode("20px"),
-				ColumnSpec.decode("5px"),
-				ColumnSpec.decode("20px"),
-				ColumnSpec.decode("5px"),
-				ColumnSpec.decode("20px:grow"),
-				ColumnSpec.decode("5px"),
-				ColumnSpec.decode("20px"),
-				ColumnSpec.decode("5px"),
-				ColumnSpec.decode("20px"),
-				ColumnSpec.decode("5px"),
-				ColumnSpec.decode("20px"),
-				ColumnSpec.decode("5px"),
-				ColumnSpec.decode("20px"),
-				ColumnSpec.decode("5px"),
-				ColumnSpec.decode("20px"),
-				ColumnSpec.decode("5px"),
-				ColumnSpec.decode("20px"),
-				ColumnSpec.decode("5px"),
-				ColumnSpec.decode("20px"),
-				ColumnSpec.decode("5px"),
-				ColumnSpec.decode("20px"),
-				ColumnSpec.decode("5px"),
-				ColumnSpec.decode("20px"),
-				ColumnSpec.decode("5px"),
-				ColumnSpec.decode("20px"),
-				ColumnSpec.decode("5px"),
-				ColumnSpec.decode("20px"),
-				ColumnSpec.decode("5px"),
-				ColumnSpec.decode("20px"),
-				ColumnSpec.decode("5px"),
-				ColumnSpec.decode("20px"),
-				ColumnSpec.decode("5px"),
-				ColumnSpec.decode("20px"),
-				ColumnSpec.decode("5px"),
-				ColumnSpec.decode("20px"),
-				ColumnSpec.decode("5px"),
-				ColumnSpec.decode("20px"),
-				ColumnSpec.decode("5px"),
-				ColumnSpec.decode("20px"),
-				ColumnSpec.decode("5px"),
-				ColumnSpec.decode("20px:grow"),
-				ColumnSpec.decode("5px"),
-				ColumnSpec.decode("20px"),
-				ColumnSpec.decode("5px"),
-				ColumnSpec.decode("20px"),
-				ColumnSpec.decode("5px"),
-				ColumnSpec.decode("20px"),
-				ColumnSpec.decode("5px"),
-				ColumnSpec.decode("20px"),},
-			new RowSpec[] {
-				RowSpec.decode("20px"),
-				RowSpec.decode("5px"),
-				RowSpec.decode("20px:grow"),
-				RowSpec.decode("5px"),
-				RowSpec.decode("20px"),
-				RowSpec.decode("5px"),
-				RowSpec.decode("20px"),
-				RowSpec.decode("5px"),
-				RowSpec.decode("20px"),
-				RowSpec.decode("5px"),
-				RowSpec.decode("20px"),
-				RowSpec.decode("5px"),
-				RowSpec.decode("20px"),
-				RowSpec.decode("5px"),
-				RowSpec.decode("20px"),
-				RowSpec.decode("5px"),
-				RowSpec.decode("20px"),
-				RowSpec.decode("5px"),
-				RowSpec.decode("20px"),
-				RowSpec.decode("5px"),
-				RowSpec.decode("20px"),
-				RowSpec.decode("5px"),
-				RowSpec.decode("20px"),
-				RowSpec.decode("5px"),
-				RowSpec.decode("20px"),
-				RowSpec.decode("5px"),
-				RowSpec.decode("20px"),
-				RowSpec.decode("5px"),
-				RowSpec.decode("20px"),
-				RowSpec.decode("5px"),
-				RowSpec.decode("20px"),}));
+		setLayout(new FormLayout(
+				new ColumnSpec[] { ColumnSpec.decode("20px"), ColumnSpec.decode("5px"), ColumnSpec.decode("left:20px"),
+						ColumnSpec.decode("5px"), ColumnSpec.decode("20px"), ColumnSpec.decode("5px"),
+						ColumnSpec.decode("20px"), ColumnSpec.decode("5px"), ColumnSpec.decode("20px:grow"),
+						ColumnSpec.decode("5px"), ColumnSpec.decode("20px"), ColumnSpec.decode("5px"),
+						ColumnSpec.decode("20px"), ColumnSpec.decode("5px"), ColumnSpec.decode("20px"),
+						ColumnSpec.decode("5px"), ColumnSpec.decode("20px"), ColumnSpec.decode("5px"),
+						ColumnSpec.decode("20px"), ColumnSpec.decode("5px"), ColumnSpec.decode("20px"),
+						ColumnSpec.decode("5px"), ColumnSpec.decode("20px"), ColumnSpec.decode("5px"),
+						ColumnSpec.decode("20px"), ColumnSpec.decode("5px"), ColumnSpec.decode("20px"),
+						ColumnSpec.decode("5px"), ColumnSpec.decode("20px"), ColumnSpec.decode("5px"),
+						ColumnSpec.decode("20px"), ColumnSpec.decode("5px"), ColumnSpec.decode("20px"),
+						ColumnSpec.decode("5px"), ColumnSpec.decode("20px"), ColumnSpec.decode("5px"),
+						ColumnSpec.decode("20px"), ColumnSpec.decode("5px"), ColumnSpec.decode("20px"),
+						ColumnSpec.decode("5px"), ColumnSpec.decode("20px"), ColumnSpec.decode("5px"),
+						ColumnSpec.decode("20px"), ColumnSpec.decode("5px"), ColumnSpec.decode("20px:grow"),
+						ColumnSpec.decode("5px"), ColumnSpec.decode("20px"), ColumnSpec.decode("5px"),
+						ColumnSpec.decode("20px"),
+						ColumnSpec.decode("5px"), ColumnSpec.decode("20px"), ColumnSpec.decode("5px"),
+						ColumnSpec.decode("20px"), },
+				new RowSpec[] { RowSpec.decode("20px"), RowSpec.decode("5px"), RowSpec.decode("20px:grow"),
+						RowSpec.decode("5px"), RowSpec.decode("20px"), RowSpec.decode("5px"), RowSpec.decode("20px"),
+						RowSpec.decode("5px"), RowSpec.decode("20px"), RowSpec.decode("5px"), RowSpec.decode("20px"),
+						RowSpec.decode("5px"), RowSpec.decode("20px"), RowSpec.decode("5px"), RowSpec.decode("20px"),
+						RowSpec.decode("5px"), RowSpec.decode("20px"), RowSpec.decode("5px"), RowSpec.decode("20px"),
+						RowSpec.decode("5px"), RowSpec.decode("20px"), RowSpec.decode("5px"), RowSpec.decode("20px"),
+						RowSpec.decode("5px"), RowSpec.decode("20px"), RowSpec.decode("5px"), RowSpec.decode("20px"),
+						RowSpec.decode("5px"), RowSpec.decode("20px"), RowSpec.decode("5px"),
+						RowSpec.decode("20px"), }));
 
 		btnHeroes = UiStatics.createButton("Heroes", 2, 0, 0, 2);
 		btnHeroes.setFont(btnHeroes.getFont().deriveFont(Font.PLAIN, 18));
 		btnHeroes.setFocusPainted(false);
-		//btnHeroes.setBorder(BorderFactory.createEmptyBorder(2, 0, 2, 0));
+		// btnHeroes.setBorder(BorderFactory.createEmptyBorder(2, 0, 2, 0));
 		add(btnHeroes, "18, 1, 4, 1");
 		setOpaque(false);
 		JPanel pContent = new JPanel();
@@ -143,21 +87,20 @@ public class JOWMatchContentPanel extends JPanel {
 		spContent.getVerticalScrollBar().setUnitIncrement(10);
 		spContent.setOpaque(false);
 		spContent.getViewport().setOpaque(false);
-		spContent.setBorder(null); 
+		spContent.setBorder(null);
 		pContent.setLayout(new BoxLayout(pContent, BoxLayout.Y_AXIS));
 		for (int i = 0; i < match.getCharacterStats().size(); i++) {
 			OWCharacterStats stat = match.getCharacterStats().get(i);
 			pContent.add(new JHeroStatsPanel(stat, this));
 
-			if (i+1<match.getCharacterStats().size())
-				pContent.add(Box.createRigidArea(new Dimension(5,5)));
+			if (i + 1 < match.getCharacterStats().size())
+				pContent.add(Box.createRigidArea(new Dimension(5, 5)));
 		}
 		add(spContent, "1, 3, 53, 29, fill, fill");
-		
+
 	}
-	
-	public void clicked()
-	{
+
+	public void clicked() {
 		if (JOWMatchContentPanel.this.getParent() instanceof JOWMatchPanel) {
 			((JOWMatchPanel) JOWMatchContentPanel.this.getParent()).clicked();
 		}

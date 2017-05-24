@@ -38,9 +38,9 @@ public class JFilterTest extends JFrame {
 	private JPanel contentPane;
 	private JTable tItems;
 	private DefaultTableModel model;
-	
+
 	private String selectedScreenResolution = null;
-	
+
 	private JComboBox<String> cbScreenResolution;
 	private JScrollPane scrollPane;
 	private JButton btnTestFilter;
@@ -61,18 +61,16 @@ public class JFilterTest extends JFrame {
 			}
 		});
 	}
-	
+
 	/**
 	 * Create the frame.
 	 */
-	public JFilterTest() 
-	{
+	public JFilterTest() {
 		this(null);
 	}
-	
-	public JFilterTest(String selectedScreenResolution)
-	{
-		this.selectedScreenResolution = selectedScreenResolution;	
+
+	public JFilterTest(String selectedScreenResolution) {
+		this.selectedScreenResolution = selectedScreenResolution;
 		setTitle("Test Filters");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 850, 620);
@@ -80,50 +78,44 @@ public class JFilterTest extends JFrame {
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.Y_AXIS));
-		
+
 		JLabel lblScreenResolution = new JLabel("Screen Resolution");
 		lblScreenResolution.setAlignmentX(Component.CENTER_ALIGNMENT);
 		contentPane.add(lblScreenResolution);
-		
+
 		cbScreenResolution = new JComboBox<>();
 		cbScreenResolution.setPreferredSize(new Dimension(200, 20));
 		cbScreenResolution.setMaximumSize(new Dimension(2000, 20));
 		cbScreenResolution.setMinimumSize(new Dimension(50, 20));
 		contentPane.add(cbScreenResolution);
-		
+
 		JLabel lblItems = new JLabel("Items");
 		lblItems.setAlignmentX(Component.CENTER_ALIGNMENT);
 		contentPane.add(lblItems);
-		
+
 		scrollPane = new JScrollPane();
 		contentPane.add(scrollPane);
-		
+
 		tItems = new JTable();
 		tItems.setDefaultRenderer(String.class, new ColoredStringCellRenderer("Matches!"));
 		tItems.setDefaultRenderer(Object.class, new ColoredStringCellRenderer("Matches!"));
-		model = new DefaultTableModel(
-				new Object[][] {
-				},
-				new String[] {
-					"Item Name", "Template"
-				}
-			) ;
+		model = new DefaultTableModel(new Object[][] {}, new String[] { "Item Name", "Template" });
 		tItems.setModel(model);
 		scrollPane.setViewportView(tItems);
-		
+
 		JLabel label = new JLabel(" ");
 		contentPane.add(label);
-		
+
 		JPanel panel = new JPanel();
 		contentPane.add(panel);
 		panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
-		
+
 		btnTestFilter = new JButton("Test Filter");
 		panel.add(btnTestFilter);
-		
+
 		JPanel panel_1 = new JPanel();
 		panel.add(panel_1);
-		
+
 		btnClose = new JButton("Close");
 		btnClose.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -133,14 +125,13 @@ public class JFilterTest extends JFrame {
 		panel.add(btnClose);
 		init();
 	}
-	
-	private void init()
-	{
+
+	private void init() {
 		OWLib lib = OWLib.getInstance();
-		for(String res : lib.getSupportedScreenResolutions())
+		for (String res : lib.getSupportedScreenResolutions())
 			this.cbScreenResolution.addItem(res);
 		if (this.selectedScreenResolution != null) {
-			for(int i=0;i<this.cbScreenResolution.getModel().getSize();i++) {
+			for (int i = 0; i < this.cbScreenResolution.getModel().getSize(); i++) {
 				if (cbScreenResolution.getItemAt(i).equals(selectedScreenResolution)) {
 					cbScreenResolution.setSelectedIndex(i);
 					break;
@@ -166,22 +157,21 @@ public class JFilterTest extends JFrame {
 							int columnCount = tItems.getColumnCount();
 							SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 							System.out.println("Start: " + sdf.format(Calendar.getInstance().getTime()));
-							for(int i=0;i<rows;i++) {
-								for(int j=1;j<columnCount;j++) {
-									if(!"--".equals(model.getValueAt(i, j))) {
+							for (int i = 0; i < rows; i++) {
+								for (int j = 1; j < columnCount; j++) {
+									if (!"--".equals(model.getValueAt(i, j))) {
 										System.out.println("Source: " + model.getValueAt(i, 0));
 										System.out.println("Target: " + model.getColumnName(j));
 										System.out.println();
-										OWItem sourceItem = lib.getItem(res, (String)model.getValueAt(i, 0));
-										OWItem targetItem = lib.getItem(res, (String)model.getColumnName(j));
+										OWItem sourceItem = lib.getItem(res, (String) model.getValueAt(i, 0));
+										OWItem targetItem = lib.getItem(res, (String) model.getColumnName(j));
 										if (sourceItem.hasFilter()) {
 											Filter f = sourceItem.getFilter();
 											if (targetItem.hasTemplate()) {
 												BufferedImage image = targetItem.getTemplate();
 												boolean succ = f.match(image);
 												model.setValueAt(succ ? "Matches!" : "No match", i, j);
-											}
-											else {
+											} else {
 												model.setValueAt("No template", i, j);
 											}
 										}
@@ -189,47 +179,49 @@ public class JFilterTest extends JFrame {
 								}
 							}
 							System.out.println("End: " + sdf.format(Calendar.getInstance().getTime()));
+						} catch (Exception e) {
+							e.printStackTrace();
 						}
-						catch(Exception e) {e.printStackTrace();}
 						btnTestFilter.setEnabled(true);
 					}
 				});
 				t.start();
-//				String itemName = (String) cbItem.getSelectedItem();
-//				Filter f = lib.getItem(res, itemName).getFilter();
-//				int rows = model.getRowCount();
-//				for(int i=0; i<rows;i++) {
-//					if ("Ready".equals(model.getValueAt(i, 1))) {
-//						OWItem testSubject = lib.getItem(res, (String)model.getValueAt(i, 0));
-//						if(testSubject.hasTemplate()) {
-//							boolean success = f.match(testSubject.getTemplate());
-//							model.setValueAt(success ? "Machtes!" : "No match", i, 1);
-//						}
-//					}
-//				}
+				// String itemName = (String) cbItem.getSelectedItem();
+				// Filter f = lib.getItem(res, itemName).getFilter();
+				// int rows = model.getRowCount();
+				// for(int i=0; i<rows;i++) {
+				// if ("Ready".equals(model.getValueAt(i, 1))) {
+				// OWItem testSubject = lib.getItem(res,
+				// (String)model.getValueAt(i, 0));
+				// if(testSubject.hasTemplate()) {
+				// boolean success = f.match(testSubject.getTemplate());
+				// model.setValueAt(success ? "Machtes!" : "No match", i, 1);
+				// }
+				// }
+				// }
 			}
 		});
 	}
 
-	private void updateItems()
-	{
+	private void updateItems() {
 		String res = (String) this.cbScreenResolution.getSelectedItem();
 		List<String> itemNames = OWLib.getInstance().getItemNames(res);
 		Collections.sort(itemNames);
-		Object[] columnNames = new Object[itemNames.size()+1];
-		Object[][] rows = new Object[itemNames.size()][itemNames.size()+1];
+		Object[] columnNames = new Object[itemNames.size() + 1];
+		Object[][] rows = new Object[itemNames.size()][itemNames.size() + 1];
 		columnNames[0] = "Items";
-		for (int i = 0;i<itemNames.size();i++) {
+		for (int i = 0; i < itemNames.size(); i++) {
 			String itemName = itemNames.get(i);
-			columnNames[i+1] = itemName;
+			columnNames[i + 1] = itemName;
 			rows[i][0] = itemName;
-			for(int c=i+2;c<rows[i].length;c++)
+			for (int c = i + 2; c < rows[i].length; c++)
 				rows[i][c] = "NA";
-			for(int c=1;c<=i+1;c++)
+			for (int c = 1; c <= i + 1; c++)
 				rows[i][c] = "NA";
 		}
 		model = new DefaultTableModel(rows, columnNames) {
 			private static final long serialVersionUID = -2324701057366647233L;
+
 			public boolean isCellEditable(int row, int column) {
 				return false;
 			}
@@ -237,11 +229,12 @@ public class JFilterTest extends JFrame {
 		tItems.setModel(model);
 		tItems.getColumnModel().getColumn(0).setPreferredWidth(120);
 		tItems.getColumnModel().getColumn(0).setMinWidth(75);
-//		List<OWItem> items = lib.getItems(res);
-//		for (OWItem owItem : items) {
-//			Object[] row = new Object[]{owItem.getItemName(), (owItem.hasTemplate() ? "Ready" : "No template image") };
-//			model.addRow(row);
-//		}
+		// List<OWItem> items = lib.getItems(res);
+		// for (OWItem owItem : items) {
+		// Object[] row = new Object[]{owItem.getItemName(),
+		// (owItem.hasTemplate() ? "Ready" : "No template image") };
+		// model.addRow(row);
+		// }
 	}
 
 }

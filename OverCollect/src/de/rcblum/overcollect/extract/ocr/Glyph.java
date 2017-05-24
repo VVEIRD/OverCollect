@@ -18,40 +18,35 @@ import de.rcblum.overcollect.configuration.Filter;
 import de.rcblum.overcollect.configuration.OWItem;
 import de.rcblum.overcollect.configuration.OWLib;
 
-public class Glyph 
-{
+public class Glyph {
 	private int baseFontSize = 55;
-	
+
 	private char character = '~';
-	
+
 	private int[][] positivePixels = null;
 	private int[][] negativePixels = null;
-	
-	public Glyph(char character, int fontSize, int[][] positivePixels)
-	{
+
+	public Glyph(char character, int fontSize, int[][] positivePixels) {
 		this(character, fontSize, positivePixels, null);
 	}
-	
-	public Glyph(char character, int fontSize, int[][] positivePixels, int[][] negativePixels)
-	{
+
+	public Glyph(char character, int fontSize, int[][] positivePixels, int[][] negativePixels) {
 		this.character = character;
 		this.positivePixels = Objects.requireNonNull(positivePixels);
 		this.negativePixels = negativePixels;
 		this.baseFontSize = fontSize;
 	}
 
-	public static void save(String libPath, String resolution, String alias, Glyph glyph) throws IOException 
-	{
+	public static void save(String libPath, String resolution, String alias, Glyph glyph) throws IOException {
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
-		Path glyphFile = Paths.get(libPath, resolution, alias, "glyph.json"); 
+		Path glyphFile = Paths.get(libPath, resolution, alias, "glyph.json");
 		System.out.println(glyphFile.toString());
 		String text = gson.toJson(glyph);
 		Files.write(glyphFile, text.getBytes("UTF-8"));
 	}
-	
-	public boolean match(BufferedImage image, Color primary, float tolerance) 
-	{
-		//image = image.
+
+	public boolean match(BufferedImage image, Color primary, float tolerance) {
+		// image = image.
 		int rPrim = primary.getRed();
 		int gPrim = primary.getGreen();
 		int bPrim = primary.getBlue();
@@ -62,15 +57,14 @@ public class Glyph
 			if (image.getWidth() <= x || image.getHeight() <= y)
 				return false;
 			int argb = image.getRGB(x, y);
-			int r = (argb>>16)&0xFF;
-			int g = (argb>>8)&0xFF;
-			int b = (argb>>0)&0xFF;
-			if(!(Math.abs((rPrim-r)/255.0f) <= tolerance &&
-					Math.abs((gPrim-g)/255.0f) <= tolerance &&
-					Math.abs((bPrim-b)/255.0f) <= tolerance)) 
+			int r = (argb >> 16) & 0xFF;
+			int g = (argb >> 8) & 0xFF;
+			int b = (argb >> 0) & 0xFF;
+			if (!(Math.abs((rPrim - r) / 255.0f) <= tolerance && Math.abs((gPrim - g) / 255.0f) <= tolerance
+					&& Math.abs((bPrim - b) / 255.0f) <= tolerance))
 				return false;
 		}
-		if(this.negativePixels != null) {
+		if (this.negativePixels != null) {
 			// check for negatives
 			for (int i = 0; i < negativePixels.length; i++) {
 				int x = Math.round(negativePixels[i][0]);
@@ -78,23 +72,21 @@ public class Glyph
 				if (image.getWidth() <= x || image.getHeight() <= y)
 					return false;
 				int argb = image.getRGB(x, y);
-				int r = (argb>>16)&0xFF;
-				int g = (argb>>8)&0xFF;
-				int b = (argb>>0)&0xFF;
-				if((Math.abs((rPrim-r)/255.0f) <= tolerance &&
-						Math.abs((gPrim-g)/255.0f) <= tolerance &&
-						Math.abs((bPrim-b)/255.0f) <= tolerance)) 
+				int r = (argb >> 16) & 0xFF;
+				int g = (argb >> 8) & 0xFF;
+				int b = (argb >> 0) & 0xFF;
+				if ((Math.abs((rPrim - r) / 255.0f) <= tolerance && Math.abs((gPrim - g) / 255.0f) <= tolerance
+						&& Math.abs((bPrim - b) / 255.0f) <= tolerance))
 					return false;
 			}
 		}
 		return true;
 	}
-	
-	public float matchPercentage(BufferedImage image, Color primary, float tolerance) 
-	{
+
+	public float matchPercentage(BufferedImage image, Color primary, float tolerance) {
 		float totalPoints = this.positivePixels.length + (this.negativePixels != null ? this.negativePixels.length : 0);
 		int ok = 0;
-		//image = image.
+		// image = image.
 		int rPrim = primary.getRed();
 		int gPrim = primary.getGreen();
 		int bPrim = primary.getBlue();
@@ -106,16 +98,15 @@ public class Glyph
 				continue;
 			}
 			int argb = image.getRGB(x, y);
-			int r = (argb>>16)&0xFF;
-			int g = (argb>>8)&0xFF;
-			int b = (argb>>0)&0xFF;
-			if(!(Math.abs((rPrim-r)/255.0f) <= tolerance &&
-					Math.abs((gPrim-g)/255.0f) <= tolerance &&
-					Math.abs((bPrim-b)/255.0f) <= tolerance)) 
+			int r = (argb >> 16) & 0xFF;
+			int g = (argb >> 8) & 0xFF;
+			int b = (argb >> 0) & 0xFF;
+			if (!(Math.abs((rPrim - r) / 255.0f) <= tolerance && Math.abs((gPrim - g) / 255.0f) <= tolerance
+					&& Math.abs((bPrim - b) / 255.0f) <= tolerance))
 				continue;
 			ok++;
 		}
-		if(this.negativePixels != null) {
+		if (this.negativePixels != null) {
 			// check for negatives
 			for (int i = 0; i < negativePixels.length; i++) {
 				int x = Math.round(negativePixels[i][0]);
@@ -125,56 +116,59 @@ public class Glyph
 					continue;
 				}
 				int argb = image.getRGB(x, y);
-				int r = (argb>>16)&0xFF;
-				int g = (argb>>8)&0xFF;
-				int b = (argb>>0)&0xFF;
-				if((Math.abs((rPrim-r)/255.0f) <= tolerance &&
-						Math.abs((gPrim-g)/255.0f) <= tolerance &&
-						Math.abs((bPrim-b)/255.0f) <= tolerance)) {
-					System.out.println("Negative misses " +x +", " + y);
+				int r = (argb >> 16) & 0xFF;
+				int g = (argb >> 8) & 0xFF;
+				int b = (argb >> 0) & 0xFF;
+				if ((Math.abs((rPrim - r) / 255.0f) <= tolerance && Math.abs((gPrim - g) / 255.0f) <= tolerance
+						&& Math.abs((bPrim - b) / 255.0f) <= tolerance)) {
+					System.out.println("Negative misses " + x + ", " + y);
 					continue;
 				}
 				ok++;
 			}
 		}
-		return ok/totalPoints;
+		return ok / totalPoints;
 	}
 
 	public char getChar() {
 		// TODO Auto-generated method stub
 		return this.character;
 	}
-	
+
 	public int getBaseFontSize() {
 		return baseFontSize;
 	}
+
 	/**
-	 * Creates a glyph from a filter. Positive pixels are from Black dots, negatives from all other  
+	 * Creates a glyph from a filter. Positive pixels are from Black dots,
+	 * negatives from all other
+	 * 
 	 * @param character
 	 * @param filter
 	 * @return
 	 */
-	public static Glyph fromFilter(char character, Filter filter, int fontSize) 
-	{
+	public static Glyph fromFilter(char character, Filter filter, int fontSize) {
 		List<int[]> positivePixels = new LinkedList<>();
 		List<int[]> negativePixels = new LinkedList<>();
-		for(int i=0;i<filter.points.length;i++) 
-		{
+		for (int i = 0; i < filter.points.length; i++) {
 			int[] pixel = filter.points[i];
-			if (pixel[2]/255.0 < 0.06d && pixel[3]/255.0 < 0.06d && pixel[3]/255.0 < 0.06d)
-				positivePixels.add(new int[]{pixel[0], pixel[1]});
+			if (pixel[2] / 255.0 < 0.06d && pixel[3] / 255.0 < 0.06d && pixel[3] / 255.0 < 0.06d)
+				positivePixels.add(new int[] { pixel[0], pixel[1] });
 			else
-				negativePixels.add(new int[]{pixel[0], pixel[1]});
+				negativePixels.add(new int[] { pixel[0], pixel[1] });
 		}
-		
-		return new Glyph(character, fontSize, positivePixels.size() == 0 ? null : positivePixels.toArray(new int[][]{{}}), negativePixels.size() == 0 ? null : negativePixels.toArray(new int[][]{{}}));
+
+		return new Glyph(character, fontSize,
+				positivePixels.size() == 0 ? null : positivePixels.toArray(new int[][] { {} }),
+				negativePixels.size() == 0 ? null : negativePixels.toArray(new int[][] { {} }));
 	}
-	
+
 	public static void main(String[] args) throws IOException {
 		List<OWItem> items = OWLib.getInstance().getItems("ocr_primary_font");
 		for (OWItem owItem : items) {
 			if (owItem.hasFilter()) {
-				Glyph g = fromFilter(owItem.getItemName().charAt(0) == '_' ? ':' : owItem.getItemName().charAt(0), owItem.getFilter(), 55);
+				Glyph g = fromFilter(owItem.getItemName().charAt(0) == '_' ? ':' : owItem.getItemName().charAt(0),
+						owItem.getFilter(), 55);
 				owItem.saveGlyph(g);
 			}
 		}
@@ -194,7 +188,7 @@ public class Glyph
 		testGlyph("ocr_primary_font", "7");
 		testGlyph("ocr_primary_font", "8");
 		testGlyph("ocr_primary_font", "9");
-		
+
 		testGlyph("ocr_secondary_font", "1");
 		testGlyph("ocr_secondary_font", "2");
 		testGlyph("ocr_secondary_font", "3");
@@ -204,16 +198,16 @@ public class Glyph
 		testGlyph("ocr_secondary_font", "7");
 		testGlyph("ocr_secondary_font", "8");
 		testGlyph("ocr_secondary_font", "9");
-		
+
 		System.exit(0);
 	}
-	
-	private static void testGlyph(String category, String itemId) 
-	{
-		System.out.println("Category: " + category + ", glyph: " +itemId);
+
+	private static void testGlyph(String category, String itemId) {
+		System.out.println("Category: " + category + ", glyph: " + itemId);
 		Glyph g2 = OWLib.getInstance().getItem(category, itemId).getGlyph();
 		BufferedImage b = OWLib.getInstance().getItem(category, itemId).getTemplate();
-		System.out.println("    Matched: " + g2.match(b, Color.BLACK, 0.06f) + ", Percentage: " +Math.round(g2.matchPercentage(b, Color.BLACK, 0.06f)*100) );
+		System.out.println("    Matched: " + g2.match(b, Color.BLACK, 0.06f) + ", Percentage: "
+				+ Math.round(g2.matchPercentage(b, Color.BLACK, 0.06f) * 100));
 		System.out.println();
 	}
 }

@@ -26,8 +26,7 @@ import de.rcblum.overcollect.data.OWCharacterStats;
 import de.rcblum.overcollect.data.OWMatch;
 import de.rcblum.overcollect.data.OWMatch.Result;
 
-public class XSSFExporter 
-{
+public class XSSFExporter {
 	private List<OWMatch> matches = null;
 
 	private List<String> maps = null;
@@ -35,18 +34,16 @@ public class XSSFExporter
 	private List<OWItem> heroes = null;
 
 	private XSSFWorkbook workbook = null;
-	
-	public XSSFExporter()
-	{
+
+	public XSSFExporter() {
 		this.matches = OWLib.getInstance().getMatches().stream()
 				.sorted((m1, m2) -> m1.getStartTime().compareTo(m2.getStartTime())).collect(Collectors.toList());
 		this.heroes = OWLib.getInstance().getHeroes();
 		this.maps = OWLib.getInstance().getMaps();
 		this.workbook = new XSSFWorkbook();
 	}
-	
-	public XSSFSheet generateMatchSheet() 
-	{
+
+	public XSSFSheet generateMatchSheet() {
 		XSSFSheet sheet = null;
 		sheet = workbook.createSheet("match_data");
 		int rowIndex = 0;
@@ -71,8 +68,7 @@ public class XSSFExporter
 		c.setCellValue("Match ID");
 		CellStyle cellStyle = workbook.createCellStyle();
 		CreationHelper createHelper = workbook.getCreationHelper();
-		cellStyle.setDataFormat(
-		    createHelper.createDataFormat().getFormat("DD.MM.YYYY hh:mm:ss"));
+		cellStyle.setDataFormat(createHelper.createDataFormat().getFormat("DD.MM.YYYY hh:mm:ss"));
 		// Set values
 		OWMatch previousMatch = null;
 		for (OWMatch match : matches) {
@@ -95,30 +91,33 @@ public class XSSFExporter
 			c = row.createCell(cellIndex++);
 			c.setCellValue(match.getSr());
 			c = row.createCell(cellIndex++);
-			c.setCellValue(match.getSr()-(previousMatch != null ? previousMatch.getSr() : match.getSr()));
+			c.setCellValue(match.getSr() - (previousMatch != null ? previousMatch.getSr() : match.getSr()));
 			c = row.createCell(cellIndex++);
 			c.setCellValue(match.getMatchId());
 			previousMatch = match;
 		}
 		return sheet;
 	}
-	
-	
-	public void generateHeroSheets() 
-	{
+
+	public void generateHeroSheets() {
 		for (OWItem hero : heroes) {
 			this.createHeroSheet(hero);
 		}
 	}
-	
-	private XSSFSheet createHeroSheet(OWItem hero) 
-	{
+
+	private XSSFSheet createHeroSheet(OWItem hero) {
 		String heroName = hero.getItemName();
 		Set<String> secondaryStats = hero.getOCRConfiguration().secondaryValues.keySet();
 		XSSFSheet sheet = null;
 		System.out.println("Hero: " + hero.getItemName() + " ");
-		List<OWMatch> heroMatches = this.matches;//.stream().filter(m -> m.getCharacterStats().stream().anyMatch(j -> heroName.equals(j.getName()))).collect(Collectors.toList());
-		List<OWMatch> foundMatches = this.matches.stream().filter(m -> m.getCharacterStats().stream().anyMatch(j -> heroName.equals(j.getName()))).collect(Collectors.toList());;
+		List<OWMatch> heroMatches = this.matches;// .stream().filter(m ->
+													// m.getCharacterStats().stream().anyMatch(j
+													// ->
+													// heroName.equals(j.getName()))).collect(Collectors.toList());
+		List<OWMatch> foundMatches = this.matches.stream()
+				.filter(m -> m.getCharacterStats().stream().anyMatch(j -> heroName.equals(j.getName())))
+				.collect(Collectors.toList());
+		;
 		System.out.println("Matches: " + foundMatches.size());
 		System.out.println();
 		if (foundMatches.size() > 0) {
@@ -159,7 +158,7 @@ public class XSSFExporter
 			c.setCellValue("K/D");
 			for (String secondaryStat : secondaryStats) {
 				c = row.createCell(cIndex++);
-				c.setCellValue(secondaryStat);	
+				c.setCellValue(secondaryStat);
 			}
 			c = row.createCell(cIndex++);
 			c.setCellValue("SR after Match");
@@ -170,10 +169,8 @@ public class XSSFExporter
 			CellStyle cellStyleDate = workbook.createCellStyle();
 			CellStyle cellStylePercentage = workbook.createCellStyle();
 			CreationHelper createHelper = workbook.getCreationHelper();
-			cellStyleDate.setDataFormat(
-			    createHelper.createDataFormat().getFormat("DD.MM.YYYY hh:mm:ss"));
-			cellStylePercentage.setDataFormat(
-				    createHelper.createDataFormat().getFormat("0%"));
+			cellStyleDate.setDataFormat(createHelper.createDataFormat().getFormat("DD.MM.YYYY hh:mm:ss"));
+			cellStylePercentage.setDataFormat(createHelper.createDataFormat().getFormat("0%"));
 
 			OWMatch previousMatch = null;
 			double kills = 0;
@@ -201,10 +198,11 @@ public class XSSFExporter
 					games++;
 					wins += (match.getResult() == Result.VICTORY ? 1 : 0);
 					c = row.createCell(cellIndex++);
-					c.setCellValue(wins/games);
+					c.setCellValue(wins / games);
 					c.setCellStyle(cellStylePercentage);
 					// Hero Stats
-					Optional<OWCharacterStats> statOptional = match.getCharacterStats().stream().filter(i -> i.getName().equals(heroName)).findFirst();
+					Optional<OWCharacterStats> statOptional = match.getCharacterStats().stream()
+							.filter(i -> i.getName().equals(heroName)).findFirst();
 					c = row.createCell(cellIndex++);
 					c.setCellValue(statOptional.isPresent() ? statOptional.get().getName() : "");
 					c = row.createCell(cellIndex++);
@@ -221,18 +219,20 @@ public class XSSFExporter
 					c.setCellValue(statOptional.isPresent() ? statOptional.get().getDeaths() : 0);
 					deaths += statOptional.get().getDeaths();
 					kills += statOptional.get().getEliminations();
-					double kd =kills/(deaths == 0 ? 1 : deaths);
+					double kd = kills / (deaths == 0 ? 1 : deaths);
 					c = row.createCell(cellIndex++);
 					c.setCellValue(kd);
-					Map<String, Integer> sStats = statOptional.isPresent() ? statOptional.get().getSecondaryStats() : new HashMap<>();
+					Map<String, Integer> sStats = statOptional.isPresent() ? statOptional.get().getSecondaryStats()
+							: new HashMap<>();
 					for (String secondaryStat : secondaryStats) {
 						c = row.createCell(cellIndex++);
-						c.setCellValue(sStats.get(secondaryStat));	
+						c.setCellValue(sStats.get(secondaryStat));
 					}
 					c = row.createCell(cellIndex++);
 					c.setCellValue(match.getSr());
 					c = row.createCell(cellIndex++);
-					c.setCellValue(match.getSr()-(previousMatch != null && previousMatch.getSr() != -1 ? previousMatch.getSr() : match.getSr()));
+					c.setCellValue(match.getSr() - (previousMatch != null && previousMatch.getSr() != -1
+							? previousMatch.getSr() : match.getSr()));
 					c = row.createCell(cellIndex++);
 					c.setCellValue(match.getMatchId());
 				}
@@ -242,9 +242,8 @@ public class XSSFExporter
 		return sheet;
 	}
 
-	public void save(Path path) 
-	{
-		try (OutputStream out = Files.newOutputStream(path)){
+	public void save(Path path) {
+		try (OutputStream out = Files.newOutputStream(path)) {
 			workbook.write(out);
 			System.out.println("Excel written successfully..");
 		} catch (FileNotFoundException e) {
@@ -253,14 +252,13 @@ public class XSSFExporter
 			e.printStackTrace();
 		}
 	}
-	
-	public static void main(String[] args) 
-	{
+
+	public static void main(String[] args) {
 		XSSFExporter eExport = new XSSFExporter();
 		eExport.generateMatchSheet();
 		eExport.generateHeroSheets();
 		eExport.save(Paths.get("export.xlsx"));
-		
+
 	}
-	
+
 }

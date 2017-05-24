@@ -35,11 +35,11 @@ public class JTestCaptureFrame extends JFrame implements ImageListener {
 	 * 
 	 */
 	private static final long serialVersionUID = -6380383693767869767L;
-	
+
 	private JPanel contentPane;
 	private JLabel pImage;
 	private JComboBox<GraphicsDevice> cboxDevices;
-	
+
 	private CaptureEngine engine = null;
 	private JCheckBox chckbxPreview;
 	private JPanel panel;
@@ -63,7 +63,8 @@ public class JTestCaptureFrame extends JFrame implements ImageListener {
 
 	/**
 	 * Create the frame.
-	 * @throws AWTException 
+	 * 
+	 * @throws AWTException
 	 */
 	public JTestCaptureFrame() throws AWTException {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -72,11 +73,11 @@ public class JTestCaptureFrame extends JFrame implements ImageListener {
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(new BorderLayout(0, 0));
-		
+
 		pImage = new JLabel();
 		contentPane.add(pImage, BorderLayout.CENTER);
 		GraphicsDevice[] devices = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
-		
+
 		panel = new JPanel();
 		contentPane.add(panel, BorderLayout.WEST);
 		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
@@ -99,26 +100,26 @@ public class JTestCaptureFrame extends JFrame implements ImageListener {
 				}
 			}
 		});
-		
+
 		chckbxPreview = new JCheckBox("Preview");
 		chckbxPreview.setAlignmentX(Component.RIGHT_ALIGNMENT);
 		chckbxPreview.setAlignmentY(Component.TOP_ALIGNMENT);
 		chckbxPreview.setSelected(true);
 		panel.add(chckbxPreview);
-		
+
 		panel_1 = new JPanel();
 		FlowLayout flowLayout = (FlowLayout) panel_1.getLayout();
 		flowLayout.setAlignment(FlowLayout.LEFT);
 		panel.add(panel_1);
 		this.engine.addImageListener(this);
 		SwingUtilities.invokeLater(new Runnable() {
-			
+
 			@Override
 			public void run() {
 				engine.start();
 			}
 		});
-		
+
 	}
 
 	@Override
@@ -128,25 +129,23 @@ public class JTestCaptureFrame extends JFrame implements ImageListener {
 		else
 			this.pImage.setIcon(null);
 	}
-	
-	
-	private Image getScaledImage(Image srcImg, int w, int h){
+
+	private Image getScaledImage(Image srcImg, int w, int h) {
 		float srcW = srcImg.getWidth(null);
 		int srcH = srcImg.getHeight(null);
-		if(srcW / srcH > w / (float)h) {
+		if (srcW / srcH > w / (float) h) {
 			h = (int) (w / (srcW / srcH));
-		}
-		else {
+		} else {
 			w = (int) (h * (srcW / srcH));
 		}
-	    BufferedImage resizedImg = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
-	    Graphics2D g2 = resizedImg.createGraphics();
+		BufferedImage resizedImg = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+		Graphics2D g2 = resizedImg.createGraphics();
 
-	    g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-	    g2.drawImage(srcImg, 0, 0, w, h, null);
-	    g2.dispose();
+		g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+		g2.drawImage(srcImg, 0, 0, w, h, null);
+		g2.dispose();
 
-	    return resizedImg;
+		return resizedImg;
 	}
 
 }

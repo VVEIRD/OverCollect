@@ -14,20 +14,18 @@ import javax.imageio.ImageIO;
 import de.rcblum.overcollect.configuration.OWLib;
 import de.rcblum.overcollect.ui.panels.JMapPanel;
 
-public class ImageCache 
-{
-	
+public class ImageCache {
+
 	private static Map<String, BufferedImage> images = new HashMap<>();
 
-	public static BufferedImage getImage(URL url) 
-	{
+	public static BufferedImage getImage(URL url) {
 		if (images.containsKey(url.toString()))
 			return images.get(url.toString());
 		BufferedImage image = null;
-		String filename = url.toString().substring(url.toString().lastIndexOf('/')+1);
+		String filename = url.toString().substring(url.toString().lastIndexOf('/') + 1);
 		Path cacheRoot = OWLib.getInstance().getTempPath().resolve("cache");
 		Path cachFile = OWLib.getInstance().getTempPath().resolve("cache").resolve(filename);
-		
+
 		if (!Files.exists(cacheRoot))
 			try {
 				Files.createDirectories(cacheRoot);
@@ -44,9 +42,10 @@ public class ImageCache
 		}
 		if (image == null && url != null) {
 			try {
-			    image = ImageIO.read(url);
-			    if (image != null)
-			    	ImageIO.write(image, filename.substring(filename.lastIndexOf(".")+1).toUpperCase(), cachFile.toFile());
+				image = ImageIO.read(url);
+				if (image != null)
+					ImageIO.write(image, filename.substring(filename.lastIndexOf(".") + 1).toUpperCase(),
+							cachFile.toFile());
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -54,9 +53,8 @@ public class ImageCache
 		images.put(url.toString(), image);
 		return image;
 	}
-	
-	public static BufferedImage getImageFromResource(String resourcePath) 
-	{
+
+	public static BufferedImage getImageFromResource(String resourcePath) {
 		if (images.containsKey(resourcePath))
 			return images.get(resourcePath);
 		BufferedImage img = null;

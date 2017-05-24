@@ -32,14 +32,15 @@ public class JMapPanel extends JPanel {
 	private static final long serialVersionUID = 6792531438908056066L;
 
 	private BufferedImage background = null;
-	
+
 	private BufferedImage _draw = new BufferedImage(220, 123, BufferedImage.TYPE_INT_ARGB);
-	
+
 	private BufferedImage defaultBackground = null;
 
-	private  JLabel2D lblMap = null;
-	
-	private  JLabel2D lblRecording = null;
+	private JLabel2D lblMap = null;
+
+	private JLabel2D lblRecording = null;
+
 	/**
 	 * Create the panel.
 	 */
@@ -62,10 +63,10 @@ public class JMapPanel extends JPanel {
 		Font textFont = UiStatics.OW_FONT_ITALIC.deriveFont(Font.PLAIN, 35).deriveFont(attributes);
 		lblMap.setFont(textFont);
 		lblMap.setForeground(Color.YELLOW);
-		//lblMap.setBorder(new LineBorder(Color.black));
+		// lblMap.setBorder(new LineBorder(Color.black));
 		lblMap.setStroke(new BasicStroke(2.5f));
 
-		lblMap.setOutlineColor(Color.BLACK); //new Color(20, 20, 20)
+		lblMap.setOutlineColor(Color.BLACK); // new Color(20, 20, 20)
 		lblMap.setBounds(0, 11, 220, 43);
 		add(lblMap);
 		//
@@ -74,35 +75,36 @@ public class JMapPanel extends JPanel {
 		lblRecording.setHorizontalAlignment(SwingConstants.CENTER);
 		lblRecording.setFont(textFont);
 		lblRecording.setForeground(Color.YELLOW);
-		//lblMap.setBorder(new LineBorder(Color.black));
+		// lblMap.setBorder(new LineBorder(Color.black));
 		lblRecording.setStroke(new BasicStroke(2.5f));
 
-		lblRecording.setOutlineColor(Color.BLACK); //new Color(20, 20, 20)
+		lblRecording.setOutlineColor(Color.BLACK); // new Color(20, 20, 20)
 		lblRecording.setBounds(0, 80, 220, 43);
 		add(lblRecording);
 	}
-	
+
 	@Override
-	protected void paintComponent(Graphics g) 
-	{
+	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		if (background != null || defaultBackground != null) {
-			drawBackground((Graphics2D)g, background != null ? background : defaultBackground);
+			drawBackground((Graphics2D) g, background != null ? background : defaultBackground);
 			g.setColor(new Color(200, 200, 200, 70));
-			if (background != null )
+			if (background != null)
 				g.fillRect(0, 0, this.getWidth(), this.getHeight());
 		}
 	}
-	private void drawBackground(Graphics2D g2d, BufferedImage img) { 
-    	Image tmp = img.getScaledInstance(this.getWidth()
-    			, (int) (img.getHeight()*((float)this.getWidth())/img.getWidth())
-    			, Image.SCALE_SMOOTH);
-	    g2d.drawImage(tmp, 0, 0, null);
+
+	private void drawBackground(Graphics2D g2d, BufferedImage img) {
+		Image tmp = img.getScaledInstance(this.getWidth(),
+				(int) (img.getHeight() * ((float) this.getWidth()) / img.getWidth()), Image.SCALE_SMOOTH);
+		g2d.drawImage(tmp, 0, 0, null);
 	}
-	
-	public void setMap(String name, BufferedImage background)
-	{
-		this.background = background;// != null ? resize(background, this.getWidth(), (int) (background.getHeight()*((float)this.getWidth())/background.getWidth())) : null;
+
+	public void setMap(String name, BufferedImage background) {
+		this.background = background;// != null ? resize(background,
+										// this.getWidth(), (int)
+										// (background.getHeight()*((float)this.getWidth())/background.getWidth()))
+										// : null;
 		Map<TextAttribute, Object> attributes = new HashMap<>();
 		attributes.put(TextAttribute.TRACKING, 0.05);
 		int fontSize = 35;
@@ -117,22 +119,21 @@ public class JMapPanel extends JPanel {
 		repaint();
 	}
 
-	public void setBackgroundImage(BufferedImage background) 
-	{
-		this.background = background;// != null ? resize(background, this.getWidth(), (int) (background.getHeight()*((float)this.getWidth())/background.getWidth())) : null;
+	public void setBackgroundImage(BufferedImage background) {
+		this.background = background;// != null ? resize(background,
+										// this.getWidth(), (int)
+										// (background.getHeight()*((float)this.getWidth())/background.getWidth()))
+										// : null;
 		repaint();
 	}
-	
-	public void setSecondText(String stext)
-	{
+
+	public void setSecondText(String stext) {
 		this.lblRecording.setText(stext != null && stext.length() > 0 ? stext : " ");
 	}
-	
-	
 
-	
 	public static void main(String[] args) throws IOException, InterruptedException {
-		BufferedImage bImg = ImageIO.read(new File("C:\\Java-Projekte\\OverCollect\\lib\\owdata\\1920x1080\\_Volskaya_Industries\\template.png"));
+		BufferedImage bImg = ImageIO.read(
+				new File("C:\\Java-Projekte\\OverCollect\\lib\\owdata\\1920x1080\\_Volskaya_Industries\\template.png"));
 		JFrame f = new JFrame("");
 		JMapPanel mapPanel = new JMapPanel();
 		f.getContentPane().add(mapPanel);
@@ -142,7 +143,8 @@ public class JMapPanel extends JPanel {
 		Thread.sleep(5_000);
 		mapPanel.setMap("Volskaya Industries", bImg);
 		Thread.sleep(5_000);
-		bImg = ImageIO.read(new File("C:\\Java-Projekte\\OverCollect\\lib\\owdata\\1920x1080\\_Temple_of_Anubis\\template.png"));
+		bImg = ImageIO.read(
+				new File("C:\\Java-Projekte\\OverCollect\\lib\\owdata\\1920x1080\\_Temple_of_Anubis\\template.png"));
 		mapPanel.setMap("Temple of Anubis", bImg);
 	}
 }

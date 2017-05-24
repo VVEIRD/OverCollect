@@ -19,19 +19,19 @@ import de.rcblum.overcollect.utils.CacheOptional;
 
 /**
  * Configuration item for detecting, extracting and configuring data for
- * overwatch from screenshots taken while playing a comp match.
- * ALl OWItems will be loaded by {@link OWLib} from the library path, for detailed information see {@link OWLib}.
+ * overwatch from screenshots taken while playing a comp match. ALl OWItems will
+ * be loaded by {@link OWLib} from the library path, for detailed information
+ * see {@link OWLib}.
  * 
  * @author rcBlum
  *
  */
-public class OWItem 
-{
+public class OWItem {
 
 	private String category = null;
-	
+
 	private String itemName = null;
-	
+
 	private String libPath = null;
 
 	/**
@@ -43,19 +43,19 @@ public class OWItem
 	 * Filter to match against items relevant for this item
 	 */
 	private transient Filter filter = null;
-	
+
 	/**
 	 * configuration for extracting text from a captured screenshot.
 	 */
 	private transient OCRConfiguration ocr = null;
-	
+
 	/**
-	 * Like filter a matcher to test if an image is in fact a glyph, that can be extracted. 
+	 * Like filter a matcher to test if an image is in fact a glyph, that can be
+	 * extracted.
 	 */
 	private transient Glyph glyph = null;
-	
-	public OWItem(String category, String itemName, String libPath) 
-	{
+
+	public OWItem(String category, String itemName, String libPath) {
 		super();
 		this.category = category;
 		this.itemName = itemName;
@@ -64,134 +64,147 @@ public class OWItem
 	}
 
 	/**
-	 * Returns the category of the item, for filters & co its the screen resolution in String form, e.G. "1920x1080".
-	 * For glyphs of the primary stats its ocr_primary_font, for the secondary stats its ocr_secondary_font 
+	 * Returns the category of the item, for filters & co its the screen
+	 * resolution in String form, e.G. "1920x1080". For glyphs of the primary
+	 * stats its ocr_primary_font, for the secondary stats its
+	 * ocr_secondary_font
+	 * 
 	 * @return
 	 */
-	public String getCategory() 
-	{
+	public String getCategory() {
 		return category;
 	}
 
 	/**
-	 * Sets the screen resolution this item is configured for. Do not use if you are not shure that the item works for the new Screen resolution
+	 * Sets the screen resolution this item is configured for. Do not use if you
+	 * are not shure that the item works for the new Screen resolution
+	 * 
 	 * @param resolution
 	 */
-	public void setResolution(String resolution) 
-	{
+	public void setResolution(String resolution) {
 		this.category = resolution;
 	}
 
 	/**
-	 * Returns the item name, for Heroes it the heroname, for map its the map name.
+	 * Returns the item name, for Heroes it the heroname, for map its the map
+	 * name.
+	 * 
 	 * @return
 	 */
-	public String getItemName() 
-	{
+	public String getItemName() {
 		return itemName;
 	}
 
 	/**
-	 * Sets the name of the item, this is only temporally, as the items are loaded from the library at program start
+	 * Sets the name of the item, this is only temporally, as the items are
+	 * loaded from the library at program start
+	 * 
 	 * @param itemName
 	 */
-	public void setItemName(String itemName)
-	{
+	public void setItemName(String itemName) {
 		this.itemName = itemName;
 	}
 
 	/**
 	 * Returns the library path for this item
+	 * 
 	 * @return Path to the library
 	 */
-	public String getLibPath() 
-	{
+	public String getLibPath() {
 		return libPath;
 	}
 
 	/**
 	 * Sets the library path this item is containt within
+	 * 
 	 * @param libPath
 	 */
-	public void setLibPath(String libPath)
-	{
+	public void setLibPath(String libPath) {
 		this.libPath = libPath;
 	}
 
 	/**
 	 * Reutnrs if the item has a filter, to match screenshots against.
-	 * @return <code>True</code> if a {@link Filter} is present, <code>false</code> if not
+	 * 
+	 * @return <code>True</code> if a {@link Filter} is present,
+	 *         <code>false</code> if not
 	 */
-	public boolean hasFilter() 
-	{
+	public boolean hasFilter() {
 		return Files.exists(Paths.get(libPath, category, itemName, "filter.json"));
 	}
 
 	/**
 	 * Returns if the item has a template Screenshot attached to it
-	 * @return <code>true</code> if there is an screenshot, <code>false</code> if not
+	 * 
+	 * @return <code>true</code> if there is an screenshot, <code>false</code>
+	 *         if not
 	 */
-	public boolean hasTemplate() 
-	{
+	public boolean hasTemplate() {
 		return Files.exists(Paths.get(libPath, category, itemName, "template.png"));
 	}
 
 	/**
-	 * Returns if the item has an OCR filter present, to extract text from the captured screenshot.
-	 * @return <code>True</code> if {@link OCRConfiguration} is present, <code>false</code> if not
+	 * Returns if the item has an OCR filter present, to extract text from the
+	 * captured screenshot.
+	 * 
+	 * @return <code>True</code> if {@link OCRConfiguration} is present,
+	 *         <code>false</code> if not
 	 */
-	public boolean hasOCRConfiguration() 
-	{
+	public boolean hasOCRConfiguration() {
 		return Files.exists(Paths.get(libPath, category, itemName, "ocr_fields.json"));
 	}
 
 	/**
-	 * Returns if this represents a glyph (0..9) and ahs a Glyph-Object to test an image against
+	 * Returns if this represents a glyph (0..9) and ahs a Glyph-Object to test
+	 * an image against
+	 * 
 	 * @return <code>true</code> if item is a glyph, <code>false</code> if not
 	 */
-	public boolean hasGlyph() 
-	{
+	public boolean hasGlyph() {
 		return Files.exists(Paths.get(libPath, category, itemName, "glyph.json"));
 	}
 
 	/**
 	 * Returns if the captrured Screen contains stats of an hero
-	 * @return <code>true</code> if screenshot contains hero stats, <code>false</code> if not
+	 * 
+	 * @return <code>true</code> if screenshot contains hero stats,
+	 *         <code>false</code> if not
 	 */
-	public boolean isHero() 
-	{
+	public boolean isHero() {
 		return Files.exists(Paths.get(libPath, category, itemName, "hero"));
 	}
 
 	/**
 	 * Returns if the Item representátes a map
-	 * @return <code>true</code> if filtered screenshots represents a map, <code>false</code> if not
+	 * 
+	 * @return <code>true</code> if filtered screenshots represents a map,
+	 *         <code>false</code> if not
 	 */
-	public boolean isMap() 
-	{
+	public boolean isMap() {
 		return Files.exists(Paths.get(libPath, category, itemName, "map"));
 	}
 
 	/**
 	 * Returns if the Item should not be processed further
-	 * @return <code>true</code> if filtered screenshots represents a map, <code>false</code> if not
+	 * 
+	 * @return <code>true</code> if filtered screenshots represents a map,
+	 *         <code>false</code> if not
 	 */
-	public boolean drop() 
-	{
+	public boolean drop() {
 		return Files.exists(Paths.get(libPath, category, itemName, "drop"));
 	}
-	
+
 	/**
 	 * Returns if this item starts a new Match
-	 * @return <code>true</code> if item is a Match indicator, <code>false</code> if it is not.
+	 * 
+	 * @return <code>true</code> if item is a Match indicator,
+	 *         <code>false</code> if it is not.
 	 */
-	public boolean isMatchIndicator()
-	{
+	public boolean isMatchIndicator() {
 		return Files.exists(Paths.get(libPath, category, itemName, "matchindicator"));
 	}
-	
-	public Filter getFilter() 
-	{
+
+	public Filter getFilter() {
 		if (this.filter != null)
 			return this.filter;
 		Gson gson = new Gson();
@@ -206,9 +219,8 @@ public class OWItem
 		}
 		return filter;
 	}
-	
-	public Glyph getGlyph() 
-	{
+
+	public Glyph getGlyph() {
 		if (this.glyph != null)
 			return this.glyph;
 		Gson gson = new Gson();
@@ -223,9 +235,8 @@ public class OWItem
 		}
 		return glyph;
 	}
-	
-	public OCRConfiguration getOCRConfiguration() 
-	{
+
+	public OCRConfiguration getOCRConfiguration() {
 		if (this.ocr != null)
 			return this.ocr;
 		Gson gson = new Gson();
@@ -240,9 +251,8 @@ public class OWItem
 		}
 		return ocr;
 	}
-	
-	public BufferedImage getTemplate() 
-	{
+
+	public BufferedImage getTemplate() {
 		if (this.template.isPresent())
 			return this.template.get();
 		Path templateFile = Paths.get(this.libPath, this.category, this.itemName, "template.png");
@@ -255,59 +265,51 @@ public class OWItem
 		}
 		return template.isPresent() ? template.get() : null;
 	}
-	
-	public void saveFilter(Filter f) throws IOException
-	{
+
+	public void saveFilter(Filter f) throws IOException {
 		this.filter = f;
 		Filter.save(this.libPath, this.category, this.itemName, f);
 	}
-	
-	public void saveGlyph(Glyph f) throws IOException
-	{
+
+	public void saveGlyph(Glyph f) throws IOException {
 		this.glyph = f;
 		Glyph.save(this.libPath, this.category, this.itemName, f);
 	}
 
-	public void saveOCRConfiguration(OCRConfiguration ocr) throws IOException 
-	{
+	public void saveOCRConfiguration(OCRConfiguration ocr) throws IOException {
 		this.ocr = ocr;
 		OCRConfiguration.save(this.libPath, this.category, this.itemName, ocr);
 	}
 
-	public void setMap(boolean selected) throws IOException 
-	{
+	public void setMap(boolean selected) throws IOException {
 		if (selected && !Files.exists(Paths.get(libPath, category, itemName, "map")))
 			Files.createFile(Paths.get(libPath, category, itemName, "map"));
 		else if (!selected && Files.exists(Paths.get(libPath, category, itemName, "map")))
 			Files.delete(Paths.get(libPath, category, itemName, "map"));
 	}
 
-	public void setDrop(boolean selected) throws IOException 
-	{
+	public void setDrop(boolean selected) throws IOException {
 		if (selected && !Files.exists(Paths.get(libPath, category, itemName, "drop")))
 			Files.createFile(Paths.get(libPath, category, itemName, "drop"));
 		else if (!selected && Files.exists(Paths.get(libPath, category, itemName, "drop")))
 			Files.delete(Paths.get(libPath, category, itemName, "drop"));
 	}
 
-	public void setHero(boolean selected) throws IOException 
-	{
+	public void setHero(boolean selected) throws IOException {
 		if (selected && !Files.exists(Paths.get(libPath, category, itemName, "hero")))
 			Files.createFile(Paths.get(libPath, category, itemName, "hero"));
 		else if (!selected && Files.exists(Paths.get(libPath, category, itemName, "hero")))
 			Files.delete(Paths.get(libPath, category, itemName, "hero"));
 	}
 
-	public void setMatchIndicator(boolean selected) throws IOException 
-	{
+	public void setMatchIndicator(boolean selected) throws IOException {
 		if (selected && !Files.exists(Paths.get(libPath, category, itemName, "matchindicator")))
 			Files.createFile(Paths.get(libPath, category, itemName, "matchindicator"));
 		else if (!selected && Files.exists(Paths.get(libPath, category, itemName, "matchindicator")))
 			Files.delete(Paths.get(libPath, category, itemName, "matchindicator"));
 	}
 
-	public void setGlyph(boolean selected, int fontSize) throws IOException 
-	{
+	public void setGlyph(boolean selected, int fontSize) throws IOException {
 		if (selected)
 			saveGlyph(Glyph.fromFilter(this.getItemName().charAt(0), this.getFilter(), fontSize));
 		else if (Files.exists(Paths.get(libPath, category, itemName, "glyph.json")))

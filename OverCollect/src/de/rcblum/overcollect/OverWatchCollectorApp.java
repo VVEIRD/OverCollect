@@ -36,27 +36,25 @@ import de.rcblum.overcollect.ui.setup.filter.JFilterTest;
 import de.rcblum.overcollect.ui.setup.ocr.JOCRSetup;
 import de.rcblum.overcollect.ui.utils.UiStatics;
 
-public class OverWatchCollectorApp
-{
+public class OverWatchCollectorApp {
 
 	private CaptureEngine captureEngine = null;
-	
+
 	private FilterEngine filterEngine = null;
-	
+
 	private MatchComposer matchComposer = null;
-	
+
 	private MatchExtractor extractor = null;
-	
-	public OverWatchCollectorApp() throws AWTException, IOException 
-	{
+
+	public OverWatchCollectorApp() throws AWTException, IOException {
 		OWLib.getInstance();
 		Path libPath = Paths.get(System.getProperties().getProperty("owcollect.lib.dir"));
 		Path dataPath = Paths.get(System.getProperties().getProperty("owcollect.data.dir"));
 		Path imagePath = Paths.get(System.getProperties().getProperty("owcollect.image.dir"));
 		Path matchPath = Paths.get(System.getProperties().getProperty("owcollect.match.dir"));
 		Path tempDir = Paths.get(System.getProperties().getProperty("owcollect.temp.dir"));
-		
-		//Make Paths if necessary
+
+		// Make Paths if necessary
 		if (!Files.exists(matchPath))
 			Files.createDirectories(matchPath);
 		if (!Files.exists(dataPath))
@@ -66,127 +64,118 @@ public class OverWatchCollectorApp
 		if (!Files.exists(tempDir))
 			Files.createDirectories(tempDir);
 		if (!Files.exists(libPath))
-			throw new FileNotFoundException("Library \"" + libPath.toAbsolutePath().toString() + "\" not found, installation must be corrupt");
-		
-		
+			throw new FileNotFoundException(
+					"Library \"" + libPath.toAbsolutePath().toString() + "\" not found, installation must be corrupt");
+
 		/**
 		 * Capture Screenshots
 		 */
 		captureEngine = new CaptureEngine();
-		
+
 		/**
 		 * Filter screenshotrs for relevant images
 		 */
 		filterEngine = new FilterEngine();
-		
+
 		/**
-		 * Compose captured screenshots into matches, discard duplicates or out of order false positives
+		 * Compose captured screenshots into matches, discard duplicates or out
+		 * of order false positives
 		 */
 		matchComposer = new MatchComposer(System.getProperties().getProperty("owcollect.match.dir"));
-		
+
 		/**
 		 * Link the filter engine to the capture process
 		 */
 		captureEngine.addImageListener(filterEngine);
-		
+
 		/**
 		 * Link composer to filter engine
 		 */
 		filterEngine.addOWItemImageListener(matchComposer);
-		
-		
+
 		try {
 			extractor = new MatchExtractor(matchPath, imagePath, dataPath);
 			matchComposer.addOWMatchListener(extractor);
 		} catch (IOException e) {
 			e.printStackTrace();
-		} 
+		}
 	}
-	
-	public void startCapture()
-	{
+
+	public void startCapture() {
 		captureEngine.start();
 	}
-	
-	public void stopCapture()
-	{
+
+	public void stopCapture() {
 		captureEngine.stop();
 	}
-	
-	public void addOWMatchListener(OWMatchListener listener)
-	{
+
+	public void addOWMatchListener(OWMatchListener listener) {
 		this.matchComposer.addOWMatchListener(listener);
 	}
-	
-	public void removeOWMatchListener(OWMatchListener listener)
-	{
+
+	public void removeOWMatchListener(OWMatchListener listener) {
 		this.matchComposer.removeOWMatchListener(listener);
 	}
-	
-	public void addOWMatchExtractionListener(OWMatchExtractionListener listener)
-	{
-		
+
+	public void addOWMatchExtractionListener(OWMatchExtractionListener listener) {
+
 		this.extractor.addExtractionListener(listener);
 	}
-	
-	public void removeOWMatchExtractionListener(OWMatchExtractionListener listener)
-	{
-		
+
+	public void removeOWMatchExtractionListener(OWMatchExtractionListener listener) {
+
 		this.extractor.removeExtractionListener(listener);
 	}
-	
-	public void addImageListener(ImageListener listener)
-	{
+
+	public void addImageListener(ImageListener listener) {
 		this.captureEngine.addImageListener(listener);
 	}
-	
-	public void removeImageListener(ImageListener listener)
-	{
+
+	public void removeImageListener(ImageListener listener) {
 		this.captureEngine.removeImageListener(listener);
 	}
 
-	public void setLibraryPath(String libPath)
-	{
+	public void setLibraryPath(String libPath) {
 		System.getProperties().setProperty("owcollect.lib.dir", libPath);
 	}
-	
-	public void setMatchPath(String matchPath)
-	{
+
+	public void setMatchPath(String matchPath) {
 		System.getProperties().setProperty("owcollect.match.dir", matchPath);
 	}
-	
+
 	//
 	// MAIN
 	//
-	
-	public static void main(String[] args) throws AWTException, IOException 
-	{
-		 try {
-	            // Set System L&F
-	        UIManager.setLookAndFeel(
-	            UIManager.getSystemLookAndFeelClassName());
-	    } 
-	    catch (UnsupportedLookAndFeelException e) {
-	       // handle exception
-	    }
-	    catch (ClassNotFoundException e) {
-	       // handle exception
-	    }
-	    catch (InstantiationException e) {
-	       // handle exception
-	    }
-	    catch (IllegalAccessException e) {
-	       // handle exception
-	    }
-//	    java.util.Enumeration keys = UIManager.getDefaults().keys();
-//	    while (keys.hasMoreElements()) {
-//	      Object key = keys.nextElement();
-//	      Object value = UIManager.get (key);
-//	      if (value != null && value instanceof javax.swing.plaf.FontUIResource)
-//		        UIManager.put (key, new javax.swing.plaf.FontUIResource(UiStatics.OW_FONT_NORMAL.deriveFont(Font.PLAIN, 18)));
-//	      if (value != null && value instanceof javax.swing.plaf.ColorUIResource && (key.toString().toLowerCase().contains("background") || key.toString().toLowerCase().contains("border")))
-//		        UIManager.put (key, new javax.swing.plaf.ColorUIResource(UiStatics.COLOR_BACKGROUND));
-//	      }
+
+	public static void main(String[] args) throws AWTException, IOException {
+		try {
+			// Set System L&F
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		} catch (UnsupportedLookAndFeelException e) {
+			// handle exception
+		} catch (ClassNotFoundException e) {
+			// handle exception
+		} catch (InstantiationException e) {
+			// handle exception
+		} catch (IllegalAccessException e) {
+			// handle exception
+		}
+		// java.util.Enumeration keys = UIManager.getDefaults().keys();
+		// while (keys.hasMoreElements()) {
+		// Object key = keys.nextElement();
+		// Object value = UIManager.get (key);
+		// if (value != null && value instanceof
+		// javax.swing.plaf.FontUIResource)
+		// UIManager.put (key, new
+		// javax.swing.plaf.FontUIResource(UiStatics.OW_FONT_NORMAL.deriveFont(Font.PLAIN,
+		// 18)));
+		// if (value != null && value instanceof
+		// javax.swing.plaf.ColorUIResource &&
+		// (key.toString().toLowerCase().contains("background") ||
+		// key.toString().toLowerCase().contains("border")))
+		// UIManager.put (key, new
+		// javax.swing.plaf.ColorUIResource(UiStatics.COLOR_BACKGROUND));
+		// }
 		System.out.println("OverCollect Version " + OWLib.VERSION_STRING);
 		System.out.println("Made By Roland von Werden");
 		System.out.println("Copyright @2017");
@@ -202,9 +191,7 @@ public class OverWatchCollectorApp
 			System.out.println("/ocr_setup                  Start OCR configuration utility");
 			System.out.println("/glyph_update               Update glyph data unsing the Filter data");
 			System.exit(0);
-		}
-		else if (args.length > 0 && args[0].equalsIgnoreCase("/filter_setup"))
-		{
+		} else if (args.length > 0 && args[0].equalsIgnoreCase("/filter_setup")) {
 			EventQueue.invokeLater(new Runnable() {
 				public void run() {
 					try {
@@ -215,9 +202,7 @@ public class OverWatchCollectorApp
 					}
 				}
 			});
-		}
-		else if (args.length > 0 && args[0].equalsIgnoreCase("/filter_test"))
-		{
+		} else if (args.length > 0 && args[0].equalsIgnoreCase("/filter_test")) {
 			EventQueue.invokeLater(new Runnable() {
 				public void run() {
 					try {
@@ -228,9 +213,7 @@ public class OverWatchCollectorApp
 					}
 				}
 			});
-		}
-		else if (args.length > 0 && args[0].equalsIgnoreCase("/ocr_setup"))
-		{
+		} else if (args.length > 0 && args[0].equalsIgnoreCase("/ocr_setup")) {
 			EventQueue.invokeLater(new Runnable() {
 				public void run() {
 					try {
@@ -241,21 +224,19 @@ public class OverWatchCollectorApp
 					}
 				}
 			});
-		}
-		else if (args.length > 0 && args[0].equalsIgnoreCase("/glyph_update")) {
+		} else if (args.length > 0 && args[0].equalsIgnoreCase("/glyph_update")) {
 			Glyph.main(args);
-		}
-		else {
+		} else {
 			OverWatchCollectorApp app = new OverWatchCollectorApp();
 			app.startCapture();
 			JOverCollectFrame f = new JOverCollectFrame(app);
-//			JOwCaptureStatus mapPanel = new JOwCaptureStatus();
-//			f.getContentPane().add(mapPanel);
-//			f.pack();
-//			f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			// JOwCaptureStatus mapPanel = new JOwCaptureStatus();
+			// f.getContentPane().add(mapPanel);
+			// f.pack();
+			// f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 			f.setVisible(true);
-//			app.addOWMatchListener(mapPanel);
-//			app.addImageListener(mapPanel);
+			// app.addOWMatchListener(mapPanel);
+			// app.addImageListener(mapPanel);
 
 		}
 		try {

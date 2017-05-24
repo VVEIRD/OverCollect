@@ -15,81 +15,73 @@ import com.google.gson.GsonBuilder;
 
 import de.rcblum.overcollect.utils.Helper;
 
-public class OWMatch 
-{
+public class OWMatch {
 
 	private final static SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-	
+
 	private String matchId = null;
-	
+
 	private String startTime = null;
-	
+
 	private String endTime = null;
-	
+
 	private Result result = Result.VICTORY;
-	
+
 	private String teamSr = null;
-	
+
 	private String enemySr = null;
 
 	private String sr = null;
-	
+
 	private String map = null;
-	
+
 	private int stacksize = 1;
-	
+
 	private List<OWCharacterStats> characterStats = new LinkedList<>();
-	
-	public OWMatch(String matchId)
-	{
-		this.matchId = matchId;	
+
+	public OWMatch(String matchId) {
+		this.matchId = matchId;
 	}
-	
+
 	public String getMatchId() {
 		return matchId;
 	}
-	
+
 	public void setMatchId(String matchId) {
 		this.matchId = matchId;
 	}
 
-	public Date getStartTime()
-	{
+	public Date getStartTime() {
 		try {
 			return SDF.parse(this.startTime);
-		} catch (ParseException | NullPointerException e ) {
+		} catch (ParseException | NullPointerException e) {
 			e.printStackTrace();
 		}
 		return null;
 	}
-	
-	public void setStartTime(String startTime) 
-	{
+
+	public void setStartTime(String startTime) {
 		this.startTime = startTime;
 	}
-	
-	public Date getEndTime()
-	{
+
+	public Date getEndTime() {
 		try {
 			return SDF.parse(this.endTime);
-		} catch (ParseException | NullPointerException e ) {
+		} catch (ParseException | NullPointerException e) {
 			e.printStackTrace();
 		}
 		return null;
 	}
-	
-	public void setEndTime(String endTime) 
-	{
+
+	public void setEndTime(String endTime) {
 		this.endTime = endTime;
 	}
-	
-	public void setStacksize(int stacksize) 
-	{
+
+	public void setStacksize(int stacksize) {
 		this.stacksize = stacksize;
 	}
-	
-	public int getStacksize()
-	{
+
+	public int getStacksize() {
 		return stacksize;
 	}
 
@@ -108,11 +100,11 @@ public class OWMatch
 	public void setResult(Result result) {
 		this.result = result;
 	}
-	
+
 	public Result getResult() {
 		return result;
 	}
-	
+
 	public String getTeamSr() {
 		return teamSr;
 	}
@@ -155,19 +147,16 @@ public class OWMatch
 		this.sr = sr;
 	}
 
-	public void addCharacterStats(OWCharacterStats cStats)
-	{
+	public void addCharacterStats(OWCharacterStats cStats) {
 		this.characterStats.add(cStats);
 	}
 
-	public String toJson() 
-	{
+	public String toJson() {
 		Gson g = new GsonBuilder().setPrettyPrinting().create();
 		return g.toJson(this);
 	}
-	
-	public static OWMatch fromJsonFile(File jFile) 
-	{
+
+	public static OWMatch fromJsonFile(File jFile) {
 		OWMatch match = null;
 		Gson g = new Gson();
 		try {
@@ -178,7 +167,7 @@ public class OWMatch
 		}
 		return match;
 	}
-	
+
 	public static enum Result {
 		VICTORY, DEFEAT, DRAW;
 	}

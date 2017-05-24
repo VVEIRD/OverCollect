@@ -17,47 +17,46 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
 
-public class OCRConfiguration 
-{
+public class OCRConfiguration {
 	private static transient Map<String, Map<String, OCRConfiguration>> configurations = new HashMap<>();
-	
+
 	public final boolean doRecolor;
 
 	/**
 	 * Fontsize in pixel of the primary values
 	 */
 	public final int fontSize;
-	
+
 	/**
 	 * color of the data
 	 */
 	public final int[] dataColor;
-	
+
 	/**
 	 * Size of the data field on screen
 	 */
 	public final int[] dataFieldSize;
-	
+
 	/**
 	 * Fontsize in pixel of the secondary values
 	 */
 	public final int secondaryFontSize;
-	
+
 	/**
 	 * color of the secondary data
 	 */
 	public final int[] secondaryDataColor;
-	
+
 	/**
 	 * Size of the secondary data field on screen
 	 */
 	public final int[] secondaryDataFieldSize;
-	
+
 	/**
 	 * Skewing of the primary datafields
 	 */
 	public final double skew;
-	
+
 	public final int skewTrim;
 
 	public final double skewSecondary;
@@ -71,8 +70,8 @@ public class OCRConfiguration
 	public final Map<String, int[]> secondaryValues;
 
 	public OCRConfiguration(Map<String, int[]> values, Map<String, int[]> secondaryValues, int[] dataFieldSize,
-			int[] secondaryDataFieldSize, int fontSize, int secondaryFontSize, double skew, double skewSecondary, int skewTrim, int skewSecondaryTrim, boolean doRecolor,
-			int[] dataColor, int[] secondaryDataColor) {
+			int[] secondaryDataFieldSize, int fontSize, int secondaryFontSize, double skew, double skewSecondary,
+			int skewTrim, int skewSecondaryTrim, boolean doRecolor, int[] dataColor, int[] secondaryDataColor) {
 		super();
 		this.dataFieldSize = dataFieldSize;
 		this.secondaryDataFieldSize = secondaryDataFieldSize;
@@ -89,22 +88,22 @@ public class OCRConfiguration
 		this.secondaryDataColor = secondaryDataColor;
 	}
 
-	public static OCRConfiguration getInstance(Dimension dimension, String alias) 
-	{
+	public static OCRConfiguration getInstance(Dimension dimension, String alias) {
 		OCRConfiguration configuration = null;
-		String resolution = ((int)dimension.getWidth()) + "x" + ((int)dimension.getHeight());
+		String resolution = ((int) dimension.getWidth()) + "x" + ((int) dimension.getHeight());
 		Gson gson = new Gson();
-		File ocrFile = new File("lib" + File.separator + "owdata" + File.separator + resolution + File.separator + alias + File.separator + "ocr_fields.json");
+		File ocrFile = new File("lib" + File.separator + "owdata" + File.separator + resolution + File.separator + alias
+				+ File.separator + "ocr_fields.json");
 		System.out.println(ocrFile.getAbsolutePath());
 		if (configurations.containsKey(resolution) && configurations.get(resolution).containsKey(alias)) {
 			return configurations.get(resolution).get(alias);
-		}
-		else if (!configurations.containsKey(resolution)) {
+		} else if (!configurations.containsKey(resolution)) {
 			configurations.put(resolution, new HashMap<>());
 		}
 		if (ocrFile.exists()) {
 			try {
-				String text = new String(Files.readAllBytes(Paths.get(ocrFile.getAbsolutePath())), StandardCharsets.UTF_8);
+				String text = new String(Files.readAllBytes(Paths.get(ocrFile.getAbsolutePath())),
+						StandardCharsets.UTF_8);
 				configuration = gson.fromJson(text, OCRConfiguration.class);
 			} catch (JsonIOException | JsonSyntaxException | IOException e) {
 				e.printStackTrace();
@@ -114,37 +113,36 @@ public class OCRConfiguration
 		return configuration;
 	}
 
-	public static void save(String libPath, String resolution, String alias, OCRConfiguration ocr) throws UnsupportedEncodingException, IOException 
-	{
+	public static void save(String libPath, String resolution, String alias, OCRConfiguration ocr)
+			throws UnsupportedEncodingException, IOException {
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
-		Path ocrFile = Paths.get(libPath, resolution, alias, "ocr_fields.json"); 
+		Path ocrFile = Paths.get(libPath, resolution, alias, "ocr_fields.json");
 		System.out.println(ocrFile.toString());
 		String text = gson.toJson(ocr);
 		Files.write(ocrFile, text.getBytes("UTF-8"));
 	}
-	
+
 	/**
-	 * Returns the color of the primary font, if set. if not set, it returns black if doRecolor is set, else white.
+	 * Returns the color of the primary font, if set. if not set, it returns
+	 * black if doRecolor is set, else white.
+	 * 
 	 * @return
 	 */
-	public Color getDataColor() 
-	{
+	public Color getDataColor() {
 		if (dataColor != null && dataColor.length == 3)
 			return new Color(dataColor[0], dataColor[1], dataColor[2]);
-		else 
-			return doRecolor ?Color.BLACK : Color.WHITE;
-	}
-	
-	public Color getSecondaryDataColor() 
-	{
-		if (secondaryDataColor != null && secondaryDataColor.length == 3)
-			return new Color(secondaryDataColor[0], secondaryDataColor[1], secondaryDataColor[2]);
-		else 
-			return doRecolor ?Color.BLACK : Color.WHITE;
+		else
+			return doRecolor ? Color.BLACK : Color.WHITE;
 	}
 
-	public String toJson() 
-	{
+	public Color getSecondaryDataColor() {
+		if (secondaryDataColor != null && secondaryDataColor.length == 3)
+			return new Color(secondaryDataColor[0], secondaryDataColor[1], secondaryDataColor[2]);
+		else
+			return doRecolor ? Color.BLACK : Color.WHITE;
+	}
+
+	public String toJson() {
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		return gson.toJson(this);
 	}

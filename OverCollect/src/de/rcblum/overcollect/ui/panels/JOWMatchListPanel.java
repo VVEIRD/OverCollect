@@ -17,26 +17,25 @@ import de.rcblum.overcollect.extract.listener.OWMatchExtractionListener;
 import de.rcblum.overcollect.extract.ocr.Glyph;
 import de.rcblum.overcollect.ui.utils.UiStatics;
 
-public class JOWMatchListPanel extends JPanel implements OWMatchExtractionListener
-{
+public class JOWMatchListPanel extends JPanel implements OWMatchExtractionListener {
 	List<OWMatch> matches = null;
-	
+
 	int lastSr = -1;
-	
+
 	/**
 	 * Create the panel.
 	 */
-	public JOWMatchListPanel() 
-	{
+	public JOWMatchListPanel() {
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		setBackground(UiStatics.COLOR_BACKGROUND);
 		matches = OWLib.getInstance().getMatches();
-		matches = matches.stream().sorted((e1, e2) -> e2.getStartTime().compareTo(e1.getStartTime())).collect(Collectors.toList());
-		for (int i=0; i<matches.size();i++) {
+		matches = matches.stream().sorted((e1, e2) -> e2.getStartTime().compareTo(e1.getStartTime()))
+				.collect(Collectors.toList());
+		for (int i = 0; i < matches.size(); i++) {
 			OWMatch match = matches.get(i);
 			if (lastSr == -1)
 				lastSr = match.getSr();
-			OWMatch prevousMatch = i+1<matches.size() ?matches.get(i+1) : null;
+			OWMatch prevousMatch = i + 1 < matches.size() ? matches.get(i + 1) : null;
 			int previousSr = prevousMatch != null ? prevousMatch.getSr() : match.getSr();
 			JOWMatchPanel mp = new JOWMatchPanel(match, previousSr);
 			this.add(mp);
@@ -44,8 +43,7 @@ public class JOWMatchListPanel extends JPanel implements OWMatchExtractionListen
 	}
 
 	@Override
-	public void matchExtracted(OWMatch match)
-	{
+	public void matchExtracted(OWMatch match) {
 		int lastSr = this.lastSr >= 0 ? this.lastSr : match.getSr();
 		JOWMatchPanel mp = new JOWMatchPanel(match, lastSr);
 		this.lastSr = match.getSr() != -1 ? match.getSr() : this.lastSr;
@@ -56,7 +54,7 @@ public class JOWMatchListPanel extends JPanel implements OWMatchExtractionListen
 			this.add(component);
 		}
 		this.revalidate();
-		List<OWMatch> newMatches = new ArrayList<>(this.matches.size()+1);
+		List<OWMatch> newMatches = new ArrayList<>(this.matches.size() + 1);
 		newMatches.add(match);
 		newMatches.addAll(matches);
 		matches = newMatches;
