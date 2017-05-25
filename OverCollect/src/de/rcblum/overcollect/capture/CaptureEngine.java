@@ -9,6 +9,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -71,8 +72,12 @@ public class CaptureEngine implements ActionListener, ImageSource {
 			BufferedImage br = r.createScreenCapture(this.screen.getDefaultConfiguration().getBounds());
 			this.fireImage(br);
 			if (OWLib.getInstance().getBoolean("debug.capture")) {
-				Path debugFile = Paths.get(OWLib.getInstance().getDebugDir(), "capture", Helper.SDF_FILE.format(new Date(System.currentTimeMillis())) + ".png");
 				try {
+					Path debugPath = Paths.get(OWLib.getInstance().getDebugDir(), "capture");
+					if (!Files.exists(debugPath)) {
+							Files.createDirectories(debugPath);
+					}
+					Path debugFile = debugPath.resolve(Helper.SDF_FILE.format(new Date(System.currentTimeMillis())) + ".png");
 					ImageIO.write(br, "PNG", debugFile.toFile());
 				} catch (IOException e1) {
 					// TODO Auto-generated catch block
