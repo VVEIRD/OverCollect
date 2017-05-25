@@ -316,4 +316,18 @@ public class OWLib {
 	public String getString(String key, String defaultString) {
 		return this.config.getProperty(key) != null ? this.config.getProperty(key) : defaultString;
 	}
+
+	public String getDebugDir() {
+		String ddirName = getString("debug.dir",  "debug");
+		Path ddir = Paths.get(ddirName);
+		if (!Files.exists(ddir)) {
+			try {
+				Files.createDirectories(ddir);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		return ddirName;
+	}
 }
