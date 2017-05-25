@@ -10,6 +10,7 @@ public class Helper {
 	
 	
 	public final static SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	public final static SimpleDateFormat SDF_FILE = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
 	
 	public static BufferedImage copy(BufferedImage img) {
 		try {

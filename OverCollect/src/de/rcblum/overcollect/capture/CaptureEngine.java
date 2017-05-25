@@ -71,7 +71,7 @@ public class CaptureEngine implements ActionListener, ImageSource {
 			BufferedImage br = r.createScreenCapture(this.screen.getDefaultConfiguration().getBounds());
 			this.fireImage(br);
 			if (OWLib.getInstance().getBoolean("debug.capture")) {
-				Path debugFile = Paths.get(OWLib.getInstance().getDebugDir(), "capture", Helper.SDF.format(new Date(System.currentTimeMillis())) + ".png");
+				Path debugFile = Paths.get(OWLib.getInstance().getDebugDir(), "capture", Helper.SDF_FILE.format(new Date(System.currentTimeMillis())) + ".png");
 				try {
 					ImageIO.write(br, "PNG", debugFile.toFile());
 				} catch (IOException e1) {
