@@ -172,7 +172,8 @@ public class XSSFExporter {
 							: new HashMap<>();
 					for (String secondaryStat : secondaryStats) {
 						c = row.createCell(cellIndex++);
-						c.setCellValue(sStats.get(secondaryStat));
+						if (sStats != null && sStats.get(secondaryStat) != null)
+							c.setCellValue(sStats.get(secondaryStat));
 					}
 					c = row.createCell(cellIndex++);
 					c.setCellValue(match.getSr());
