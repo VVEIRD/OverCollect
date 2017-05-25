@@ -192,7 +192,7 @@ public class Glyph {
 				int x = Math.round(negativePixels[i][0]);
 				int y = Math.round(negativePixels[i][1]);
 				if (image.getWidth() <= x || image.getHeight() <= y) {
-					System.out.println("Outofbounds pixel");
+					//System.out.println("Outofbounds pixel");
 					continue;
 				}
 				int argb = image.getRGB(x, y);
@@ -201,7 +201,7 @@ public class Glyph {
 				int b = (argb >> 0) & 0xFF;
 				if ((Math.abs((rPrim - r) / 255.0f) <= tolerance && Math.abs((gPrim - g) / 255.0f) <= tolerance
 						&& Math.abs((bPrim - b) / 255.0f) <= tolerance)) {
-					System.out.println("Negative misses " + x + ", " + y);
+					//System.out.println("Negative misses " + x + ", " + y);
 					continue;
 				}
 				ok++;

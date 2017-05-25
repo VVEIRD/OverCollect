@@ -104,45 +104,6 @@ public class OCRConfiguration {
 
 	public final Map<String, int[]> secondaryValues;
 
-	public OCRConfiguration rescale(float rescale) {
-		int skewTrim = Math.round(this.skewTrim * rescale);
-		int skewSecondaryTrim = Math.round(this.skewSecondaryTrim * rescale);
-		int fontSize = Math.round(this.fontSize * rescale);
-		int secondaryFontSize = Math.round(this.secondaryFontSize * rescale);
-
-		Map<String, int[]> values = new HashMap<>();
-		Map<String, int[]> secondaryValues = new HashMap<>();
-		int[] secondaryDataFieldSize = new int[this.secondaryDataFieldSize.length];
-		int[] dataFieldSize = new int[this.dataFieldSize.length];
-		for (int i = 0; i < this.dataFieldSize.length; i++) {
-			dataFieldSize[i] = Math.round(this.dataFieldSize[i] * rescale);
-		}
-		for (int i = 0; i < this.secondaryDataFieldSize.length; i++) {
-			secondaryDataFieldSize[i] = Math.round(this.secondaryDataFieldSize[i] * rescale);
-		}
-		Set<String> valuesKeys = this.values.keySet();
-		for (String key : valuesKeys) {
-			int[] xy = this.values.get(key);
-			int[] nxy = new int[xy.length];
-			for (int i = 0; i < xy.length; i++) {
-				nxy[i] = Math.round(xy[i] * rescale);
-			}
-			values.put(key, nxy);
-		}
-		valuesKeys = this.secondaryValues.keySet();
-		for (String key : valuesKeys) {
-			int[] xy = this.secondaryValues.get(key);
-			int[] nxy = new int[xy.length];
-			for (int i = 0; i < xy.length; i++) {
-				nxy[i] = Math.round(xy[i] * rescale);
-			}
-			secondaryValues.put(key, nxy);
-		}
-		return new OCRConfiguration(values, secondaryValues, dataFieldSize, secondaryDataFieldSize, fontSize,
-				secondaryFontSize, skew, skewSecondary, skewTrim, skewSecondaryTrim, doRecolor,
-				dataColor, secondaryDataColor);
-	}
-
 	public OCRConfiguration(Map<String, int[]> values, Map<String, int[]> secondaryValues, int[] dataFieldSize,
 			int[] secondaryDataFieldSize, int fontSize, int secondaryFontSize, double skew, double skewSecondary,
 			int skewTrim, int skewSecondaryTrim, boolean doRecolor, int[] dataColor, int[] secondaryDataColor) {
@@ -180,6 +141,45 @@ public class OCRConfiguration {
 			return new Color(secondaryDataColor[0], secondaryDataColor[1], secondaryDataColor[2]);
 		else
 			return doRecolor ? Color.BLACK : Color.WHITE;
+	}
+
+	public OCRConfiguration rescale(float rescale) {
+		int skewTrim = Math.round(this.skewTrim * rescale);
+		int skewSecondaryTrim = Math.round(this.skewSecondaryTrim * rescale);
+		int fontSize = Math.round(this.fontSize * rescale);
+		int secondaryFontSize = Math.round(this.secondaryFontSize * rescale);
+
+		Map<String, int[]> values = new HashMap<>();
+		Map<String, int[]> secondaryValues = new HashMap<>();
+		int[] secondaryDataFieldSize = new int[this.secondaryDataFieldSize.length];
+		int[] dataFieldSize = new int[this.dataFieldSize.length];
+		for (int i = 0; i < this.dataFieldSize.length; i++) {
+			dataFieldSize[i] = Math.round(this.dataFieldSize[i] * rescale);
+		}
+		for (int i = 0; i < this.secondaryDataFieldSize.length; i++) {
+			secondaryDataFieldSize[i] = Math.round(this.secondaryDataFieldSize[i] * rescale);
+		}
+		Set<String> valuesKeys = this.values.keySet();
+		for (String key : valuesKeys) {
+			int[] xy = this.values.get(key);
+			int[] nxy = new int[xy.length];
+			for (int i = 0; i < xy.length; i++) {
+				nxy[i] = Math.round(xy[i] * rescale);
+			}
+			values.put(key, nxy);
+		}
+		valuesKeys = this.secondaryValues.keySet();
+		for (String key : valuesKeys) {
+			int[] xy = this.secondaryValues.get(key);
+			int[] nxy = new int[xy.length];
+			for (int i = 0; i < xy.length; i++) {
+				nxy[i] = Math.round(xy[i] * rescale);
+			}
+			secondaryValues.put(key, nxy);
+		}
+		return new OCRConfiguration(values, secondaryValues, dataFieldSize, secondaryDataFieldSize, fontSize,
+				secondaryFontSize, skew, skewSecondary, skewTrim, skewSecondaryTrim, doRecolor,
+				dataColor, secondaryDataColor);
 	}
 
 	public String toJson() {

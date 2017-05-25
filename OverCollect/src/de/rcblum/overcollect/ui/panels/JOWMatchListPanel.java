@@ -27,7 +27,7 @@ public class JOWMatchListPanel extends JPanel implements OWMatchExtractionListen
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		setBackground(UiStatics.COLOR_BACKGROUND);
 		matches = OWLib.getInstance().getMatches();
-		matches = matches.stream().sorted((e1, e2) -> e2.getStartTime().compareTo(e1.getStartTime()))
+		matches = matches.stream().filter(m -> m.getAccount() == null || m.getAccount().equals(OWLib.getInstance().getActiveAccount())).sorted((e1, e2) -> e2.getStartTime().compareTo(e1.getStartTime()))
 				.collect(Collectors.toList());
 		for (int i = 0; i < matches.size(); i++) {
 			OWMatch match = matches.get(i);
@@ -47,20 +47,22 @@ public class JOWMatchListPanel extends JPanel implements OWMatchExtractionListen
 
 	@Override
 	public void matchExtracted(OWMatch match) {
-		int lastSr = this.lastSr >= 0 ? this.lastSr : match.getSr();
-		JOWMatchPanel mp = new JOWMatchPanel(match, lastSr);
-		this.lastSr = match.getSr() != -1 ? match.getSr() : this.lastSr;
-		Component[] components = this.getComponents();
-		this.removeAll();
-		this.add(mp);
-		for (Component component : components) {
-			this.add(component);
+		if (match.getAccount().equals(OWLib.getInstance().getActiveAccount())) {
+			int lastSr = this.lastSr >= 0 ? this.lastSr : match.getSr();
+			JOWMatchPanel mp = new JOWMatchPanel(match, lastSr);
+			this.lastSr = match.getSr() != -1 ? match.getSr() : this.lastSr;
+			Component[] components = this.getComponents();
+			this.removeAll();
+			this.add(mp);
+			for (Component component : components) {
+				this.add(component);
+			}
+			this.revalidate();
+			List<OWMatch> newMatches = new ArrayList<>(this.matches.size() + 1);
+			newMatches.add(match);
+			newMatches.addAll(matches);
+			matches = newMatches;
 		}
-		this.revalidate();
-		List<OWMatch> newMatches = new ArrayList<>(this.matches.size() + 1);
-		newMatches.add(match);
-		newMatches.addAll(matches);
-		matches = newMatches;
 	}
 
 }

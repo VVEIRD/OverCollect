@@ -8,16 +8,22 @@ import java.awt.Robot;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
+import javax.imageio.ImageIO;
 import javax.swing.Timer;
 
 import de.rcblum.overcollect.capture.listener.ImageListener;
 import de.rcblum.overcollect.capture.listener.ImageSource;
 import de.rcblum.overcollect.configuration.OWItem;
 import de.rcblum.overcollect.configuration.OWLib;
+import de.rcblum.overcollect.utils.Helper;
 
 public class CaptureEngine implements ActionListener, ImageSource {
 
@@ -64,6 +70,15 @@ public class CaptureEngine implements ActionListener, ImageSource {
 		else {
 			BufferedImage br = r.createScreenCapture(this.screen.getDefaultConfiguration().getBounds());
 			this.fireImage(br);
+			if (OWLib.getInstance().getBoolean("debug.capture")) {
+				Path debugFile = Paths.get(OWLib.getInstance().getString("debug.dir",  "debug"), "capture", Helper.SDF.format(new Date(System.currentTimeMillis())) + ".png");
+				try {
+					ImageIO.write(br, "PNG", debugFile.toFile());
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
 		}
 	}
 

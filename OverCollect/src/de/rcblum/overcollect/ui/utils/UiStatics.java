@@ -16,10 +16,12 @@ import java.text.SimpleDateFormat;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.UIManager;
 import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
+import javax.swing.plaf.ColorUIResource;
 
 public class UiStatics {
 
@@ -101,6 +103,15 @@ public class UiStatics {
 	public static final Color TEXT_COLOR_DEFEAT = new Color(200, 0, 19);
 
 	public static final Color TEXT_COLOR_DRAW = new Color(255, 220, 0);
+	
+	static {
+		UIManager.put("ComboBox.background", new ColorUIResource(COLOR_BACKGROUND));
+		UIManager.put("ComboBox.buttonBackground", new ColorUIResource(COLOR_BACKGROUND));
+		UIManager.put("ComboBox.buttonBackground", new ColorUIResource(COLOR_BACKGROUND));
+		UIManager.put("ComboBox.selectionBackground", new ColorUIResource(COLOR_BACKGROUND.brighter()));
+		UIManager.put("ComboBox.foreground", new ColorUIResource(TEXT_DESCRIPTION));
+		//UIManager.put("ComboBox.selectionForeground", new ColorUIResource(Color.WHITE));
+	}
 
 	public static JButton createButton(String caption) {
 		OWButton btnNewButton = new OWButton(caption);

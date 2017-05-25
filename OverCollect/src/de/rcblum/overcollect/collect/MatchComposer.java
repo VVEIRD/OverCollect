@@ -357,7 +357,8 @@ public class MatchComposer implements OWItemImageListener, Runnable {
 			}
 			String propertiesString = "startTime=" + this.sdf.format(this.startDate) + "\r\n" + "endTime="
 					+ this.sdf.format(Calendar.getInstance().getTime()) + "\r\n" + "map=" + this.map + "\r\n"
-					+ "stacksize=" + this.stacksize;
+					+ "stacksize=" + this.stacksize + "\r\n"
+					+ "account=" + OWLib.getInstance().getActiveAccount();
 			writeFile(dataFile, propertiesString);
 			// Write BufferedImages primary files
 			Path matchPath = Paths.get(this.matchRoot, this.currentMatch.toString());

@@ -75,11 +75,6 @@ public class Filter {
 		return matches;
 	}
 
-	public String toJson() {
-		Gson g = new Gson();
-		return g.toJson(this);
-	}
-
 	public Filter rescale(float rescale) {
 		int[][] rescaledPoinst = new int[this.points.length][5];
 		for (int i = 0; i < points.length; i++) {
@@ -91,5 +86,10 @@ public class Filter {
 			rescaledPoinst[i][4] = point[4];
 		}
 		return new Filter(rescaledPoinst, this.tolerance);
+	}
+
+	public String toJson() {
+		Gson g = new Gson();
+		return g.toJson(this);
 	}
 }

@@ -86,20 +86,41 @@ public class JOwCaptureStatus extends JPanel implements OWMatchListener, ActionL
 		this.setMinimumSize(new Dimension(800, 130));
 		this.setSize(new Dimension(800, 130));
 		this.setMaximumSize(new Dimension(5000, 130));
-		setLayout(new FormLayout(new ColumnSpec[] { FormSpecs.RELATED_GAP_COLSPEC, ColumnSpec.decode("220px"),
-				FormSpecs.RELATED_GAP_COLSPEC, ColumnSpec.decode("max(75px;default)"), FormSpecs.RELATED_GAP_COLSPEC,
-				ColumnSpec.decode("max(90px;default)"), FormSpecs.RELATED_GAP_COLSPEC,
-				ColumnSpec.decode("max(75px;default)"), FormSpecs.RELATED_GAP_COLSPEC,
-				ColumnSpec.decode("max(75px;default)"), FormSpecs.RELATED_GAP_COLSPEC,
-				ColumnSpec.decode("default:grow"), FormSpecs.RELATED_GAP_COLSPEC,
-				ColumnSpec.decode("max(75px;default)"), FormSpecs.RELATED_GAP_COLSPEC,
-				ColumnSpec.decode("max(30px;default)"), FormSpecs.RELATED_GAP_COLSPEC, FormSpecs.DEFAULT_COLSPEC,
-				FormSpecs.RELATED_GAP_COLSPEC, FormSpecs.DEFAULT_COLSPEC, FormSpecs.RELATED_GAP_COLSPEC,
-				FormSpecs.DEFAULT_COLSPEC, FormSpecs.RELATED_GAP_COLSPEC, FormSpecs.DEFAULT_COLSPEC,
-				FormSpecs.RELATED_GAP_COLSPEC, FormSpecs.DEFAULT_COLSPEC, FormSpecs.RELATED_GAP_COLSPEC, },
-				new RowSpec[] { FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC,
-						FormSpecs.RELATED_GAP_ROWSPEC, RowSpec.decode("30dlu"),
-						FormSpecs.LABEL_COMPONENT_GAP_ROWSPEC, }));
+		setLayout(new FormLayout(new ColumnSpec[] {
+				FormSpecs.RELATED_GAP_COLSPEC,
+				ColumnSpec.decode("220px"),
+				FormSpecs.RELATED_GAP_COLSPEC,
+				ColumnSpec.decode("max(100px;default)"),
+				FormSpecs.RELATED_GAP_COLSPEC,
+				ColumnSpec.decode("max(90px;default)"),
+				FormSpecs.RELATED_GAP_COLSPEC,
+				ColumnSpec.decode("max(100px;default)"),
+				FormSpecs.RELATED_GAP_COLSPEC,
+				ColumnSpec.decode("max(75px;default)"),
+				FormSpecs.RELATED_GAP_COLSPEC,
+				ColumnSpec.decode("default:grow"),
+				FormSpecs.RELATED_GAP_COLSPEC,
+				ColumnSpec.decode("max(75px;default)"),
+				FormSpecs.RELATED_GAP_COLSPEC,
+				ColumnSpec.decode("max(30px;default)"),
+				FormSpecs.RELATED_GAP_COLSPEC,
+				FormSpecs.DEFAULT_COLSPEC,
+				FormSpecs.RELATED_GAP_COLSPEC,
+				FormSpecs.DEFAULT_COLSPEC,
+				FormSpecs.RELATED_GAP_COLSPEC,
+				FormSpecs.DEFAULT_COLSPEC,
+				FormSpecs.RELATED_GAP_COLSPEC,
+				FormSpecs.DEFAULT_COLSPEC,
+				FormSpecs.RELATED_GAP_COLSPEC,
+				FormSpecs.DEFAULT_COLSPEC,
+				FormSpecs.RELATED_GAP_COLSPEC,},
+			new RowSpec[] {
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				FormSpecs.DEFAULT_ROWSPEC,
+				FormSpecs.DEFAULT_ROWSPEC,
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				RowSpec.decode("30dlu"),
+				FormSpecs.LABEL_COMPONENT_GAP_ROWSPEC,}));
 
 		pMap = new JMapPanel();
 		add(pMap, "2, 2, 1, 4, fill, fill");

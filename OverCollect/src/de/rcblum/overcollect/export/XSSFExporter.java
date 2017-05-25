@@ -44,7 +44,7 @@ public class XSSFExporter {
 	private XSSFWorkbook workbook = null;
 
 	public XSSFExporter() {
-		this.matches = OWLib.getInstance().getMatches().stream()
+		this.matches = OWLib.getInstance().getMatches().stream().filter(m -> m.getAccount() == null || m.getAccount().equals(OWLib.getInstance().getActiveAccount()))
 				.sorted((m1, m2) -> m1.getStartTime().compareTo(m2.getStartTime())).collect(Collectors.toList());
 		this.heroes = OWLib.getInstance().getHeroes();
 		this.maps = OWLib.getInstance().getMaps();

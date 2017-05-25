@@ -237,6 +237,38 @@ public class OWItem {
 		return Files.exists(Paths.get(libPath, category, itemName, "matchindicator"));
 	}
 
+	public OWItem rescale(float rescale) {
+		if (getCategory().contains("x")) {
+			int width = Helper.toInteger(getCategory().split("x")[0], -1);
+			int height = Helper.toInteger(getCategory().split("x")[1], -1);
+			if (width != -1 && height != -1) {
+				width = Math.round(width * rescale);
+				height = Math.round(height * rescale);
+				String category = width + "x" + height;
+				Path itemPath = Paths.get(this.libPath, category, getItemName());
+				try {
+					if (!Files.exists(itemPath)) {
+						Files.createDirectories(itemPath);
+					}
+					OWItem nItem = new OWItem(category, this.itemName, this.libPath);
+					if (this.hasFilter())
+						nItem.saveFilter(this.getFilter().rescale(rescale));
+					if (this.hasOCRConfiguration())
+						nItem.saveOCRConfiguration(this.getOCRConfiguration().rescale(rescale));
+					nItem.setDrop(this.drop());
+					nItem.setHero(this.isHero());
+					nItem.setMap(this.isMap());
+					nItem.setMatchIndicator(this.isMatchIndicator());
+					return nItem;
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+		return null;
+	}
+
 	public void saveFilter(Filter f) throws IOException {
 		this.filter = f;
 		Filter.save(this.libPath, this.category, this.itemName, f);
@@ -305,7 +337,7 @@ public class OWItem {
 		else if (!selected && Files.exists(Paths.get(libPath, category, itemName, "matchindicator")))
 			Files.delete(Paths.get(libPath, category, itemName, "matchindicator"));
 	}
-
+	
 	/**
 	 * Sets the screen resolution this item is configured for. Do not use if you
 	 * are not shure that the item works for the new Screen resolution
@@ -314,37 +346,5 @@ public class OWItem {
 	 */
 	public void setResolution(String resolution) {
 		this.category = resolution;
-	}
-	
-	public OWItem rescale(float rescale) {
-		if (getCategory().contains("x")) {
-			int width = Helper.toInteger(getCategory().split("x")[0], -1);
-			int height = Helper.toInteger(getCategory().split("x")[1], -1);
-			if (width != -1 && height != -1) {
-				width = Math.round(width * rescale);
-				height = Math.round(height * rescale);
-				String category = width + "x" + height;
-				Path itemPath = Paths.get(this.libPath, category, getItemName());
-				try {
-					if (!Files.exists(itemPath)) {
-						Files.createDirectories(itemPath);
-					}
-					OWItem nItem = new OWItem(category, this.itemName, this.libPath);
-					if (this.hasFilter())
-						nItem.saveFilter(this.getFilter().rescale(rescale));
-					if (this.hasOCRConfiguration())
-						nItem.saveOCRConfiguration(this.getOCRConfiguration().rescale(rescale));
-					nItem.setDrop(this.drop());
-					nItem.setHero(this.isHero());
-					nItem.setMap(this.isMap());
-					nItem.setMatchIndicator(this.isMatchIndicator());
-					return nItem;
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-		}
-		return null;
 	}
 }

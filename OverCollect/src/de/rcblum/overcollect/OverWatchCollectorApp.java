@@ -113,6 +113,10 @@ public class OverWatchCollectorApp {
 			OverWatchCollectorApp app = new OverWatchCollectorApp();
 			app.startCapture();
 			JOverCollectFrame f = new JOverCollectFrame(app);
+			if (OWLib.getInstance().getAccounts().size() == 0) {
+				String accountName = f.showAccountCreation();
+				OWLib.getInstance().setActiveAccount(accountName);
+			}
 			// JOwCaptureStatus mapPanel = new JOwCaptureStatus();
 			// f.getContentPane().add(mapPanel);
 			// f.pack();

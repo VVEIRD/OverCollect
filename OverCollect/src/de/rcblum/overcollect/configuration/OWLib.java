@@ -4,6 +4,7 @@ import java.awt.Dimension;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -36,7 +37,8 @@ public class OWLib {
 		if (System.getProperties().getProperty("owcollect.lib.dir") == null)
 			System.getProperties().setProperty("owcollect.lib.dir", "lib" + File.separator + "owdata");
 
-		Path libPath = Paths.get(System.getProperties().getProperty("owcollect.lib.dir"));
+		// Path libPath =
+		// Paths.get(System.getProperties().getProperty("owcollect.lib.dir"));
 		Path dataPath = Paths.get(System.getProperties().getProperty("owcollect.data.dir"));
 		Path imagePath = Paths.get(System.getProperties().getProperty("owcollect.image.dir"));
 		Path matchPath = Paths.get(System.getProperties().getProperty("owcollect.match.dir"));
@@ -87,8 +89,10 @@ public class OWLib {
 	private Map<String, OWMatch> matches = null;
 
 	private Properties config = null;
-
-	private String[] maps = null;
+	
+	private List<String> accounts = null;
+	
+	private String selectedAccount = null;
 
 	private OWLib() {
 		this(Paths.get("lib", "owdata"));
@@ -116,6 +120,14 @@ public class OWLib {
 	public void addMatch(OWMatch match) {
 		Objects.requireNonNull(match);
 		this.matches.put(match.getMatchId(), match);
+	}
+
+	public List<String> getAccounts() {
+		return this.accounts;
+	}
+
+	public String getActiveAccount() {
+		return this.selectedAccount;
 	}
 
 	public boolean getBoolean(String key) {
@@ -212,14 +224,18 @@ public class OWLib {
 	public List<String> getSupportedScreenResolutions() {
 		return this.supportedScreenResolutions;
 	}
-
+	
 	public Path getTempPath() {
 		return Paths.get(System.getProperties().getProperty("owcollect.temp.dir"));
 	}
-
+	
 	private void init() {
 		File[] resolutionFolders = this.libPath.toFile().listFiles();
 		Arrays.sort(resolutionFolders);
+		// load accounts
+		this.accounts = new LinkedList(this.config.getProperty("accounts") != null ? Arrays.asList(this.config.getProperty("accounts").split(",")) : new LinkedList<>());
+		this.selectedAccount = this.config.getProperty("activeAccount");
+		
 		// Find all resolutions
 		for (File res : resolutionFolders) {
 			if (res.isDirectory()) {
@@ -249,10 +265,33 @@ public class OWLib {
 		for (File match : matchFiles) {
 			System.out.println(match);
 			OWMatch m = OWMatch.fromJsonFile(match);
-			System.out.println(m);
-			if (m != null)
+			if (m != null) {
 				this.matches.put(m.getMatchId(), m);
+				if (m.getAccount() == null && this.getActiveAccount() != null) {
+					m.setAccount(this.getActiveAccount());
+					OWMatch.toJsonFile(m, match);
+				}
+			}
 		}
+	}
+	
+	private void saveConfig() {
+		this.config.setProperty("accounts", String.join(",", this.accounts));
+		this.config.setProperty("activeAccount", this.selectedAccount);
+		try (OutputStream os = Files.newOutputStream(this.libPath.resolve("configuration.properties"))) {
+			this.config.store(os, "");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+	}
+
+	public void setActiveAccount(String account) {
+		if (!this.accounts.contains(account))
+			this.accounts.add(account);
+		this.selectedAccount = account;
+		this.config.setProperty("activeAccount", this.selectedAccount);
+		this.saveConfig();
 	}
 
 	public boolean supportScreenResolution(Dimension screenResolution) {
@@ -267,5 +306,14 @@ public class OWLib {
 
 	public boolean supportScreenResolution(String screenResolution) {
 		return this.supportedScreenResolutions.contains(screenResolution);
+	}
+
+	public void addAccount(String accountName) {
+		this.accounts.add(accountName);
+		this.saveConfig();
+	}
+
+	public String getString(String key, String defaultString) {
+		return this.config.getProperty(key) != null ? this.config.getProperty(key) : defaultString;
 	}
 }

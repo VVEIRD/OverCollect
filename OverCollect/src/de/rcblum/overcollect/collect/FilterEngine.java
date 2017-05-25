@@ -1,6 +1,7 @@
 package de.rcblum.overcollect.collect;
 
 import java.awt.image.BufferedImage;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -11,6 +12,7 @@ import de.rcblum.overcollect.collect.listener.OWItemImageListener;
 import de.rcblum.overcollect.configuration.Filter;
 import de.rcblum.overcollect.configuration.OWItem;
 import de.rcblum.overcollect.configuration.OWLib;
+import de.rcblum.overcollect.utils.Helper;
 
 /**
  * FilterEnginge will test all captured screenshots against the configured
@@ -47,7 +49,8 @@ public class FilterEngine implements ImageListener {
 			List<OWItem> dropItems = OWLib.getInstance().getDropItems(i.getWidth(), i.getHeight());
 			for (OWItem item : dropItems) {
 				if (item.hasFilter() && item.getFilter().match(i)) {
-					System.out.println("Dropping screenshot: " + item.getItemName());
+					if (OWLib.getInstance().getBoolean("debug.filter"))
+						Helper.debug(this.getClass(), "Dropping screenshot: " + item.getItemName());
 					return;
 				}
 			}
@@ -56,6 +59,8 @@ public class FilterEngine implements ImageListener {
 					if (item.hasFilter() && item.getFilter().match(i)) {
 						fireImage(i, item);
 						lastFilter = item.getItemName();
+						if (OWLib.getInstance().getBoolean("debug.filter"))
+							Helper.debug(this.getClass(), "Filter matched: " + item.getItemName());
 					}
 				}
 			}

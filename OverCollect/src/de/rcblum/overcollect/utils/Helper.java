@@ -3,8 +3,14 @@ package de.rcblum.overcollect.utils;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class Helper {
+	
+	
+	public final static SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	
 	public static BufferedImage copy(BufferedImage img) {
 		try {
 			int newW = img.getWidth();
@@ -27,5 +33,9 @@ public class Helper {
 
 	public static int toInteger(String value, int defaultValue) {
 		return isInteger(value) ? Integer.valueOf(value) : defaultValue;
+	}
+
+	public static void debug(Class<?> clazz, String string) {
+		System.out.println(Helper.SDF.format(new Date(System.currentTimeMillis())) + "\tDEBUG\t" + clazz.toString() + "\t" + string);
 	}
 }

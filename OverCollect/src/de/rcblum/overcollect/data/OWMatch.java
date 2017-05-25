@@ -35,7 +35,18 @@ public class OWMatch {
 		return match;
 	}
 
+	public static void toJsonFile(OWMatch m, File jFile) {
+		Gson g = new GsonBuilder().setPrettyPrinting().create();
+		try {
+			Files.write(jFile.toPath(), g.toJson(m).getBytes("UTF-8"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
 	private String matchId = null;
+	
+	private String account = null;
 
 	private String startTime = null;
 
@@ -61,6 +72,10 @@ public class OWMatch {
 
 	public void addCharacterStats(OWCharacterStats cStats) {
 		this.characterStats.add(cStats);
+	}
+
+	public String getAccount() {
+		return account;
 	}
 
 	public List<OWCharacterStats> getCharacterStats() {
@@ -127,6 +142,10 @@ public class OWMatch {
 		return result == Result.VICTORY;
 	}
 
+	public void setAccount(String account) {
+		this.account = account;
+	}
+
 	public void setCharacterStats(List<OWCharacterStats> characterStats) {
 		this.characterStats = characterStats;
 	}
@@ -154,11 +173,11 @@ public class OWMatch {
 	public void setSr(String sr) {
 		this.sr = sr;
 	}
-
+	
 	public void setStacksize(int stacksize) {
 		this.stacksize = stacksize;
 	}
-
+	
 	public void setStartTime(String startTime) {
 		this.startTime = startTime;
 	}
