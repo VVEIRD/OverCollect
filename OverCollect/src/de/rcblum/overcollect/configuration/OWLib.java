@@ -63,7 +63,7 @@ public class OWLib {
 	// Static attributes
 	//
 
-	public static final String VERSION_STRING = "0.1.6a";
+	public static final String VERSION_STRING = "0.1.7a";
 
 	private static String defaultFolder = Paths.get("lib", "owdata").toString();
 
