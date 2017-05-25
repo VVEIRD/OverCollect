@@ -1,25 +1,29 @@
 {
   "doRecolor": true,
   "fontSize": 55,
-  "secondaryFontSize": 19,
   "dataColor": [
     0,
     0,
-	0
-  ],
-  "secondaryDataColor": [
-    0,
-    0,
-	0
+    0
   ],
   "dataFieldSize": [
     240,
     75
   ],
+  "secondaryFontSize": 19,
+  "secondaryDataColor": [
+    0,
+    0,
+    0
+  ],
   "secondaryDataFieldSize": [
     240,
-    50
+    45
   ],
+  "skew": 0.26,
+  "skewTrim": 21,
+  "skewSecondary": 0.0,
+  "skewSecondaryTrim": 0,
   "values": {
     "healingDone": [
       1245,
@@ -46,9 +50,30 @@
       437
     ]
   },
-  "secondaryValues": {},
-  "skew": 0.26,
-  "skewTrim": 21,
-  "skewSecondary": 0.0,
-  "skewSecondaryTrim": 0
+  "secondaryValues": {
+    "killStreak": [
+      444,
+      640
+    ],
+    "criticalHits": [
+      971,
+      640
+    ],
+    "finalBlows": [
+      707,
+      640
+    ],
+    "deadeyeKills": [
+      1235,
+      640
+    ],
+    "fanTheHammerKills": [
+      1499,
+      640
+    ],
+    "weaponAccuarcy": [
+      180,
+      640
+    ]
+  }
 }

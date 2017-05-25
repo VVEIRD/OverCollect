@@ -18,7 +18,7 @@
   ],
   "secondaryDataFieldSize": [
     320,
-    67
+    60
   ],
   "skew": 0.26,
   "skewTrim": 28,
@@ -50,5 +50,30 @@
       583
     ]
   },
-  "secondaryValues": {}
+  "secondaryValues": {
+    "moltenCoreKills": [
+      1647,
+      853
+    ],
+    "killStreak": [
+      592,
+      853
+    ],
+    "armorPacksCreated": [
+      1999,
+      853
+    ],
+    "weaponAccuarcy": [
+      240,
+      853
+    ],
+    "torbjörnKills": [
+      943,
+      853
+    ],
+    "turretKills": [
+      1295,
+      853
+    ]
+  }
 }

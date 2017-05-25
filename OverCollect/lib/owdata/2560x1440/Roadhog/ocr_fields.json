@@ -18,7 +18,7 @@
   ],
   "secondaryDataFieldSize": [
     320,
-    67
+    60
   ],
   "skew": 0.26,
   "skewTrim": 28,
@@ -50,5 +50,30 @@
       583
     ]
   },
-  "secondaryValues": {}
+  "secondaryValues": {
+    "enemiesHooked": [
+      943,
+      853
+    ],
+    "killStreak": [
+      592,
+      853
+    ],
+    "wholeHogKills": [
+      1999,
+      853
+    ],
+    "weaponAccuarcy": [
+      240,
+      853
+    ],
+    "selfHealing": [
+      1647,
+      853
+    ],
+    "hookAccuracy": [
+      1295,
+      853
+    ]
+  }
 }
