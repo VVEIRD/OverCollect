@@ -24,6 +24,7 @@ import de.rcblum.overcollect.ui.JOverCollectFrame;
 import de.rcblum.overcollect.ui.setup.filter.JFilterSetup;
 import de.rcblum.overcollect.ui.setup.filter.JFilterTest;
 import de.rcblum.overcollect.ui.setup.ocr.JOCRSetup;
+import de.rcblum.overcollect.utils.Helper;
 
 public class OverWatchCollectorApp {
 
@@ -62,7 +63,7 @@ public class OverWatchCollectorApp {
 		System.out.println("Uses the folowing, not modified, Open Source Libraries:");
 		System.out.println("  GSON 2.8.0, Licenced under Apache 2.0 Licence");
 		System.out.println("  JGOODIES 1.8.0, Licenced under BSD 2-clause Licence");
-		System.out.println();
+		System.out.println("");
 		if (args.length > 0 && (args[0].equalsIgnoreCase("/?") || args[0].equalsIgnoreCase("/help"))) {
 			System.out.println("Commandline Arguments:");
 			System.out.println("/? or /help                 Show this help text");

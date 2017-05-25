@@ -29,6 +29,7 @@ import de.rcblum.overcollect.collect.listener.owmatch.OWMatchEvent;
 import de.rcblum.overcollect.collect.listener.owmatch.OWMatchListener;
 import de.rcblum.overcollect.configuration.OWItem;
 import de.rcblum.overcollect.ui.utils.UiStatics;
+import de.rcblum.overcollect.utils.Helper;
 
 public class JOwCaptureStatus extends JPanel implements OWMatchListener, ActionListener, ImageListener {
 
@@ -258,7 +259,7 @@ public class JOwCaptureStatus extends JPanel implements OWMatchListener, ActionL
 
 	@Override
 	public void matchStatRecorded(OWMatchEvent e) {
-		System.out.println("Stat ev fired");
+		Helper.info(this.getClass(), "Stat ev recieved");
 		if (matchRunning)
 			lblHeroStatsRecorded.setText("Hero Stat recorded");
 	}

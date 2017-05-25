@@ -4,6 +4,8 @@ import java.io.File;
 
 import javax.swing.filechooser.FileFilter;
 
+import de.rcblum.overcollect.utils.Helper;
+
 public class FileUtils {
 
 	public static class OWFileFilter extends FileFilter {
@@ -17,7 +19,7 @@ public class FileUtils {
 		@Override
 		public boolean accept(File f) {
 			if (f == null)
-				System.out.println(f);
+				Helper.info(this.getClass(), f);
 			return (f != null && f.toString().endsWith(this.ext)) || (f != null && f.isDirectory()) ? true : false;
 		}
 

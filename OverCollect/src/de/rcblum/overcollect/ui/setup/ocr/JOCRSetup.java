@@ -183,7 +183,7 @@ public class JOCRSetup extends JFrame {
 				OCRConfiguration nOcr = new OCRConfiguration(primatyDatafields, secondaryDatafields,
 						primaryDataFiledSize, secondaryDataFiledSize, primaryFontSize, secondaryFontSize, primarySkew,
 						secondarySkew, primarySkewTrim, secondarySkewTrim, doRecolor, primaryDataColor,
-						secondaryDataColor);
+						secondaryDataColor, item.isMap() ? 3 : 1);
 				try {
 					item.saveOCRConfiguration(nOcr);
 					lblSaved.setForeground(Color.green.darker());

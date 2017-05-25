@@ -71,7 +71,7 @@ public class FontUtils {
 				if (inputImages.get(n) == null)
 					inputImages.put(n, new LinkedList<>());
 				inputImages.get(n).add(b);
-				System.out.println(n + ": " + path.getFileName());
+				Helper.info(FontUtils.class, n + ": " + path.getFileName());
 			}
 			List<int[]> filterPoints = new LinkedList<>();
 			Set<String> glyphs = inputImages.keySet();

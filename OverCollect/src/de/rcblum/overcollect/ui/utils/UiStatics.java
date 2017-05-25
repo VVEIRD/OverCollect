@@ -23,6 +23,8 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.plaf.ColorUIResource;
 
+import de.rcblum.overcollect.utils.Helper;
+
 public class UiStatics {
 
 	public static class OWButton extends JButton {
@@ -151,7 +153,7 @@ public class UiStatics {
 			fontFolder.mkdir();
 		File lfont = new File(localFontFile);
 		if (!lfont.exists()) {
-			System.out.println("Downloading Font " + urlString);
+			Helper.info(UiStatics.class, "Downloading Font " + urlString);
 			try (FileOutputStream outputStream = new FileOutputStream(localFontFile)) {
 				URL owFontNormal = new URL(urlString);
 				ReadableByteChannel rbcFont = Channels.newChannel(owFontNormal.openStream());
@@ -162,9 +164,9 @@ public class UiStatics {
 				while ((bytesRead = inputStream.read(buffer)) != -1) {
 					outputStream.write(buffer, 0, bytesRead);
 				}
-				System.out.println("Done downloading Fonts");
+				Helper.info(UiStatics.class, "Done downloading Fonts");
 			} catch (IOException e1) {
-				System.out.println("Error downloading font:");
+				Helper.info(UiStatics.class, "Error downloading font:");
 				e1.printStackTrace();
 			}
 		}

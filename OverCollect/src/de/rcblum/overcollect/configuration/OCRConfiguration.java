@@ -18,39 +18,15 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
 
-public class OCRConfiguration {
-	private static transient Map<String, Map<String, OCRConfiguration>> configurations = new HashMap<>();
+import de.rcblum.overcollect.utils.Helper;
 
-	public static OCRConfiguration getInstance(Dimension dimension, String alias) {
-		OCRConfiguration configuration = null;
-		String resolution = ((int) dimension.getWidth()) + "x" + ((int) dimension.getHeight());
-		Gson gson = new Gson();
-		File ocrFile = new File("lib" + File.separator + "owdata" + File.separator + resolution + File.separator + alias
-				+ File.separator + "ocr_fields.json");
-		System.out.println(ocrFile.getAbsolutePath());
-		if (configurations.containsKey(resolution) && configurations.get(resolution).containsKey(alias)) {
-			return configurations.get(resolution).get(alias);
-		} else if (!configurations.containsKey(resolution)) {
-			configurations.put(resolution, new HashMap<>());
-		}
-		if (ocrFile.exists()) {
-			try {
-				String text = new String(Files.readAllBytes(Paths.get(ocrFile.getAbsolutePath())),
-						StandardCharsets.UTF_8);
-				configuration = gson.fromJson(text, OCRConfiguration.class);
-			} catch (JsonIOException | JsonSyntaxException | IOException e) {
-				e.printStackTrace();
-			}
-		}
-		configurations.get(resolution).put(alias, configuration);
-		return configuration;
-	}
+public class OCRConfiguration {
 
 	public static void save(String libPath, String resolution, String alias, OCRConfiguration ocr)
 			throws UnsupportedEncodingException, IOException {
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		Path ocrFile = Paths.get(libPath, resolution, alias, "ocr_fields.json");
-		System.out.println(ocrFile.toString());
+		Helper.info(OCRConfiguration.class, ocrFile.toString());
 		String text = gson.toJson(ocr);
 		Files.write(ocrFile, text.getBytes("UTF-8"));
 	}
@@ -61,6 +37,12 @@ public class OCRConfiguration {
 	 * Fontsize in pixel of the primary values
 	 */
 	public final int fontSize;
+	
+	/**
+	 * Amount of pixels that is needed to recognize a character on screen.
+	 * Fix for Master level player. Only used on maps
+	 */
+	public final int pixelDetectionCount;
 
 	/**
 	 * color of the data
@@ -95,6 +77,8 @@ public class OCRConfiguration {
 	public final int skewTrim;
 
 	public final double skewSecondary;
+	
+	
 	public final int skewSecondaryTrim;
 
 	/**
@@ -106,7 +90,7 @@ public class OCRConfiguration {
 
 	public OCRConfiguration(Map<String, int[]> values, Map<String, int[]> secondaryValues, int[] dataFieldSize,
 			int[] secondaryDataFieldSize, int fontSize, int secondaryFontSize, double skew, double skewSecondary,
-			int skewTrim, int skewSecondaryTrim, boolean doRecolor, int[] dataColor, int[] secondaryDataColor) {
+			int skewTrim, int skewSecondaryTrim, boolean doRecolor, int[] dataColor, int[] secondaryDataColor, int pixelDetectionCount) {
 		super();
 		this.dataFieldSize = dataFieldSize;
 		this.secondaryDataFieldSize = secondaryDataFieldSize;
@@ -121,6 +105,7 @@ public class OCRConfiguration {
 		this.doRecolor = doRecolor;
 		this.dataColor = dataColor;
 		this.secondaryDataColor = secondaryDataColor;
+		this.pixelDetectionCount = pixelDetectionCount;
 	}
 
 	/**
@@ -143,7 +128,7 @@ public class OCRConfiguration {
 			return doRecolor ? Color.BLACK : Color.WHITE;
 	}
 
-	public OCRConfiguration rescale(float rescale) {
+	public OCRConfiguration rescale(float rescale, boolean isMap) {
 		int skewTrim = Math.round(this.skewTrim * rescale);
 		int skewSecondaryTrim = Math.round(this.skewSecondaryTrim * rescale);
 		int fontSize = Math.round(this.fontSize * rescale);
@@ -179,7 +164,7 @@ public class OCRConfiguration {
 		}
 		return new OCRConfiguration(values, secondaryValues, dataFieldSize, secondaryDataFieldSize, fontSize,
 				secondaryFontSize, skew, skewSecondary, skewTrim, skewSecondaryTrim, doRecolor,
-				dataColor, secondaryDataColor);
+				dataColor, secondaryDataColor, isMap ? 3 : 1);
 	}
 
 	public String toJson() {

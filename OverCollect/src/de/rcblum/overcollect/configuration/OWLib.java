@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 
 import de.rcblum.overcollect.data.OWMatch;
 import de.rcblum.overcollect.extract.ocr.Glyph;
+import de.rcblum.overcollect.utils.Helper;
 
 public class OWLib {
 
@@ -63,7 +64,7 @@ public class OWLib {
 	// Static attributes
 	//
 
-	public static final String VERSION_STRING = "0.1.7a";
+	public static final String VERSION_STRING = "0.1.8-alpha";
 
 	private static String defaultFolder = Paths.get("lib", "owdata").toString();
 
@@ -117,6 +118,11 @@ public class OWLib {
 		this(Paths.get(libPath));
 	}
 
+	public void addAccount(String accountName) {
+		this.accounts.add(accountName);
+		this.saveConfig();
+	}
+
 	public void addMatch(OWMatch match) {
 		Objects.requireNonNull(match);
 		this.matches.put(match.getMatchId(), match);
@@ -132,6 +138,20 @@ public class OWLib {
 
 	public boolean getBoolean(String key) {
 		return Boolean.valueOf(this.config.getProperty(key, "false"));
+	}
+
+	public String getDebugDir() {
+		String ddirName = getString("debug.dir",  "debug");
+		Path ddir = Paths.get(ddirName);
+		if (!Files.exists(ddir)) {
+			try {
+				Files.createDirectories(ddir);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		return ddirName;
 	}
 
 	public List<OWItem> getDropItems(int width, int height) {
@@ -215,20 +235,24 @@ public class OWLib {
 		List<Glyph> g = getSecondaryFontGlyphs();
 		return g.size() > 0 ? g.get(0).getBaseFontSize() : 57;
 	}
-
+	
 	public List<Glyph> getSecondaryFontGlyphs() {
 		return this.items.get("ocr_secondary_font") != null ? this.items.get("ocr_secondary_font").values().stream()
 				.filter(i -> i.hasGlyph()).map(i -> i.getGlyph()).collect(Collectors.toList()) : null;
 	}
-
+	
+	public String getString(String key, String defaultString) {
+		return this.config.getProperty(key) != null ? this.config.getProperty(key) : defaultString;
+	}
+	
 	public List<String> getSupportedScreenResolutions() {
 		return this.supportedScreenResolutions;
 	}
-	
+
 	public Path getTempPath() {
 		return Paths.get(System.getProperties().getProperty("owcollect.temp.dir"));
 	}
-	
+
 	private void init() {
 		File[] resolutionFolders = this.libPath.toFile().listFiles();
 		Arrays.sort(resolutionFolders);
@@ -263,7 +287,7 @@ public class OWLib {
 		this.matches = new HashMap<>();
 		File[] matchFiles = Paths.get(System.getProperties().getProperty("owcollect.data.dir")).toFile().listFiles();
 		for (File match : matchFiles) {
-			System.out.println(match);
+			Helper.info(this.getClass(), match);
 			OWMatch m = OWMatch.fromJsonFile(match);
 			if (m != null) {
 				this.matches.put(m.getMatchId(), m);
@@ -274,7 +298,7 @@ public class OWLib {
 			}
 		}
 	}
-	
+
 	private void saveConfig() {
 		this.config.setProperty("accounts", String.join(",", this.accounts));
 		this.config.setProperty("activeAccount", this.selectedAccount);
@@ -306,28 +330,5 @@ public class OWLib {
 
 	public boolean supportScreenResolution(String screenResolution) {
 		return this.supportedScreenResolutions.contains(screenResolution);
-	}
-
-	public void addAccount(String accountName) {
-		this.accounts.add(accountName);
-		this.saveConfig();
-	}
-
-	public String getString(String key, String defaultString) {
-		return this.config.getProperty(key) != null ? this.config.getProperty(key) : defaultString;
-	}
-
-	public String getDebugDir() {
-		String ddirName = getString("debug.dir",  "debug");
-		Path ddir = Paths.get(ddirName);
-		if (!Files.exists(ddir)) {
-			try {
-				Files.createDirectories(ddir);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-		
-		return ddirName;
 	}
 }

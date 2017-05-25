@@ -46,7 +46,7 @@ public class CaptureEngine implements ActionListener, ImageSource {
 		this.captureInterval = OWLib.getInstance().getInteger("captureInterval", 1000);
 		// this.screen = Objects.requireNonNull(screen);
 		// this.r = new Robot(screen);
-		System.out.println(this.captureInterval);
+		Helper.info((Class)this.getClass(), this.captureInterval);
 		t = new Timer(this.captureInterval, this);
 	}
 
@@ -97,7 +97,7 @@ public class CaptureEngine implements ActionListener, ImageSource {
 		OWLib lib = OWLib.getInstance();
 
 		// if (screenAutodetectCount%(this.captureInterval/100)==0) {
-		// System.out.println("Autodetecting
+		// Helper.info(this.getClass(), "Autodetecting
 		// Overwatch["+Math.round(screenAutodetectCount/(this.captureInterval/1000.0))+"
 		// sec]...");
 		// }
@@ -122,7 +122,7 @@ public class CaptureEngine implements ActionListener, ImageSource {
 							|| itemMain.hasFilter() && itemMain.getFilter().match(br)) {
 						this.screen = screen;
 						this.r = robot;
-						System.out.println("Screen found");
+						Helper.info(this.getClass(), "Screen found");
 						break;
 					}
 				}
@@ -174,12 +174,12 @@ public class CaptureEngine implements ActionListener, ImageSource {
 	}
 
 	public void start() {
-		System.out.println("Start capture");
+		Helper.info(this.getClass(), "Start capture");
 		this.t.start();
 	}
 
 	public void stop() {
-		System.out.println("Stop capture");
+		Helper.info(this.getClass(), "Stop capture");
 		this.t.stop();
 	}
 

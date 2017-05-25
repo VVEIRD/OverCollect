@@ -92,11 +92,11 @@ public class OdsExporter {
 		String heroName = hero.getItemName();
 		Set<String> secondaryStats = hero.getOCRConfiguration().secondaryValues.keySet();
 		XSSFSheet sheet = null;
-		System.out.println("Hero: " + hero.getItemName() + " ");
+		Helper.info(this.getClass(), "Hero: " + hero.getItemName() + " ");
 		List<OWMatch> heroMatches = this.matches;//.stream().filter(m -> m.getCharacterStats().stream().anyMatch(j -> heroName.equals(j.getName()))).collect(Collectors.toList());
 		List<OWMatch> foundMatches = this.matches.stream().filter(m -> m.getCharacterStats().stream().anyMatch(j -> heroName.equals(j.getName()))).collect(Collectors.toList());;
-		System.out.println("Matches: " + foundMatches.size());
-		System.out.println();
+		Helper.info(this.getClass(), "Matches: " + foundMatches.size());
+		Helper.info(this.getClass(), );
 		if (foundMatches.size() > 0) {
 			sheet = this.workbook.createSheet(heroName + "_data");
 			int rowIndex = 0;
@@ -209,7 +209,7 @@ public class OdsExporter {
 	{
 		try (OutputStream out = Files.newOutputStream(path)){
 			workbook.save(out);
-			System.out.println("ODS written successfully..");
+			Helper.info(this.getClass(), "ODS written successfully..");
 		} 
 	}
 }

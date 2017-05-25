@@ -1,7 +1,6 @@
 package de.rcblum.overcollect.ui;
 
 import java.awt.BorderLayout;
-import java.util.List;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;

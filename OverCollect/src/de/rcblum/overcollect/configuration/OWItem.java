@@ -254,7 +254,7 @@ public class OWItem {
 					if (this.hasFilter())
 						nItem.saveFilter(this.getFilter().rescale(rescale));
 					if (this.hasOCRConfiguration())
-						nItem.saveOCRConfiguration(this.getOCRConfiguration().rescale(rescale));
+						nItem.saveOCRConfiguration(this.getOCRConfiguration().rescale(rescale, this.isMap()));
 					nItem.setDrop(this.drop());
 					nItem.setHero(this.isHero());
 					nItem.setMap(this.isMap());

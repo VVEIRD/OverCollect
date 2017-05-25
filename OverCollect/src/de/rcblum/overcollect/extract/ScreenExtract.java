@@ -23,6 +23,7 @@ import de.rcblum.overcollect.configuration.OCRConfiguration;
 import de.rcblum.overcollect.configuration.OWLib;
 import de.rcblum.overcollect.extract.ocr.Glyph;
 import de.rcblum.overcollect.extract.ocr.ImageGlyphSplitter;
+import de.rcblum.overcollect.utils.Helper;
 
 public class ScreenExtract {
 
@@ -137,7 +138,7 @@ public class ScreenExtract {
 		if (this.config.values != null) {
 			for (String field : this.config.values.keySet()) {
 				int[] bounds = this.config.values.get(field);
-				System.out.println("Primary Field: [name=" + field + ", x=" + bounds[0] + ", y=" + bounds[1] + ", w="
+				Helper.info(this.getClass(), "Primary Field: [name=" + field + ", x=" + bounds[0] + ", y=" + bounds[1] + ", w="
 						+ this.config.secondaryDataFieldSize[0] + ", h=" + this.config.secondaryDataFieldSize[1] + "]");
 				this.valueImages.put(field,
 						adjustImage(
@@ -149,7 +150,7 @@ public class ScreenExtract {
 		if (this.config.secondaryValues != null) {
 			for (String field : this.config.secondaryValues.keySet()) {
 				int[] bounds = this.config.secondaryValues.get(field);
-				System.out.println("Secondary Field: [name=" + field + ", x=" + bounds[0] + ", y=" + bounds[1] + ", w="
+				Helper.info(this.getClass(), "Secondary Field: [name=" + field + ", x=" + bounds[0] + ", y=" + bounds[1] + ", w="
 						+ this.config.secondaryDataFieldSize[0] + ", h=" + this.config.secondaryDataFieldSize[1] + "]");
 				this.secondaryValueImages.put(field, this.screenImg.getSubimage(bounds[0], bounds[1],
 						this.config.secondaryDataFieldSize[0], this.config.secondaryDataFieldSize[1]));
@@ -192,7 +193,7 @@ public class ScreenExtract {
 			// // TODO Auto-generated catch block
 			// e.printStackTrace();
 			// }
-			BufferedImage[] charImgs = ImageGlyphSplitter.splitImage(img, this.config.getDataColor(), 0.06f);
+			BufferedImage[] charImgs = ImageGlyphSplitter.splitImage(img, this.config.getDataColor(), 0.06f, this.config.pixelDetectionCount);
 			char[] chars = new char[charImgs.length];
 			Glyph[] mostProbableGlyph = new Glyph[charImgs.length];
 			BufferedImage[] mostProbableImg = new BufferedImage[charImgs.length];
@@ -209,7 +210,7 @@ public class ScreenExtract {
 							* (((float) glyph.getBaseFontSize()) / ((float) charImgs[i].getHeight())));
 					BufferedImage rescaled = glyph.getBaseFontSize() != charImgs[i].getHeight()
 							? resize(charImgs[i], newW, newH) : charImgs[i];
-					if (OWLib.getInstance().getBoolean("debug")) {
+					if (OWLib.getInstance().getBoolean("debug.extraction")) {
 						try {
 							ImageIO.write(rescaled, "PNG",
 									Paths.get("tmp", field + "[" + i + "]_rescaled.png").toFile());
@@ -267,7 +268,7 @@ public class ScreenExtract {
 			BufferedImage imgResc = glyphFontSize != config.secondaryFontSize ? resize(img, newW, newH) : img;
 			imgResc = adjustImage(imgResc, this.config.getSecondaryDataColor(), config.skewSecondary,
 					config.skewSecondaryTrim, config.doRecolor);
-			BufferedImage[] charImgs = ImageGlyphSplitter.splitImage(imgResc, config.getSecondaryDataColor(), 0.06f);
+			BufferedImage[] charImgs = ImageGlyphSplitter.splitImage(imgResc, config.getSecondaryDataColor(), 0.06f, 1);
 			char[] chars = new char[charImgs.length];
 			Glyph[] mostProbableGlyph = new Glyph[charImgs.length];
 			BufferedImage[] mostProbableImg = new BufferedImage[charImgs.length];

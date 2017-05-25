@@ -2,6 +2,7 @@
   "doRecolor": true,
   "fontSize": 55,
   "secondaryFontSize": 19,
+  "pixelDetectionCount": 1,
   "dataColor": [
     0,
     0,

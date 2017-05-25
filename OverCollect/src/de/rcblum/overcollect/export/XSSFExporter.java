@@ -25,6 +25,7 @@ import de.rcblum.overcollect.configuration.OWLib;
 import de.rcblum.overcollect.data.OWCharacterStats;
 import de.rcblum.overcollect.data.OWMatch;
 import de.rcblum.overcollect.data.OWMatch.Result;
+import de.rcblum.overcollect.utils.Helper;
 
 public class XSSFExporter {
 	public static void main(String[] args) {
@@ -55,7 +56,7 @@ public class XSSFExporter {
 		String heroName = hero.getItemName();
 		Set<String> secondaryStats = hero.getOCRConfiguration().secondaryValues.keySet();
 		XSSFSheet sheet = null;
-		System.out.println("Hero: " + hero.getItemName() + " ");
+		Helper.info(this.getClass(), "Hero: " + hero.getItemName() + " ");
 		List<OWMatch> heroMatches = this.matches;// .stream().filter(m ->
 													// m.getCharacterStats().stream().anyMatch(j
 													// ->
@@ -64,8 +65,8 @@ public class XSSFExporter {
 				.filter(m -> m.getCharacterStats().stream().anyMatch(j -> heroName.equals(j.getName())))
 				.collect(Collectors.toList());
 		;
-		System.out.println("Matches: " + foundMatches.size());
-		System.out.println();
+		Helper.info(this.getClass(), "Matches: " + foundMatches.size());
+		Helper.info(this.getClass(), "");
 		if (foundMatches.size() > 0) {
 			sheet = this.workbook.createSheet(heroName + "_data");
 			int rowIndex = 0;
@@ -254,7 +255,7 @@ public class XSSFExporter {
 	public void save(Path path) {
 		try (OutputStream out = Files.newOutputStream(path)) {
 			workbook.write(out);
-			System.out.println("Excel written successfully..");
+			Helper.info(this.getClass(), "Excel written successfully..");
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {

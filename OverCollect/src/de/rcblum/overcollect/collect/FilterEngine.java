@@ -1,7 +1,6 @@
 package de.rcblum.overcollect.collect;
 
 import java.awt.image.BufferedImage;
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -85,7 +84,7 @@ public class FilterEngine implements ImageListener {
 		if (OWLib.getInstance().supportScreenResolution(i.getWidth(), i.getHeight())) {
 			worker.submit(new FilterTask(i));
 		} else {
-			System.out.println("Image resolution " + i.getWidth() + " x " + i.getHeight() + " not supported");
+			Helper.info(this.getClass(), "Image resolution " + i.getWidth() + " x " + i.getHeight() + " not supported");
 		}
 	}
 

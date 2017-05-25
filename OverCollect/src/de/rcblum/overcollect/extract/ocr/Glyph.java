@@ -16,6 +16,7 @@ import com.google.gson.GsonBuilder;
 import de.rcblum.overcollect.configuration.Filter;
 import de.rcblum.overcollect.configuration.OWItem;
 import de.rcblum.overcollect.configuration.OWLib;
+import de.rcblum.overcollect.utils.Helper;
 
 public class Glyph {
 	/**
@@ -84,15 +85,15 @@ public class Glyph {
 	public static void save(String libPath, String resolution, String alias, Glyph glyph) throws IOException {
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		Path glyphFile = Paths.get(libPath, resolution, alias, "glyph.json");
-		System.out.println(glyphFile.toString());
+		Helper.info(Glyph.class, glyphFile.toString());
 		String text = gson.toJson(glyph);
 		Files.write(glyphFile, text.getBytes("UTF-8"));
 	}
 	private static void testGlyph(String category, String itemId) {
-		System.out.println("Category: " + category + ", glyph: " + itemId);
+		Helper.info(Glyph.class, "Category: " + category + ", glyph: " + itemId);
 		Glyph g2 = OWLib.getInstance().getItem(category, itemId).getGlyph();
 		BufferedImage b = OWLib.getInstance().getItem(category, itemId).getTemplate();
-		System.out.println("    Matched: " + g2.match(b, Color.BLACK, 0.06f) + ", Percentage: "
+		Helper.info(Glyph.class, "    Matched: " + g2.match(b, Color.BLACK, 0.06f) + ", Percentage: "
 				+ Math.round(g2.matchPercentage(b, Color.BLACK, 0.06f) * 100));
 		System.out.println();
 	}
@@ -192,7 +193,7 @@ public class Glyph {
 				int x = Math.round(negativePixels[i][0]);
 				int y = Math.round(negativePixels[i][1]);
 				if (image.getWidth() <= x || image.getHeight() <= y) {
-					//System.out.println("Outofbounds pixel");
+					//Helper.info(this.getClass(), "Outofbounds pixel");
 					continue;
 				}
 				int argb = image.getRGB(x, y);
@@ -201,7 +202,7 @@ public class Glyph {
 				int b = (argb >> 0) & 0xFF;
 				if ((Math.abs((rPrim - r) / 255.0f) <= tolerance && Math.abs((gPrim - g) / 255.0f) <= tolerance
 						&& Math.abs((bPrim - b) / 255.0f) <= tolerance)) {
-					//System.out.println("Negative misses " + x + ", " + y);
+					//Helper.info(this.getClass(), "Negative misses " + x + ", " + y);
 					continue;
 				}
 				ok++;

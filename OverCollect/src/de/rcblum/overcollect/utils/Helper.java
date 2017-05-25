@@ -28,15 +28,23 @@ public class Helper {
 		return null;
 	}
 
+	public static void debug(Class<?> clazz, String string) {
+		System.out.println(Helper.SDF.format(new Date(System.currentTimeMillis())) + "\tDEBUG\t" + clazz.getName() + "\t" + string);
+	}
+
+	public static void info(Class clazz, Object string) {
+		System.out.println(Helper.SDF.format(new Date(System.currentTimeMillis())) + "\tINFO\t" + clazz.getName() + "\t" + string.toString());
+	}
+
+	public static void info(Class clazz, int intVal) {
+		System.out.println(Helper.SDF.format(new Date(System.currentTimeMillis())) + "\tINFO\t" + clazz.getName() + "\t" + intVal);
+	}
+
 	public static boolean isInteger(String val) {
 		return val != null && val.matches("^-?\\d+$");
 	}
 
 	public static int toInteger(String value, int defaultValue) {
 		return isInteger(value) ? Integer.valueOf(value) : defaultValue;
-	}
-
-	public static void debug(Class<?> clazz, String string) {
-		System.out.println(Helper.SDF.format(new Date(System.currentTimeMillis())) + "\tDEBUG\t" + clazz.toString() + "\t" + string);
 	}
 }

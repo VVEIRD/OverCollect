@@ -1,6 +1,7 @@
 {
   "doRecolor": true,
   "fontSize": 51,
+  "pixelDetectionCount": 3,
   "dataColor": [
     0,
     0,

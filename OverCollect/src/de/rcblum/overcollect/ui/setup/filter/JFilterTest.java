@@ -27,6 +27,7 @@ import javax.swing.table.DefaultTableModel;
 import de.rcblum.overcollect.configuration.Filter;
 import de.rcblum.overcollect.configuration.OWItem;
 import de.rcblum.overcollect.configuration.OWLib;
+import de.rcblum.overcollect.utils.Helper;
 
 public class JFilterTest extends JFrame {
 
@@ -159,13 +160,13 @@ public class JFilterTest extends JFrame {
 							int rows = tItems.getRowCount();
 							int columnCount = tItems.getColumnCount();
 							SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-							System.out.println("Start: " + sdf.format(Calendar.getInstance().getTime()));
+							Helper.info(this.getClass(), "Start: " + sdf.format(Calendar.getInstance().getTime()));
 							for (int i = 0; i < rows; i++) {
 								for (int j = 1; j < columnCount; j++) {
 									if (!"--".equals(model.getValueAt(i, j))) {
-										System.out.println("Source: " + model.getValueAt(i, 0));
-										System.out.println("Target: " + model.getColumnName(j));
-										System.out.println();
+										Helper.info(this.getClass(), "Source: " + model.getValueAt(i, 0));
+										Helper.info(this.getClass(), "Target: " + model.getColumnName(j));
+										Helper.info(this.getClass(), "");
 										OWItem sourceItem = lib.getItem(res, (String) model.getValueAt(i, 0));
 										OWItem targetItem = lib.getItem(res, model.getColumnName(j));
 										if (sourceItem.hasFilter()) {
@@ -181,7 +182,7 @@ public class JFilterTest extends JFrame {
 									}
 								}
 							}
-							System.out.println("End: " + sdf.format(Calendar.getInstance().getTime()));
+							Helper.info(this.getClass(), "End: " + sdf.format(Calendar.getInstance().getTime()));
 						} catch (Exception e) {
 							e.printStackTrace();
 						}

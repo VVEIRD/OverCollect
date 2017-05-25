@@ -22,7 +22,8 @@ public class ImageGlyphSplitter {
 	 *            will be reduced to either 0 or 1.
 	 * @return Array with the images split by the primary color.
 	 */
-	public static BufferedImage[] splitImage(BufferedImage biSource, Color primary, float tolerance) {
+	public static BufferedImage[] splitImage(BufferedImage biSource, Color primary, float tolerance, int pixelDetectionCount) {
+		pixelDetectionCount = pixelDetectionCount == 0 ? 1 : pixelDetectionCount;
 		Objects.requireNonNull(biSource);
 		Objects.requireNonNull(primary);
 		tolerance = tolerance > 1 ? 1 : tolerance < 0 ? 0 : tolerance;
@@ -34,19 +35,22 @@ public class ImageGlyphSplitter {
 			int pr = primary.getRed();
 			int pg = primary.getGreen();
 			int pb = primary.getBlue();
+			int cCount=0;
+			// Find top / bottom
 			for (int y = 0; y < biSource.getHeight(); y++) {
 				int argb = biSource.getRGB(x, y);
 				int r = (argb >> 16) & 0xFF;
 				int g = (argb >> 8) & 0xFF;
 				int b = (argb >> 0) & 0xFF;
 				if (Math.abs(r - pr) / 255.0 < tolerance && Math.abs(g - pg) / 255.0 < tolerance
-						&& Math.abs(b - pb) / 255.0 < tolerance && glyphXStart < 0) {
-					glyphXStart = x;
+						&& Math.abs(b - pb) / 255.0 < tolerance)
+					cCount++;
+				if (cCount >= pixelDetectionCount && glyphXStart < 0) {
+						glyphXStart = x;
 					break;
-				} else if (Math.abs(r - pr) / 255.0 < tolerance && Math.abs(g - pg) / 255.0 < tolerance
-						&& Math.abs(b - pb) / 255.0 < tolerance) {
-					glyphXEnd = x;
 				}
+				if (cCount>= pixelDetectionCount)
+						glyphXEnd = x;
 			}
 			if (glyphXEnd >= 0 && glyphXEnd < x && glyphXEnd < biSource.getWidth()) {
 				int glyphYStart = -1;

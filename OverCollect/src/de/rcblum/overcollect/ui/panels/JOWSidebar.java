@@ -3,7 +3,6 @@ package de.rcblum.overcollect.ui.panels;
 import java.awt.Container;
 import java.awt.Desktop;
 import java.awt.Font;
-import java.awt.Graphics;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -15,10 +14,11 @@ import java.nio.file.Paths;
 import java.util.List;
 
 import javax.swing.AbstractButton;
-import javax.swing.DefaultListCellRenderer;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -38,8 +38,6 @@ import de.rcblum.overcollect.ui.utils.ComboBoxRenderer;
 import de.rcblum.overcollect.ui.utils.FileUtils;
 import de.rcblum.overcollect.ui.utils.FileUtils.OWFileFilter;
 import de.rcblum.overcollect.ui.utils.UiStatics;
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
 
 public class JOWSidebar extends JPanel {
 

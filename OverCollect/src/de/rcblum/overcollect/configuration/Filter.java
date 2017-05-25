@@ -10,6 +10,8 @@ import java.nio.file.Paths;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import de.rcblum.overcollect.utils.Helper;
+
 /**
  * Each Screenshot must pass one of the filters to may be used.
  * 
@@ -20,7 +22,7 @@ public class Filter {
 	public static void save(String libPath, String resolution, String alias, Filter filter) throws IOException {
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		Path filterFile = Paths.get(libPath, resolution, alias, "filter.json");
-		System.out.println(filterFile.toString());
+		Helper.info(Filter.class, filterFile.toString());
 		String text = gson.toJson(filter);
 		Files.write(filterFile, text.getBytes("UTF-8"));
 	}
@@ -56,13 +58,13 @@ public class Filter {
 			}
 			Color c = new Color(i.getRGB(points[cpoint][0], points[cpoint][1]), true);
 			// Test R G B
-			// System.out.println("R diff: " +
+			// Helper.info(this.getClass(), "R diff: " +
 			// Math.round(100*(Math.abs(points[cpoint][2] -
 			// c.getRed())/255.0)));
-			// System.out.println("B diff: " +
+			// Helper.info(this.getClass(), "B diff: " +
 			// Math.round(100*(Math.abs(points[cpoint][3] -
 			// c.getGreen())/255.0)));
-			// System.out.println("G diff: " +
+			// Helper.info(this.getClass(), "G diff: " +
 			// Math.round(100*(Math.abs(points[cpoint][4] -
 			// c.getBlue())/255.0)));
 			matches = matches && Math.abs(points[cpoint][2] - c.getRed()) <= toleranceVal

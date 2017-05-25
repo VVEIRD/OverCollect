@@ -7,6 +7,8 @@ import java.awt.event.MouseWheelListener;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 
+import de.rcblum.overcollect.utils.Helper;
+
 /**
  * A JScrollPane that will bubble a mouse wheel scroll event to the parent
  * JScrollPane if one exists when this scrollpane either tops out or bottoms
@@ -47,7 +49,7 @@ public class PDControlScrollPane extends JScrollPane {
 		@Override
 		public void mouseWheelMoved(MouseWheelEvent e) {
 			JScrollPane parent = getParentScrollPane();
-			System.out.println("Parent scroll pane " + parent);
+			Helper.info(this.getClass(), "Parent scroll pane " + parent);
 			if (parent != null) {
 				/*
 				 * Only dispatch if we have reached top/bottom on previous
@@ -56,14 +58,14 @@ public class PDControlScrollPane extends JScrollPane {
 				if (e.getWheelRotation() < 0) {
 					if (bar.getValue() == 0 && previousValue == 0) {
 						parent.dispatchEvent(cloneEvent(e));
-						System.out.println("To Parent");
+						Helper.info(this.getClass(), "To Parent");
 					}
 				} else if (!PDControlScrollPane.this.getVerticalScrollBar().isVisible()) {
 					parent.dispatchEvent(cloneEvent(e));
 				} else {
 					if (bar.getValue() == getMax() && previousValue == getMax()) {
 						parent.dispatchEvent(cloneEvent(e));
-						System.out.println("To Parent");
+						Helper.info(this.getClass(), "To Parent");
 					}
 				}
 				previousValue = bar.getValue();

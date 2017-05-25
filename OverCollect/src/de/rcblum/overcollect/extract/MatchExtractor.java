@@ -80,11 +80,15 @@ public class MatchExtractor implements Runnable, OWMatchListener {
 		}
 
 		private ScreenExtract createScreenExtract(Path imagePath, Path ocrConfig) {
+			if (OWLib.getInstance().getBoolean("debug.extraction"))
+				Helper.debug(this.getClass(), "Extracting: " +imagePath.getFileName().toString());
 			if (Files.exists(imagePath) && Files.exists(ocrConfig))
 				try {
 					BufferedImage image = ImageIO.read(imagePath.toFile());
 					String text = new String(Files.readAllBytes(ocrConfig), StandardCharsets.UTF_8);
 					OCRConfiguration config = g.fromJson(text, OCRConfiguration.class);
+					if (OWLib.getInstance().getBoolean("debug.extraction"))
+						Helper.debug(this.getClass(), "OCR-Configuration.pixelDetectionCount: " + config.pixelDetectionCount);
 					ScreenExtract sc = new ScreenExtract(image, config);
 					return sc;
 				} catch (IOException e) {
@@ -94,7 +98,7 @@ public class MatchExtractor implements Runnable, OWMatchListener {
 		}
 
 		private void readStats(Path hero) {
-			System.out.println("Hero: " + hero);
+			Helper.info(this.getClass(), "Hero: " + hero);
 			String filename = hero.getFileName().toString().replace(".png", "");
 			ScreenExtract sc = null;
 			if (Files.exists(hero) && Files.exists(hero.getParent().resolve(filename + ".ocr")))
@@ -124,12 +128,15 @@ public class MatchExtractor implements Runnable, OWMatchListener {
 				}
 				this.match.addCharacterStats(cStats);
 			} else {
-				System.out.println("..Stats could not be extracted, files missing");
+				Helper.info(this.getClass(), "..Stats could not be extracted, files missing");
 			}
 		}
 
 		@Override
 		public void run() {
+
+			if (OWLib.getInstance().getBoolean("debug.extraction"))
+				Helper.debug(this.getClass(), "Extracting match: " + matchPath.getFileName().toString() + "[" + matchPath.toAbsolutePath().toString() +"]");
 			// Extract time and map
 			Properties properties = new Properties();
 			try (InputStream inD = Files.newInputStream(this.matchPath.resolve("data.properties"))) {
@@ -182,7 +189,7 @@ public class MatchExtractor implements Runnable, OWMatchListener {
 						this.matchPath.resolve("_sr_screen.ocr"));
 			if (sc != null) {
 				this.match.setSr(sc.getValue("sr"));
-				System.out.println("SR: " + sc.getValue("sr"));
+				Helper.info(this.getClass(), "SR: " + sc.getValue("sr"));
 				this.writeImage(this.imagePath.resolve("sr.png"), sc.getImage("sr"));
 				for (Map.Entry<BufferedImage, Glyph> entry : sc.nohitPrimary.entrySet()) {
 					fireExtractionError(entry.getKey(), entry.getValue(), OWMatchExtractionListener.StatType.PRIMARY);
@@ -211,9 +218,14 @@ public class MatchExtractor implements Runnable, OWMatchListener {
 			} catch (UnsupportedEncodingException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
+
+				if (OWLib.getInstance().getBoolean("debug.extraction"))
+					Helper.debug(this.getClass(), "Error writing match to file: " +e.getMessage());
 				e.printStackTrace();
 			}
+
+			if (OWLib.getInstance().getBoolean("debug.extraction"))
+				Helper.debug(this.getClass(), "Done extracting match: " + matchPath.getFileName().toString());
 		}
 
 		private void writeImage(Path imagePath, BufferedImage i) {
@@ -221,7 +233,7 @@ public class MatchExtractor implements Runnable, OWMatchListener {
 				writePNG(i, os);
 				// ImageIO.write(i, "JPG", );
 			} catch (IOException e) {
-				System.out.println("Error writing image: " + imagePath.toAbsolutePath().toString());
+				Helper.info(this.getClass(), "Error writing image: " + imagePath.toAbsolutePath().toString());
 				e.printStackTrace();
 			}
 		}
@@ -314,6 +326,8 @@ public class MatchExtractor implements Runnable, OWMatchListener {
 	 */
 	private void addMatch(Path matchPath) {
 		try {
+			if (OWLib.getInstance().getBoolean("debug.extraction"))
+				Helper.debug(this.getClass(), "Adding match to be extraced: " + matchPath.getFileName().toString() + "[" + matchPath.toAbsolutePath().toString() +"]");
 			Path imagePath = this.imageRoot.resolve(matchPath.getFileName().toString());
 			if (!Files.exists(imagePath))
 				Files.createDirectories(imagePath);
@@ -348,7 +362,7 @@ public class MatchExtractor implements Runnable, OWMatchListener {
 
 	@Override
 	public void matchEnded(OWMatchEvent e) {
-		System.out.println(this.getClass().toString() + " match ended: " + e.id.toString() + ", " + e.item.getItemName()
+		Helper.info(this.getClass(), this.getClass().toString() + " match ended: " + e.id.toString() + ", " + e.item.getItemName()
 				+ ", " + e.type);
 		if (e.type != OWMatchEvent.Type.END_ABORTED)
 			this.events.add(e);
