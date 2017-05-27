@@ -164,7 +164,7 @@ public class OCRConfiguration {
 		}
 		return new OCRConfiguration(values, secondaryValues, dataFieldSize, secondaryDataFieldSize, fontSize,
 				secondaryFontSize, skew, skewSecondary, skewTrim, skewSecondaryTrim, doRecolor,
-				dataColor, secondaryDataColor, isMap ? 3 : 1);
+				dataColor, secondaryDataColor, this.pixelDetectionCount);
 	}
 
 	public String toJson() {
