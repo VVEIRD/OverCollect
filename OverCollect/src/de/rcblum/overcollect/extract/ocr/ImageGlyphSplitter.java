@@ -42,6 +42,7 @@ public class ImageGlyphSplitter {
 			int pg = primary.getGreen();
 			int pb = primary.getBlue();
 			int cCount=0;
+			int hCount=0;
 			// Find right and left bounds of the next number
 			for (int y = 0; y < biSource.getHeight(); y++) {
 				int argb = biSource.getRGB(x, y);
@@ -53,14 +54,15 @@ public class ImageGlyphSplitter {
 				if (foundFontColor)
 					cCount++;
 				if (cCount >= pixelDetectionCount && glyphLeftBound < 0) {
-						glyphLeftBound = x;
-					break;
+					glyphLeftBound = x;
+//					glyphRightBound = x;
+//					break;
 				}
 				if (cCount>= pixelDetectionCount)
 						glyphRightBound = x;
 				// Reset left bound position of the sub-image, if there was only one pixel of primary color 
-				if (!foundFontColor && glyphLeftBound >= 0 && glyphRightBound < 0)
-					glyphLeftBound = -1;
+//				if (!foundFontColor && glyphLeftBound >= 0 && glyphRightBound < 0)
+//					glyphLeftBound = -1;
 			}
 			// Find top and bottom bounds
 			if (glyphRightBound >= 0 && glyphRightBound < x && glyphRightBound < biSource.getWidth()) {
@@ -72,12 +74,14 @@ public class ImageGlyphSplitter {
 						int r = (argb >> 16) & 0xFF;
 						int g = (argb >> 8) & 0xFF;
 						int b = (argb >> 0) & 0xFF;
-						if (Math.abs(r - pr) / 255.0 < tolerance && Math.abs(g - pg) / 255.0 < tolerance
-								&& Math.abs(b - pb) / 255.0 < tolerance && glyphYStart < 0) {
+						boolean foundFontColor = Math.abs(r - pr) / 255.0 < tolerance
+								&& Math.abs(g - pg) / 255.0 < tolerance && Math.abs(b - pb) / 255.0 < tolerance;
+						if (foundFontColor)
+							hCount++;
+						if (hCount >= pixelDetectionCount && glyphYStart < 0) {
 							glyphYStart = ysub;
 							break;
-						} else if (Math.abs(r - pr) / 255.0 < tolerance && Math.abs(g - pg) / 255.0 < tolerance
-								&& Math.abs(b - pb) / 255.0 < tolerance) {
+						} else if (foundFontColor && glyphYStart >= 0) {
 							glyphYEnd = ysub;
 						}
 					}
