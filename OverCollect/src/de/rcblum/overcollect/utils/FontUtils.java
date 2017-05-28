@@ -131,6 +131,8 @@ public class FontUtils {
 	}
 
 	public static void main(String[] args) {
+		System.out.println("Working Directory = " +
+	              System.getProperty("user.dir"));
 		mergeSecondaryFontTestFiles();
 		mergePrimaryFontTestFiles();
 	}
@@ -185,7 +187,33 @@ public class FontUtils {
 
 	public static void mergeSecondaryFontTestFiles() {
 		mergeTestFiles(Paths.get("lib", "samples", "secondary_font_source"),
-				Paths.get("lib", "samples", "secondary_font_compiled"), true);
+				Paths.get("lib", "samples", "secondary_font_compiled"), false);
+		try {
+			Stream<Path> files = Files.list(Paths.get("lib", "samples", "secondary_font_compiled"));
+			files.filter(f -> f.toString().endsWith(".png")).forEach(c -> {
+				try {
+					BufferedImage source = ImageIO.read(c.toFile());
+					BufferedImage target = new BufferedImage(source.getWidth(), 2000, BufferedImage.TYPE_INT_ARGB);
+					Color color = new Color(0, 0, 0, 0);
+					Graphics2D g = target.createGraphics();
+					g.setColor(color);
+					g.fillRect(0, 0, target.getWidth(), target.getHeight());
+					g.drawImage(source, 0, 0, null);
+					g.dispose();
+					ImageIO.write(target,
+							"PNG", Paths
+									.get("lib", "owdata", "ocr_secondary_font",
+											String.valueOf(c.getFileName().toString().charAt(0)), "template.png")
+									.toFile());
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			});
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public static void mergeTestFiles(Path imageRoot, Path imageDest, boolean filterAgainstOtherGlyphs) {

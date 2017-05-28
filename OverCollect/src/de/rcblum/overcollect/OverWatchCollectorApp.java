@@ -24,7 +24,6 @@ import de.rcblum.overcollect.ui.JOverCollectFrame;
 import de.rcblum.overcollect.ui.setup.filter.JFilterSetup;
 import de.rcblum.overcollect.ui.setup.filter.JFilterTest;
 import de.rcblum.overcollect.ui.setup.ocr.JOCRSetup;
-import de.rcblum.overcollect.utils.Helper;
 
 public class OverWatchCollectorApp {
 

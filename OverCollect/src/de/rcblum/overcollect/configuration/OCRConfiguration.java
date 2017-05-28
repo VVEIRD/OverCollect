@@ -1,11 +1,8 @@
 package de.rcblum.overcollect.configuration;
 
 import java.awt.Color;
-import java.awt.Dimension;
-import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -15,8 +12,6 @@ import java.util.Set;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonIOException;
-import com.google.gson.JsonSyntaxException;
 
 import de.rcblum.overcollect.utils.Helper;
 

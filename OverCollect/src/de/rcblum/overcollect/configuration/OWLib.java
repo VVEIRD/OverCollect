@@ -64,7 +64,7 @@ public class OWLib {
 	// Static attributes
 	//
 
-	public static final String VERSION_STRING = "0.1.8-alpha";
+	public static final String VERSION_STRING = "0.1.9-alpha";
 
 	private static String defaultFolder = Paths.get("lib", "owdata").toString();
 
@@ -257,7 +257,7 @@ public class OWLib {
 		File[] resolutionFolders = this.libPath.toFile().listFiles();
 		Arrays.sort(resolutionFolders);
 		// load accounts
-		this.accounts = new LinkedList(this.config.getProperty("accounts") != null ? Arrays.asList(this.config.getProperty("accounts").split(",")) : new LinkedList<>());
+		this.accounts = new LinkedList<>(this.config.getProperty("accounts") != null ? Arrays.asList(this.config.getProperty("accounts").split(",")) : new LinkedList<>());
 		this.selectedAccount = this.config.getProperty("activeAccount");
 		
 		// Find all resolutions

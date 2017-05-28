@@ -159,7 +159,7 @@ public class JFilterSetup extends JFrame {
 			public void mouseClicked(MouseEvent e) {
 				int x = e.getX();
 				int y = e.getY();
-				if (image != null) {
+				if (image != null && image.getWidth() > x && image.getHeight() > y) {
 					Color c = new Color(image.getRGB(x, y), true);
 					Object[] tblEntry = new Object[] { x, y, c.getRed(), c.getGreen(), c.getBlue() };
 					model.addRow(tblEntry);

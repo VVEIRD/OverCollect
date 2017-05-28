@@ -268,7 +268,7 @@ public class ScreenExtract {
 			BufferedImage imgResc = glyphFontSize != config.secondaryFontSize ? resize(img, newW, newH) : img;
 			imgResc = adjustImage(imgResc, this.config.getSecondaryDataColor(), config.skewSecondary,
 					config.skewSecondaryTrim, config.doRecolor);
-			BufferedImage[] charImgs = ImageGlyphSplitter.splitImage(imgResc, config.getSecondaryDataColor(), 0.06f, 1);
+			BufferedImage[] charImgs = ImageGlyphSplitter.splitImage(imgResc, config.getSecondaryDataColor(), 0.06f, 3);
 			char[] chars = new char[charImgs.length];
 			Glyph[] mostProbableGlyph = new Glyph[charImgs.length];
 			BufferedImage[] mostProbableImg = new BufferedImage[charImgs.length];
