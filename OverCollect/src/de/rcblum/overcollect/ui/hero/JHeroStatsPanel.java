@@ -1,4 +1,4 @@
-package de.rcblum.overcollect.ui.panels;
+package de.rcblum.overcollect.ui.hero;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -8,7 +8,9 @@ import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -24,8 +26,10 @@ import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.RowSpec;
 
 import de.rcblum.overcollect.data.OWCharacterStats;
+import de.rcblum.overcollect.ui.panels.JOWMatchContentPanel;
 import de.rcblum.overcollect.ui.utils.ImageCache;
 import de.rcblum.overcollect.ui.utils.UiStatics;
+import de.rcblum.overcollect.utils.Helper;
 
 public class JHeroStatsPanel extends JPanel {
 
@@ -55,6 +59,7 @@ public class JHeroStatsPanel extends JPanel {
 	private JTextField txtHealing;
 
 	private JTextField txtDeaths;
+	private JSecondaryStatsPanel pSecondaryStatsPanel;
 
 	/**
 	 * Create the panel.
@@ -73,31 +78,76 @@ public class JHeroStatsPanel extends JPanel {
 		this.setBorder(null);
 		setBackground(new Color(0, 0, 0, 55));
 		setOpaque(false);
-		setLayout(new FormLayout(
-				new ColumnSpec[] { ColumnSpec.decode("10px"), ColumnSpec.decode("15px"), ColumnSpec.decode("10px"),
-						ColumnSpec.decode("15px"), ColumnSpec.decode("10px"), ColumnSpec.decode("15px"),
-						ColumnSpec.decode("10px"), ColumnSpec.decode("15px"), ColumnSpec.decode("10px"),
-						ColumnSpec.decode("15px"), ColumnSpec.decode("10px"), ColumnSpec.decode("20px:grow"),
-						ColumnSpec.decode("10px"), ColumnSpec.decode("20px"), ColumnSpec.decode("10px"),
-						ColumnSpec.decode("20px"), ColumnSpec.decode("10px"), ColumnSpec.decode("20px:grow"),
-						ColumnSpec.decode("10px"), ColumnSpec.decode("20px"), ColumnSpec.decode("10px"),
-						ColumnSpec.decode("20px"), ColumnSpec.decode("10px"), ColumnSpec.decode("20px:grow"),
-						ColumnSpec.decode("10px"), ColumnSpec.decode("20px"), ColumnSpec.decode("10px"),
-						ColumnSpec.decode("20px"), ColumnSpec.decode("10px"), ColumnSpec.decode("20px:grow"),
-						ColumnSpec.decode("10px"), ColumnSpec.decode("20px"), ColumnSpec.decode("10px"),
-						ColumnSpec.decode("20px"), ColumnSpec.decode("10px"), ColumnSpec.decode("20px:grow"),
-						ColumnSpec.decode("10px"), ColumnSpec.decode("20px"), ColumnSpec.decode("10px"),
-						ColumnSpec.decode("20px"), ColumnSpec.decode("10px"), ColumnSpec.decode("20px:grow"),
-						ColumnSpec.decode("10px"), ColumnSpec.decode("20px"), ColumnSpec.decode("10px"),
-						ColumnSpec.decode("20px"), ColumnSpec.decode("10px"), ColumnSpec.decode("20px"),
-						ColumnSpec.decode("10px"), ColumnSpec.decode("20px"), ColumnSpec.decode("10px"),
-						ColumnSpec.decode("20px"), ColumnSpec.decode("10px"), ColumnSpec.decode("20px"),
-						ColumnSpec.decode("10px:grow"), ColumnSpec.decode("20px:grow"),
-						ColumnSpec.decode("10px:grow"), },
-				new RowSpec[] { RowSpec.decode("1px"), RowSpec.decode("4px"), RowSpec.decode("20px"),
-						RowSpec.decode("5px"), RowSpec.decode("30px"), RowSpec.decode("5px"), RowSpec.decode("15px"),
-						RowSpec.decode("5px"), RowSpec.decode("20px"), RowSpec.decode("5px"),
-						RowSpec.decode("10px"), }));
+		setLayout(new FormLayout(new ColumnSpec[] {
+				ColumnSpec.decode("10px"),
+				ColumnSpec.decode("15px"),
+				ColumnSpec.decode("10px"),
+				ColumnSpec.decode("15px"),
+				ColumnSpec.decode("10px"),
+				ColumnSpec.decode("15px"),
+				ColumnSpec.decode("10px"),
+				ColumnSpec.decode("15px"),
+				ColumnSpec.decode("10px"),
+				ColumnSpec.decode("15px"),
+				ColumnSpec.decode("10px"),
+				ColumnSpec.decode("20px:grow"),
+				ColumnSpec.decode("10px"),
+				ColumnSpec.decode("20px"),
+				ColumnSpec.decode("10px"),
+				ColumnSpec.decode("20px"),
+				ColumnSpec.decode("10px"),
+				ColumnSpec.decode("20px:grow"),
+				ColumnSpec.decode("10px"),
+				ColumnSpec.decode("20px"),
+				ColumnSpec.decode("10px"),
+				ColumnSpec.decode("20px"),
+				ColumnSpec.decode("10px"),
+				ColumnSpec.decode("20px:grow"),
+				ColumnSpec.decode("10px"),
+				ColumnSpec.decode("20px"),
+				ColumnSpec.decode("10px"),
+				ColumnSpec.decode("20px"),
+				ColumnSpec.decode("10px"),
+				ColumnSpec.decode("20px:grow"),
+				ColumnSpec.decode("10px"),
+				ColumnSpec.decode("20px"),
+				ColumnSpec.decode("10px"),
+				ColumnSpec.decode("20px"),
+				ColumnSpec.decode("10px"),
+				ColumnSpec.decode("20px:grow"),
+				ColumnSpec.decode("10px"),
+				ColumnSpec.decode("20px"),
+				ColumnSpec.decode("10px"),
+				ColumnSpec.decode("20px"),
+				ColumnSpec.decode("10px"),
+				ColumnSpec.decode("20px:grow"),
+				ColumnSpec.decode("10px"),
+				ColumnSpec.decode("20px"),
+				ColumnSpec.decode("10px"),
+				ColumnSpec.decode("20px"),
+				ColumnSpec.decode("10px"),
+				ColumnSpec.decode("20px"),
+				ColumnSpec.decode("10px"),
+				ColumnSpec.decode("20px"),
+				ColumnSpec.decode("10px"),
+				ColumnSpec.decode("20px"),
+				ColumnSpec.decode("10px"),
+				ColumnSpec.decode("20px"),
+				ColumnSpec.decode("10px:grow"),
+				ColumnSpec.decode("20px:grow"),
+				ColumnSpec.decode("10px:grow"),},
+			new RowSpec[] {
+				RowSpec.decode("1px"),
+				RowSpec.decode("4px"),
+				RowSpec.decode("20px"),
+				RowSpec.decode("5px"),
+				RowSpec.decode("30px"),
+				RowSpec.decode("10px"),
+				RowSpec.decode("15px"),
+				RowSpec.decode("5px"),
+				RowSpec.decode("20px"),
+				RowSpec.decode("5px"),
+				RowSpec.decode("5px"),}));
 
 		Properties p = new Properties();
 		BufferedImage b = null;
@@ -159,6 +209,11 @@ public class JHeroStatsPanel extends JPanel {
 		txtEliminations.setOpaque(false);
 		add(txtEliminations, "12, 5, 5, 1, fill, top");
 		txtEliminations.setColumns(10);
+		
+		pSecondaryStatsPanel = new JSecondaryStatsPanel();
+		pSecondaryStatsPanel.setOpaque(false);
+		add(pSecondaryStatsPanel, "12, 7, 41, 5, fill, top");
+				
 
 		txtObjkills = new JTextField();
 		txtObjkills.setEditable(false);
@@ -226,6 +281,32 @@ public class JHeroStatsPanel extends JPanel {
 		this.txtDmgdone.setText("" + this.hero.getDamageDone());
 		this.txtHealing.setText("" + this.hero.getHealingDone());
 		this.txtDeaths.setText("" + this.hero.getDeaths());
+		Map<String, Integer> secondaryStats = this.hero.getSecondaryStats();
+		String[] secStatName = secondaryStats.keySet().toArray(new String[0]);
+		if (secStatName.length >= 1) {
+			this.pSecondaryStatsPanel.setSecondaryStatLabel1(Helper.insertBeforUpeprcase(secStatName[0], " "));
+			this.pSecondaryStatsPanel.setSecondaryStatValue1(String.valueOf(secondaryStats.get(secStatName[0])));
+		}
+		if (secStatName.length >= 2) {
+			this.pSecondaryStatsPanel.setSecondaryStatLabel2(Helper.insertBeforUpeprcase(secStatName[1], " "));
+			this.pSecondaryStatsPanel.setSecondaryStatValue2(String.valueOf(secondaryStats.get(secStatName[1])));
+		}
+		if (secStatName.length >= 3) {
+			this.pSecondaryStatsPanel.setSecondaryStatLabel3(Helper.insertBeforUpeprcase(secStatName[2], " "));
+			this.pSecondaryStatsPanel.setSecondaryStatValue3(String.valueOf(secondaryStats.get(secStatName[2])));
+		}
+		if (secStatName.length >= 4) {
+			this.pSecondaryStatsPanel.setSecondaryStatLabel4(Helper.insertBeforUpeprcase(secStatName[3], " "));
+			this.pSecondaryStatsPanel.setSecondaryStatValue4(String.valueOf(secondaryStats.get(secStatName[3])));
+		}
+		if (secStatName.length >= 5) {
+			this.pSecondaryStatsPanel.setSecondaryStatLabel5(Helper.insertBeforUpeprcase(secStatName[4], " "));
+			this.pSecondaryStatsPanel.setSecondaryStatValue5(String.valueOf(secondaryStats.get(secStatName[4])));
+		}
+		if (secStatName.length >= 6) {
+			this.pSecondaryStatsPanel.setSecondaryStatLabel6(Helper.insertBeforUpeprcase(secStatName[5], " "));
+			this.pSecondaryStatsPanel.setSecondaryStatValue6(String.valueOf(secondaryStats.get(secStatName[5])));
+		}
 	}
 
 }

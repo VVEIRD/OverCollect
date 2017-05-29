@@ -5,6 +5,7 @@ import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Objects;
 
 public class Helper {
 	
@@ -46,5 +47,18 @@ public class Helper {
 
 	public static int toInteger(String value, int defaultValue) {
 		return isInteger(value) ? Integer.valueOf(value) : defaultValue;
+	}
+	
+	public static String insertBeforUpeprcase(String searched, String insert) {
+		Objects.requireNonNull(searched);
+		Objects.requireNonNull(insert);
+		StringBuilder result = new StringBuilder();
+		char[] chars = searched.toCharArray();
+		for (char c : chars) {
+			if (Character.isUpperCase(c))
+				result.append(insert);
+			result.append(c);
+		}
+		return result.toString();
 	}
 }
