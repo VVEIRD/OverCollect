@@ -144,6 +144,7 @@ public class MatchExtractor implements Runnable, OWMatchListener {
 				this.match.setStartTime(properties.getProperty("startTime"));
 				this.match.setEndTime(properties.getProperty("endTime"));
 				this.match.setAccount(properties.getProperty("account"));
+				this.match.setSeason(properties.getProperty("season"));
 				this.match.setStacksize(properties.getProperty("stacksize") != null
 						&& Helper.isInteger(properties.getProperty("stacksize"))
 								? Helper.toInteger(properties.getProperty("stacksize"), 1) : 1);

@@ -20,14 +20,18 @@ public class JOWMatchListPanel extends JPanel implements OWMatchExtractionListen
 
 	int lastSr = -1;
 
-	/**
-	 * Create the panel.
-	 */
 	public JOWMatchListPanel() {
+		this(false);
+	}
+
+	public JOWMatchListPanel(boolean allSeasons) {
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		setBackground(UiStatics.COLOR_BACKGROUND);
 		matches = OWLib.getInstance().getMatches();
-		matches = matches.stream().filter(m -> m.getAccount() == null || m.getAccount().equals(OWLib.getInstance().getActiveAccount())).sorted((e1, e2) -> e2.getStartTime().compareTo(e1.getStartTime()))
+		matches = matches.stream()
+				.filter(m -> (m.getAccount() == null || m.getAccount().equals(OWLib.getInstance().getActiveAccount())) &&
+						(m.getSeason() == null || allSeasons|| m.getSeason().equals(OWLib.getInstance().getActiveSeason())))
+				.sorted((e1, e2) -> e2.getStartTime().compareTo(e1.getStartTime()))
 				.collect(Collectors.toList());
 		for (int i = 0; i < matches.size(); i++) {
 			OWMatch match = matches.get(i);

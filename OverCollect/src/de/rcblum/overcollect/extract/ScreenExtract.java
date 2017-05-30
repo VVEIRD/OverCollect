@@ -226,21 +226,27 @@ public class ScreenExtract {
 						mostProbableImg[i] = rescaled;
 					}
 					if (glyph.match(rescaled, this.config.getDataColor(), 0.06f)) {
-						try {
-							ImageIO.write(rescaled, "PNG",
-									Paths.get("tmp", (glyph.getChar() == ':' ? '_' : glyph.getChar()) + "_" + field
-											+ "[" + i + "]_rescaled.png").toFile());
-						} catch (IOException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
+//						try {
+//							ImageIO.write(rescaled, "PNG",
+//									Paths.get("tmp", (glyph.getChar() == ':' ? '_' : glyph.getChar()) + "_" + field
+//											+ "[" + i + "]_rescaled.png").toFile());
+//						} catch (IOException e) {
+//							// TODO Auto-generated catch block
+//							e.printStackTrace();
+//						}
 						chars[i] = glyph.getChar();
 					}
 				}
 				if (chars[i] == ' ') {
 					try {
+						int newW = Math.round(charImgs[i].getWidth()
+								* (((float) 55) / ((float) charImgs[i].getHeight())));
+						int newH = Math.round(charImgs[i].getHeight()
+								* (((float) 55) / ((float) charImgs[i].getHeight())));
+						BufferedImage rescaled = 55 != charImgs[i].getHeight()
+								? resize(charImgs[i], newW, newH) : charImgs[i];
 						this.nohitPrimary.put(charImgs[i], mostProbableGlyph[i]);
-						ImageIO.write(charImgs[i], "PNG",
+						ImageIO.write(rescaled, "PNG",
 								Paths.get("tmp", "NOHIT_" + field + "[" + i + "]_rescaled.png").toFile());
 					} catch (IOException e) {
 						// TODO Auto-generated catch block

@@ -11,7 +11,9 @@ import java.nio.file.Paths;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
-import de.rcblum.overcollect.capture.CaptureEngine;
+import de.rcblum.overcollect.capture.listener.ImageSource;
+import de.rcblum.overcollect.capture.FFMpegCaptureEngine;
+import de.rcblum.overcollect.capture.RobotCaptureEngine;
 import de.rcblum.overcollect.capture.listener.ImageListener;
 import de.rcblum.overcollect.collect.FilterEngine;
 import de.rcblum.overcollect.collect.MatchComposer;
@@ -134,7 +136,7 @@ public class OverWatchCollectorApp {
 		}
 	}
 
-	private CaptureEngine captureEngine = null;
+	private ImageSource captureEngine = null;
 
 	private FilterEngine filterEngine = null;
 
@@ -166,7 +168,14 @@ public class OverWatchCollectorApp {
 		/**
 		 * Capture Screenshots
 		 */
-		captureEngine = new CaptureEngine();
+//		captureEngine = new RobotCaptureEngine();
+		try {
+			captureEngine = new FFMpegCaptureEngine();
+		} catch (NullPointerException e1) {
+			e1.printStackTrace();
+			System.out.println("Fallback: initializing RobotCaptureEngine");
+			captureEngine = new RobotCaptureEngine();
+		}
 
 		/**
 		 * Filter screenshotrs for relevant images

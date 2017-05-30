@@ -66,7 +66,14 @@
     <artifactId>simple-odf</artifactId>
     <version>0.8.2-incubating</version>
 </dependency>-->
-  	
+  	<!-- https://mvnrepository.com/artifact/org.bytedeco/javacv -->
+<!-- https://mvnrepository.com/artifact/org.bytedeco/javacv -->
+<dependency>
+    <groupId>org.bytedeco</groupId>
+    <artifactId>javacv</artifactId>
+    <version>1.1</version>
+</dependency>
+
   	<dependency>
   		<groupId>com.jgoodies</groupId>
   		<artifactId>jgoodies-forms</artifactId>

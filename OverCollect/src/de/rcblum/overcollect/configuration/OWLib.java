@@ -64,7 +64,7 @@ public class OWLib {
 	// Static attributes
 	//
 
-	public static final String VERSION_STRING = "0.1.10-alpha";
+	public static final String VERSION_STRING = "0.2.0-alpha";
 
 	private static String defaultFolder = Paths.get("lib", "owdata").toString();
 
@@ -94,6 +94,10 @@ public class OWLib {
 	private List<String> accounts = null;
 	
 	private String selectedAccount = null;
+	
+	private List<String> seasons = null;
+	
+	private String selectedSeason = null;
 
 	private OWLib() {
 		this(Paths.get("lib", "owdata"));
@@ -123,6 +127,15 @@ public class OWLib {
 		this.saveConfig();
 	}
 
+	public void addSeason(String seasonName) {
+		if (!this.seasons.contains(seasonName)) {
+			if (this.seasons.size() == 0)
+				this.setActiveSeason(seasonName);
+			this.seasons.add(seasonName);
+			this.saveConfig();
+		}
+	}
+
 	public void addMatch(OWMatch match) {
 		Objects.requireNonNull(match);
 		this.matches.put(match.getMatchId(), match);
@@ -132,8 +145,16 @@ public class OWLib {
 		return this.accounts;
 	}
 
+	public List<String> getSeasons() {
+		return this.seasons;
+	}
+
 	public String getActiveAccount() {
 		return this.selectedAccount;
+	}
+
+	public String getActiveSeason() {
+		return this.selectedSeason;
 	}
 
 	public boolean getBoolean(String key) {
@@ -259,6 +280,9 @@ public class OWLib {
 		// load accounts
 		this.accounts = new LinkedList<>(this.config.getProperty("accounts") != null ? Arrays.asList(this.config.getProperty("accounts").split(",")) : new LinkedList<>());
 		this.selectedAccount = this.config.getProperty("activeAccount");
+		// Load Seasons
+		this.seasons = new LinkedList<>(this.config.getProperty("seasons") != null ? Arrays.asList(this.config.getProperty("seasons").split(",")) : new LinkedList<>());
+		this.selectedSeason = this.config.getProperty("activeSeason");
 		
 		// Find all resolutions
 		for (File res : resolutionFolders) {
@@ -295,6 +319,11 @@ public class OWLib {
 					m.setAccount(this.getActiveAccount());
 					OWMatch.toJsonFile(m, match);
 				}
+				// Fix older versions with no season
+				if (m.getSeason() == null && this.getActiveSeason() != null) {
+					m.setSeason(this.getActiveSeason());
+					OWMatch.toJsonFile(m, match);
+				}
 			}
 		}
 	}
@@ -302,6 +331,8 @@ public class OWLib {
 	private void saveConfig() {
 		this.config.setProperty("accounts", String.join(",", this.accounts));
 		this.config.setProperty("activeAccount", this.selectedAccount);
+		this.config.setProperty("seasons", String.join(",", this.seasons));
+		this.config.setProperty("activeSeason", this.selectedSeason);
 		try (OutputStream os = Files.newOutputStream(this.libPath.resolve("configuration.properties"))) {
 			this.config.store(os, "");
 		} catch (IOException e) {
@@ -315,6 +346,24 @@ public class OWLib {
 			this.accounts.add(account);
 		this.selectedAccount = account;
 		this.config.setProperty("activeAccount", this.selectedAccount);
+		this.saveConfig();
+	}
+
+	public void setActiveSeason(String season) {
+		if (this.seasons.size() == 0) {
+			for (OWMatch m : this.matches.values()) {
+				// Fix older versions with no season
+				if (m.getSeason() == null && season!= null) {
+					Path match = Paths.get(System.getProperties().getProperty("owcollect.data.dir"), m.getMatchId() + ".json");
+					m.setSeason(season);
+					OWMatch.toJsonFile(m, match.toFile());
+				}
+			}
+		}
+		if (!this.seasons.contains(season))
+			this.seasons.add(season);
+		this.selectedSeason = season;
+		this.config.setProperty("activeSeason", this.selectedSeason);
 		this.saveConfig();
 	}
 

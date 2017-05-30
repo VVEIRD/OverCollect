@@ -25,7 +25,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
-import de.rcblum.overcollect.capture.CaptureEngine;
+import de.rcblum.overcollect.capture.RobotCaptureEngine;
 import de.rcblum.overcollect.capture.listener.ImageListener;
 
 public class JTestCaptureFrame extends JFrame implements ImageListener {
@@ -55,7 +55,7 @@ public class JTestCaptureFrame extends JFrame implements ImageListener {
 	private JLabel pImage;
 
 	private JComboBox<GraphicsDevice> cboxDevices;
-	private CaptureEngine engine = null;
+	private RobotCaptureEngine engine = null;
 	private JCheckBox chckbxPreview;
 	private JPanel panel;
 
@@ -88,7 +88,7 @@ public class JTestCaptureFrame extends JFrame implements ImageListener {
 		cboxDevices.setAlignmentY(Component.TOP_ALIGNMENT);
 		panel.add(cboxDevices);
 		cboxDevices.setSelectedItem(GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice());
-		this.engine = new CaptureEngine((GraphicsDevice) cboxDevices.getSelectedItem());
+		this.engine = new RobotCaptureEngine((GraphicsDevice) cboxDevices.getSelectedItem());
 		cboxDevices.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {

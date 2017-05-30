@@ -45,8 +45,10 @@ public class OWMatch {
 	}
 
 	private String matchId = null;
-	
+
 	private String account = null;
+	
+	private String season = null;
 
 	private String startTime = null;
 
@@ -76,6 +78,10 @@ public class OWMatch {
 
 	public String getAccount() {
 		return account;
+	}
+	
+	public String getSeason() {
+		return season;
 	}
 
 	public List<OWCharacterStats> getCharacterStats() {
@@ -144,6 +150,10 @@ public class OWMatch {
 
 	public void setAccount(String account) {
 		this.account = account;
+	}
+	
+	public void setSeason(String season) {
+		this.season = season;
 	}
 
 	public void setCharacterStats(List<OWCharacterStats> characterStats) {

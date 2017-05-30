@@ -59,6 +59,7 @@ public class JOWSidebar extends JPanel {
 	JButton btnExportData = null;
 	private JComboBox<String> cbxAccount;
 	private JButton button;
+	private JComboBox cbxSeasons;
 
 	/**
 	 * Create the panel.
@@ -93,7 +94,7 @@ public class JOWSidebar extends JPanel {
 				FormSpecs.RELATED_GAP_COLSPEC,
 				ColumnSpec.decode("30px"),
 				FormSpecs.RELATED_GAP_COLSPEC,
-				ColumnSpec.decode("30px"),
+				ColumnSpec.decode("50px"),
 				FormSpecs.RELATED_GAP_COLSPEC,
 				ColumnSpec.decode("30px"),
 				FormSpecs.RELATED_GAP_COLSPEC,
@@ -148,9 +149,8 @@ public class JOWSidebar extends JPanel {
 
 			}
 		});
-
+		// Export Button
 		btnExportData.addActionListener(new ActionListener() {
-
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				JFileChooser fileChooser = new JFileChooser();
@@ -198,6 +198,7 @@ public class JOWSidebar extends JPanel {
 
 			}
 		});
+		// Account setup
 		List<String> accounts = OWLib.getInstance().getAccounts();
 		for (String acc : accounts) {
 			cbxAccount.addItem(acc);
@@ -228,7 +229,7 @@ public class JOWSidebar extends JPanel {
 						parent = parent.getParent();
 					}
 					if (parent != null) {
-						((JOverCollectFrame)parent).updateMatchList();
+						((JOverCollectFrame)parent).updateMatchList(e.getItem().equals("All Seasons"));
 					}
 				}
 			}
@@ -237,8 +238,50 @@ public class JOWSidebar extends JPanel {
 		button.setBorder(null);
 		button.setMargin(new Insets(50, 0, 0, 0));
 		add(button, "24, 2");
+		// Seasons setup
+		cbxSeasons = new JComboBox();
+		cbxSeasons.addItem("All Seasons");
+		add(cbxSeasons, "26, 2, 5, 1, fill, default");
+		List<String> seasons = OWLib.getInstance().getSeasons();
+		for (String acc : seasons) {
+			cbxSeasons.addItem(acc);
+			cbxSeasons.setSelectedItem(OWLib.getInstance().getActiveSeason());
+		}
+		cbxSeasons.setBorder(new EmptyBorder(0, 0, 0, 0));
+		for (int i = 0; i < cbxSeasons.getComponentCount(); i++) 
+		{
+		    if (cbxSeasons.getComponent(i) instanceof JComponent) {
+		        ((JComponent) cbxSeasons.getComponent(i)).setBorder(new EmptyBorder(0, 0, 0, 0));
+		    }
+		    if (cbxSeasons.getComponent(i) instanceof AbstractButton) {
+		        ((AbstractButton) cbxSeasons.getComponent(i)).setBorderPainted(false);
+		    }
+		}
+		cbxSeasons.setFocusable(false);
+		cbxSeasons.setBackground(UiStatics.COLOR_BACKGROUND);
+		cbxSeasons.setFont(UiStatics.OW_FONT_NORMAL.deriveFont(Font.PLAIN, 25));
+		cbxSeasons.setRenderer(new ComboBoxRenderer());
+		cbxSeasons.addItemListener(new ItemListener() {
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				if (e.getStateChange() == ItemEvent.SELECTED) {
+					if (!e.getItem().equals("All Seasons"))
+						OWLib.getInstance().setActiveSeason((String) e.getItem());
+					Container parent = getParent();
+					while ((parent != null) && !(parent instanceof JOverCollectFrame)) {
+						parent = parent.getParent();
+					}
+					if (parent != null) {
+						((JOverCollectFrame)parent).updateMatchList(e.getItem().equals("All Seasons"));
+					}
+				}
+			}
+		});
+		JButton btnAddSeason = UiStatics.createButton(" + ");
+		btnAddSeason.setBorder(null);
+		btnAddSeason.setMargin(new Insets(50, 0, 0, 0));
+		add(btnAddSeason, "32, 2");
 		button.addActionListener(new ActionListener() {
-			
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				Container parent = getParent();
@@ -249,6 +292,20 @@ public class JOWSidebar extends JPanel {
 					String accountName = ((JOverCollectFrame)parent).showAccountCreation();
 					OWLib.getInstance().addAccount(accountName);
 					cbxAccount.addItem(accountName);
+				}
+			}
+		});
+		btnAddSeason.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Container parent = getParent();
+				while ((parent != null) && !(parent instanceof JOverCollectFrame)) {
+					parent = parent.getParent();
+				}
+				if (parent != null) {
+					String seasonName = ((JOverCollectFrame)parent).showSeasonCreation();
+					OWLib.getInstance().addSeason(seasonName);
+					cbxSeasons.addItem(seasonName);
 				}
 			}
 		});

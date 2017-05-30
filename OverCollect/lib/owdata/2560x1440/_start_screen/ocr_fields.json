@@ -1,7 +1,7 @@
 {
   "doRecolor": false,
   "fontSize": 0,
-  "pixelDetectionCount": 1,
+  "pixelDetectionCount": 0,
   "dataFieldSize": [
     320,
     100

@@ -4,15 +4,15 @@
     <!--ANT 1.7 is required                                        -->
     <!--define folder properties-->
     <property name="dir.buildfile" value="."/>
-    <property name="dir.workspace" value="C:/Users/rcBlum/git/OverCollect"/>
+    <property name="dir.workspace" value="C:/Users/rcBlum/Google Drive/Java/workspace"/>
     <property name="dir.jarfile" value="C:/Users/rcBlum/Google Drive/Overwatch/OWCollect/owc-dist"/>
     <target name="create_run_jar">
         <jar destfile="${dir.jarfile}/OverCollect.jar">
             <manifest>
                 <attribute name="Main-Class" value="de.rcblum.overcollect.OverWatchCollectorApp"/>
-                <attribute name="Class-Path" value=". lib/OverCollect/gson-2.8.0.jar lib/OverCollect/poi-3.16.jar lib/OverCollect/commons-codec-1.10.jar lib/OverCollect/commons-collections4-4.1.jar lib/OverCollect/poi-ooxml-3.16.jar lib/OverCollect/curvesapi-1.04.jar lib/OverCollect/poi-ooxml-schemas-3.16.jar lib/OverCollect/xmlbeans-2.6.0.jar lib/OverCollect/stax-api-1.0.1.jar lib/OverCollect/jgoodies-forms-1.8.0.jar lib/OverCollect/jgoodies-common-1.8.0.jar"/>
+                <attribute name="Class-Path" value=". lib/OverCollect/gson-2.8.0.jar lib/OverCollect/poi-3.16.jar lib/OverCollect/commons-codec-1.10.jar lib/OverCollect/commons-collections4-4.1.jar lib/OverCollect/poi-ooxml-3.16.jar lib/OverCollect/curvesapi-1.04.jar lib/OverCollect/poi-ooxml-schemas-3.16.jar lib/OverCollect/xmlbeans-2.6.0.jar lib/OverCollect/stax-api-1.0.1.jar lib/OverCollect/javacv-1.1.jar lib/OverCollect/javacpp-1.1.jar lib/OverCollect/opencv-3.0.0-1.1.jar lib/OverCollect/opencv-3.0.0-1.1-windows-x86_64.jar lib/OverCollect/ffmpeg-2.8.1-1.1.jar lib/OverCollect/ffmpeg-2.8.1-1.1-windows-x86_64.jar lib/OverCollect/flycapture-2.8.3.1-1.1.jar lib/OverCollect/flycapture-2.8.3.1-1.1-windows-x86_64.jar lib/OverCollect/libdc1394-2.2.3-1.1.jar lib/OverCollect/libdc1394-2.2.3-1.1-windows-x86_64.jar lib/OverCollect/libfreenect-0.5.3-1.1.jar lib/OverCollect/libfreenect-0.5.3-1.1-windows-x86_64.jar lib/OverCollect/videoinput-0.200-1.1.jar lib/OverCollect/videoinput-0.200-1.1-windows-x86_64.jar lib/OverCollect/artoolkitplus-2.3.1-1.1.jar lib/OverCollect/artoolkitplus-2.3.1-1.1-windows-x86_64.jar lib/OverCollect/flandmark-1.07-1.1.jar lib/OverCollect/flandmark-1.07-1.1-windows-x86_64.jar lib/OverCollect/jgoodies-forms-1.8.0.jar lib/OverCollect/jgoodies-common-1.8.0.jar"/>
             </manifest>
-            <fileset dir="${dir.workspace}/OverCollect/target/classes"/>
+            <fileset dir="${dir.buildfile}/target/classes"/>
         </jar>
         <delete dir="${dir.jarfile}/lib/OverCollect"/>
         <mkdir dir="${dir.jarfile}/lib/OverCollect"/>
@@ -25,6 +25,24 @@
         <copy file="C:/Users/rcBlum/.m2/repository/org/apache/poi/poi-ooxml-schemas/3.16/poi-ooxml-schemas-3.16.jar" todir="${dir.jarfile}/lib/OverCollect"/>
         <copy file="C:/Users/rcBlum/.m2/repository/org/apache/xmlbeans/xmlbeans/2.6.0/xmlbeans-2.6.0.jar" todir="${dir.jarfile}/lib/OverCollect"/>
         <copy file="C:/Users/rcBlum/.m2/repository/stax/stax-api/1.0.1/stax-api-1.0.1.jar" todir="${dir.jarfile}/lib/OverCollect"/>
+        <copy file="C:/Users/rcBlum/.m2/repository/org/bytedeco/javacv/1.1/javacv-1.1.jar" todir="${dir.jarfile}/lib/OverCollect"/>
+        <copy file="C:/Users/rcBlum/.m2/repository/org/bytedeco/javacpp/1.1/javacpp-1.1.jar" todir="${dir.jarfile}/lib/OverCollect"/>
+        <copy file="C:/Users/rcBlum/.m2/repository/org/bytedeco/javacpp-presets/opencv/3.0.0-1.1/opencv-3.0.0-1.1.jar" todir="${dir.jarfile}/lib/OverCollect"/>
+        <copy file="C:/Users/rcBlum/.m2/repository/org/bytedeco/javacpp-presets/opencv/3.0.0-1.1/opencv-3.0.0-1.1-windows-x86_64.jar" todir="${dir.jarfile}/lib/OverCollect"/>
+        <copy file="C:/Users/rcBlum/.m2/repository/org/bytedeco/javacpp-presets/ffmpeg/2.8.1-1.1/ffmpeg-2.8.1-1.1.jar" todir="${dir.jarfile}/lib/OverCollect"/>
+        <copy file="C:/Users/rcBlum/.m2/repository/org/bytedeco/javacpp-presets/ffmpeg/2.8.1-1.1/ffmpeg-2.8.1-1.1-windows-x86_64.jar" todir="${dir.jarfile}/lib/OverCollect"/>
+        <copy file="C:/Users/rcBlum/.m2/repository/org/bytedeco/javacpp-presets/flycapture/2.8.3.1-1.1/flycapture-2.8.3.1-1.1.jar" todir="${dir.jarfile}/lib/OverCollect"/>
+        <copy file="C:/Users/rcBlum/.m2/repository/org/bytedeco/javacpp-presets/flycapture/2.8.3.1-1.1/flycapture-2.8.3.1-1.1-windows-x86_64.jar" todir="${dir.jarfile}/lib/OverCollect"/>
+        <copy file="C:/Users/rcBlum/.m2/repository/org/bytedeco/javacpp-presets/libdc1394/2.2.3-1.1/libdc1394-2.2.3-1.1.jar" todir="${dir.jarfile}/lib/OverCollect"/>
+        <copy file="C:/Users/rcBlum/.m2/repository/org/bytedeco/javacpp-presets/libdc1394/2.2.3-1.1/libdc1394-2.2.3-1.1-windows-x86_64.jar" todir="${dir.jarfile}/lib/OverCollect"/>
+        <copy file="C:/Users/rcBlum/.m2/repository/org/bytedeco/javacpp-presets/libfreenect/0.5.3-1.1/libfreenect-0.5.3-1.1.jar" todir="${dir.jarfile}/lib/OverCollect"/>
+        <copy file="C:/Users/rcBlum/.m2/repository/org/bytedeco/javacpp-presets/libfreenect/0.5.3-1.1/libfreenect-0.5.3-1.1-windows-x86_64.jar" todir="${dir.jarfile}/lib/OverCollect"/>
+        <copy file="C:/Users/rcBlum/.m2/repository/org/bytedeco/javacpp-presets/videoinput/0.200-1.1/videoinput-0.200-1.1.jar" todir="${dir.jarfile}/lib/OverCollect"/>
+        <copy file="C:/Users/rcBlum/.m2/repository/org/bytedeco/javacpp-presets/videoinput/0.200-1.1/videoinput-0.200-1.1-windows-x86_64.jar" todir="${dir.jarfile}/lib/OverCollect"/>
+        <copy file="C:/Users/rcBlum/.m2/repository/org/bytedeco/javacpp-presets/artoolkitplus/2.3.1-1.1/artoolkitplus-2.3.1-1.1.jar" todir="${dir.jarfile}/lib/OverCollect"/>
+        <copy file="C:/Users/rcBlum/.m2/repository/org/bytedeco/javacpp-presets/artoolkitplus/2.3.1-1.1/artoolkitplus-2.3.1-1.1-windows-x86_64.jar" todir="${dir.jarfile}/lib/OverCollect"/>
+        <copy file="C:/Users/rcBlum/.m2/repository/org/bytedeco/javacpp-presets/flandmark/1.07-1.1/flandmark-1.07-1.1.jar" todir="${dir.jarfile}/lib/OverCollect"/>
+        <copy file="C:/Users/rcBlum/.m2/repository/org/bytedeco/javacpp-presets/flandmark/1.07-1.1/flandmark-1.07-1.1-windows-x86_64.jar" todir="${dir.jarfile}/lib/OverCollect"/>
         <copy file="C:/Users/rcBlum/.m2/repository/com/jgoodies/jgoodies-forms/1.8.0/jgoodies-forms-1.8.0.jar" todir="${dir.jarfile}/lib/OverCollect"/>
         <copy file="C:/Users/rcBlum/.m2/repository/com/jgoodies/jgoodies-common/1.8.0/jgoodies-common-1.8.0.jar" todir="${dir.jarfile}/lib/OverCollect"/>
     </target>

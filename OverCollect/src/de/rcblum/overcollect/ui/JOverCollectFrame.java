@@ -35,6 +35,10 @@ public class JOverCollectFrame extends JFrame {
 			String accountName = this.showAccountCreation();
 			OWLib.getInstance().setActiveAccount(accountName);
 		}
+		if (OWLib.getInstance().getSeasons().size() == 0) {
+			String accountName = this.showSeasonCreation();
+			OWLib.getInstance().setActiveSeason(accountName);
+		}
 		setBackground(UiStatics.COLOR_BACKGROUND);
 		getContentPane().setBackground(UiStatics.COLOR_BACKGROUND);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -68,9 +72,15 @@ public class JOverCollectFrame extends JFrame {
                 "Add Account:", null);
 		return name;
 	}
+	
+	public String showSeasonCreation() {
+		String name = JOptionPane.showInputDialog(this,
+                "Add Season:", null);
+		return name;
+	}
 
-	public void updateMatchList() {
-		JOWMatchListPanel pMatches = new JOWMatchListPanel();
+	public void updateMatchList(boolean allSeasons) {
+		JOWMatchListPanel pMatches = new JOWMatchListPanel(allSeasons);
 		app.addOWMatchExtractionListener(pMatches);
 		app.removeOWMatchExtractionListener(this.pMatches);
 		scrollPane.setViewportView(pMatches);
