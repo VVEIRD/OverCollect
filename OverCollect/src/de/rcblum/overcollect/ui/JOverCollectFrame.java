@@ -32,12 +32,18 @@ public class JOverCollectFrame extends JFrame {
 	public JOverCollectFrame(OverWatchCollectorApp app) {
 		this.app = app;
 		if (OWLib.getInstance().getAccounts().size() == 0) {
-			String accountName = this.showAccountCreation();
+			String accountName = null;
+			do  {
+				accountName =this.showAccountCreation();
+			} while (accountName == null);
 			OWLib.getInstance().setActiveAccount(accountName);
 		}
 		if (OWLib.getInstance().getSeasons().size() == 0) {
-			String accountName = this.showSeasonCreation();
-			OWLib.getInstance().setActiveSeason(accountName);
+			String seasonName = null;
+			do  {
+				seasonName =this.showSeasonCreation();
+			} while (seasonName == null);
+			OWLib.getInstance().setActiveSeason(seasonName);
 		}
 		setBackground(UiStatics.COLOR_BACKGROUND);
 		getContentPane().setBackground(UiStatics.COLOR_BACKGROUND);

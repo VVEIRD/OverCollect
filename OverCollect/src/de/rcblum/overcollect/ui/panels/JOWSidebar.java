@@ -290,8 +290,10 @@ public class JOWSidebar extends JPanel {
 				}
 				if (parent != null) {
 					String accountName = ((JOverCollectFrame)parent).showAccountCreation();
-					OWLib.getInstance().addAccount(accountName);
-					cbxAccount.addItem(accountName);
+					if (accountName != null) {
+						OWLib.getInstance().addAccount(accountName);
+						cbxAccount.addItem(accountName);
+					}
 				}
 			}
 		});
@@ -304,8 +306,10 @@ public class JOWSidebar extends JPanel {
 				}
 				if (parent != null) {
 					String seasonName = ((JOverCollectFrame)parent).showSeasonCreation();
-					OWLib.getInstance().addSeason(seasonName);
-					cbxSeasons.addItem(seasonName);
+					if (seasonName != null) {
+						OWLib.getInstance().addSeason(seasonName);
+						cbxSeasons.addItem(seasonName);
+					}
 				}
 			}
 		});
