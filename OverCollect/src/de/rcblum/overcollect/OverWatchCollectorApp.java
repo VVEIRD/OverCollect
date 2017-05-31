@@ -26,6 +26,7 @@ import de.rcblum.overcollect.ui.JOverCollectFrame;
 import de.rcblum.overcollect.ui.setup.filter.JFilterSetup;
 import de.rcblum.overcollect.ui.setup.filter.JFilterTest;
 import de.rcblum.overcollect.ui.setup.ocr.JOCRSetup;
+import de.rcblum.overcollect.utils.Helper;
 
 public class OverWatchCollectorApp {
 
@@ -170,8 +171,16 @@ public class OverWatchCollectorApp {
 		 */
 //		captureEngine = new RobotCaptureEngine();
 		try {
-			captureEngine = new FFMpegCaptureEngine();
-		} catch (NullPointerException e1) {
+			String className = System.getProperties().getProperty("de.rcblum.overcollect.capture");
+			className = className != null ? className : OWLib.getInstance().getString("engines.capture", "de.rcblum.overcollect.capture.RobotCaptureEngine");
+			Helper.info(this.getClass(), "Loading capture engine: " + className);
+			Class classObject = Class.forName(className);
+			Object captureObject = classObject.newInstance();
+			if (captureObject instanceof ImageSource)
+				captureEngine = (ImageSource)captureObject;
+			else 
+				throw new ClassNotFoundException("Class not anm instance of Image Source");
+		} catch (NullPointerException | InstantiationException | IllegalAccessException | ClassNotFoundException e1) {
 			e1.printStackTrace();
 			System.out.println("Fallback: initializing RobotCaptureEngine");
 			captureEngine = new RobotCaptureEngine();
