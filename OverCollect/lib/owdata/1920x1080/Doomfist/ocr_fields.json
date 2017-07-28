@@ -1,0 +1,80 @@
+{
+  "doRecolor": true,
+  "fontSize": 55,
+  "pixelDetectionCount": 1,
+  "dataColor": [
+    0,
+    0,
+    0
+  ],
+  "dataFieldSize": [
+    240,
+    75
+  ],
+  "secondaryFontSize": 19,
+  "secondaryDataColor": [
+    0,
+    0,
+    0
+  ],
+  "secondaryDataFieldSize": [
+    240,
+    45
+  ],
+  "skew": 0.26,
+  "skewTrim": 21,
+  "skewSecondary": 0.0,
+  "skewSecondaryTrim": 0,
+  "values": {
+    "healingDone": [
+      1245,
+      434
+    ],
+    "objectiveKills": [
+      435,
+      430
+    ],
+    "eliminations": [
+      165,
+      433
+    ],
+    "objectiveTime": [
+      705,
+      430
+    ],
+    "damageDone": [
+      975,
+      433
+    ],
+    "deaths": [
+      1515,
+      437
+    ]
+  },
+  "secondaryValues": {
+    "killStreak": [
+      444,
+      640
+    ],
+    "dragonstrikeKills": [
+      1499,
+      640
+    ],
+    "criticalHits": [
+      971,
+      640
+    ],
+    "reconAssists": [
+      1235,
+      640
+    ],
+    "finalBlows": [
+      707,
+      640
+    ],
+    "weaponAccuarcy": [
+      180,
+      640
+    ]
+  }
+}
