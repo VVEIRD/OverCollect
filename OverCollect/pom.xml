@@ -79,6 +79,11 @@
   		<artifactId>jgoodies-forms</artifactId>
   		<version>1.8.0</version>
   	</dependency>
+  	<dependency>
+  		<groupId>com.miglayout</groupId>
+   	 	<artifactId>miglayout-swing</artifactId>
+    	<version>5.0</version>
+	</dependency>
   </dependencies>
   <dependencyManagement>
   	<dependencies>

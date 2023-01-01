@@ -71,7 +71,7 @@ public class OverWatchCollectorApp {
 			System.out.println("/? or /help                 Show this help text");
 			System.out.println("/filter_setup               Start Filter configuration utility");
 			System.out.println("/filter_test                Start Testframework for existing filters");
-			System.out.println("/ocr_setup                  Start OCR configuration utility");
+			System.out.println("/r                  Start OCR configuration utility");
 			System.out.println("/glyph_update               Update glyph data unsing the Filter data");
 			System.exit(0);
 		} else if (args.length > 0 && args[0].equalsIgnoreCase("/filter_setup")) {

@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontFormatException;
 import java.awt.Graphics;
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -85,10 +86,10 @@ public class UiStatics {
 		}
 	}
 	public static final Font OW_FONT_NORMAL = getFont("fonts" + File.separator + "koverwatch.ttf",
-			"http://us.battle.net/forums/static/fonts/koverwatch/koverwatch.ttf");
+			"http://kr.battle.net/forums/static/fonts/koverwatch/koverwatch.ttf");
 
 	public static final Font OW_FONT_ITALIC = getFont("fonts" + File.separator + "bignoodletoo.ttf",
-			"http://us.battle.net/forums/static/fonts/bignoodletoo/bignoodletoo.ttf").deriveFont(Font.PLAIN, 30);
+			"https://kr.battle.net/forums/static/fonts/bignoodletoo/bignoodletoo.ttf").deriveFont(Font.PLAIN, 30);
 
 	public static final Color TEXT_CONTENT = new Color(253, 203, 56);
 
@@ -156,14 +157,20 @@ public class UiStatics {
 			Helper.info(UiStatics.class, "Downloading Font " + urlString);
 			try (FileOutputStream outputStream = new FileOutputStream(localFontFile)) {
 				URL owFontNormal = new URL(urlString);
-				ReadableByteChannel rbcFont = Channels.newChannel(owFontNormal.openStream());
-				InputStream inputStream = owFontNormal.openConnection().getInputStream();
+				System.out.println(urlString);
+				//ReadableByteChannel rbcFont = Channels.newChannel(owFontNormal.openStream());
+				BufferedInputStream inputStream = new BufferedInputStream(owFontNormal.openStream());
+				//InputStream inputStream = owFontNormal.openConnection().getInputStream();
 				// Save fonts
 				int bytesRead = -1;
 				byte[] buffer = new byte[1024 * 1024];
+				int readTotal = 0;
 				while ((bytesRead = inputStream.read(buffer)) != -1) {
 					outputStream.write(buffer, 0, bytesRead);
+					readTotal += bytesRead;
 				}
+				System.out.println(bytesRead);
+				Helper.info(UiStatics.class, "Bytes Read: " + readTotal);
 				Helper.info(UiStatics.class, "Done downloading Fonts");
 			} catch (IOException e1) {
 				Helper.info(UiStatics.class, "Error downloading font:");
